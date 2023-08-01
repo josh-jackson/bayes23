@@ -39,7 +39,7 @@
     "href": "intro-1.html#think-of-results-in-terms-of-distributions",
     "title": "Intro to Bayes",
     "section": "2. Think of results in terms of distributions",
-    "text": "2. Think of results in terms of distributions\n\nWhat are results?\n\n\n\nEstimate and an SE\nIndicates a “best guess” ie mean/median/mode and the imprecision related to it\nIf this guess is far away from zero (and imprecision not large), then it is significant\nWe know that if we repeated this again we won’t get the same answer (estimate), but likely in between our CIs\nHow do we convey the “best guess?”"
+    "text": "2. Think of results in terms of distributions\n\n\nResults are typically thought of as an estimate and an SE\nIndicates a “best guess” ie mean/median/mode and the imprecision related to it\nIf this guess is far away from zero (and imprecision not large), then it is significant\nWe know that if we repeated this again we won’t get the same answer (estimate), but likely in between our CIs\nHow do we convey the “best guess?”"
   },
   {
     "objectID": "intro-1.html#first-bayes-example",

@@ -55,10 +55,8 @@ What are Bayesian models?
 
 ## 2. Think of results in terms of distributions
 
--   What are results?
-
 ::: incremental
--   Estimate and an SE
+-   Results are typically thought of as an estimate and an SE
 -   Indicates a "best guess" ie mean/median/mode and the imprecision related to it
 -   If this guess is far away from zero (and imprecision not large), then it is significant
 -   We know that if we repeated this again we won't get the same answer (estimate), but likely in between our CIs
