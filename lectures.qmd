@@ -1,0 +1,6 @@
+---
+title: "Lectures"
+---
+
+1.  [Background and introduction](intro-1.qmd)
+2.  [Regression introduction](regression-2.qmd)
