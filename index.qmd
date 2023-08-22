@@ -2,6 +2,6 @@
 title: "Bayesian Data Analyses"
 ---
 
-8/30: Welcome to the first day of class! If you want to follow along with examples, head over to github for all of the code and data. https://github.com/josh-jackson/bayes23
+8/29: Welcome to the first day of class! If you want to follow along with examples, head over to github for all of the code and data. https://github.com/josh-jackson/bayes23
 
 Please check the homepage regularly for class updates and announcements.

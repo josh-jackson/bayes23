@@ -9,6 +9,10 @@ website:
         text: Home
       - href: lectures.qmd
         text: Lectures
+      - href: homework.qmd
+        text: Homework
+      - href: syllabus.qmd
+        text: Syllabus
 
         
       

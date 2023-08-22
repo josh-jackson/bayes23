@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Bayesian Statistics 2023 - Bayesian Data Analyses</title>
+<title>Bayesian Statistics 2023 - Syllabus</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="./index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -94,7 +94,7 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Homework</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./syllabus.html" rel="" target="">
+    <a class="nav-link active" href="./syllabus.html" rel="" target="" aria-current="page">
  <span class="menu-text">Syllabus</span></a>
   </li>  
 </ul>
@@ -116,7 +116,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Bayesian Data Analyses</h1>
+<h1 class="title">Syllabus</h1>
 </div>
 
 
@@ -131,10 +131,152 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>8/29: Welcome to the first day of class! If you want to follow along with examples, head over to github for all of the code and data. https://github.com/josh-jackson/bayes23</p>
-<p>Please check the homepage regularly for class updates and announcements.</p>
+<p><strong>Instructor</strong>: Joshua Jackson<br>
+<strong>Office</strong>: Spare Bedroom<br>
+<strong>Office hours</strong>: By appointment</p>
+<section id="course-description" class="level4">
+<h4 class="anchored" data-anchor-id="course-description">Course Description</h4>
+<p>Bayesian parameter estimation and hypothesis testing offer a useful alternative to the classic frequentist paradigm within psychological science. This class will cover the foundations of Bayesian inference and hypothesis testing with the primary emphasis on fitting multiple regression and multi-level models common within psychology. A variety of response distributions will be discussed: Gaussian, binary and count, ordinal, survival, probability, and zero-inflated models, among others. Topics include: model calibration, regularization, prior and posterior predictions, Bayes factors, missing data, Bayesian power, cross-validation, Bayesian meta-analysis, distributional models, and multivariate response models.</p>
+<p><br></p>
+</section>
+<section id="class-textbook" class="level4">
+<h4 class="anchored" data-anchor-id="class-textbook">Class textbook</h4>
+<p>-McElreath, R. (2020). Statistical Rethinking: A Bayesian Course with Examples in R. SECOND EDITION CRC Press.</p>
+<p>Note that McElreath also has lectures from his book posted on his youtube. They are excellent. While some bits of the class materials are covered in his lectures I believe the content of this course and his course compliment one another. His focus is making the content digestible, viewing the broader picture, and delving into philosophy of science more so. We will focus more on the applied aspects, using specific programs and making sure we are comfortable “doing” the work rather than just understanding it at the high level.</p>
+<p>Please check them out, especially if you are lost: https://tinyurl.com/yckrrzjy</p>
+<p><em>Recommended text (not required)</em></p>
+<ul>
+<li>Kruschke, J. (2015). Doing Bayesian Data Analysis. SECOND EDITION.</li>
+</ul>
+<p>(This is more of a traditional stats textbook from a psychologist. It is more comprehensive but less readable. Some practices are no longer standard, the structure of the book isn’t how I would present everything and it misses some important details developed in the past 7 or so years. Yes a 7 year old book is now wildly out of date. That said I still use it often as a reference).</p>
+<ul>
+<li>Farrell, S., &amp; Lewandowsky, S. (2018). Computational modeling of cognition and behavior. Cambridge University Press</li>
+</ul>
+<p>(Very good for those who predominantly do cognitive models/behavioral tasks. These are more advanced models that we will touch on at the end of the semester, however, go ahead and read this earlier if you are inclined.)</p>
+<ul>
+<li>Gelman, A., Hill, J., &amp; Vehtari, A. (2020). Regression and other stories. Cambridge University Press.</li>
+</ul>
+<p>(A practical compendium of how to approach GLMs. If you feel like you need a refresher on GLM or are lost at any point in the semester with concepts you feel like “should have” learned prior this book will help. Very readable. It is bayesian but also not, focusing more on regression basics.)</p>
+<ul>
+<li>Lee, M. D., &amp; Wagenmakers, E. J. (2014). Bayesian cognitive modeling: A practical course. Cambridge university press</li>
+</ul>
+<p>(Terse but technically correct intro of Bayesian stats, best for completing your collection of Bayesian books by psychologists. I would not recommend as an intro book)</p>
+<p><br></p>
+</section>
+<section id="grading" class="level4">
+<h4 class="anchored" data-anchor-id="grading">Grading</h4>
+<p>Grades consist of two components: (semi)weekly homework and a takehome project. Each will count for half of your grade.</p>
+<p>Homework consists of thought questions, as well as computations. Homework may be worked on together in groups. However, short answer portions should be in your own words. Each homework is graded on a scale of 1-10.</p>
+<p>You will also have random “quizzes,” which are not graded but are submitted. These serves as progress checks for both me and you.</p>
+<p>The takehome project is a series of models and visualizations using your own data. We (you and Josh) will work together to go over what your data are, and what sort of analyses, checks and visualizations you should do. The sooner in the semester you have these conversations with me, the better. By week 6 you need to have a plan approved.</p>
+<p><strong>Grades</strong>:<br>
+100% - A+<br>
+99-92 - A<br>
+90-91 - A-<br>
+89 - B+<br>
+88-81 - B<br>
+80 - B-<br>
+79-70 - C<br>
+69-60 - D<br>
+&lt;60 - F</p>
+<p><br></p>
+</section>
+<section id="class-procedure" class="level4">
+<h4 class="anchored" data-anchor-id="class-procedure">Class procedure</h4>
+<p>I prepare slides and code. We then walk through them together. If you have questions, ask!</p>
+</section>
+<section id="schedule" class="level4">
+<h4 class="anchored" data-anchor-id="schedule">Schedule</h4>
+<p>Note that dates and readings are tentative. Topics will likely shift; all changes will be updated on the homepage, not necessarily in the syllabus below.</p>
+<table class="table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 62%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Week</th>
+<th>Topic</th>
+<th>Readings</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Basics of Bayes</td>
+<td>SR 1 &amp; 2</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Linear model basics</td>
+<td>SR 3</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Linear Models continued</td>
+<td>SR 4</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Markov Chain Monte Carlo Estimation (MCMC)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Multiple regression</td>
+<td>SR 9</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Interactions</td>
+<td>SR 5</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Information, NHST and model fit</td>
+<td>SR 8</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Generalized Linear Models</td>
+<td>SR 7</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Multilevel Models</td>
+<td>SR 10 - 12</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>Multilevel Models</td>
+<td>SR 13 &amp; 14</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>Multilevel Models</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>Multivariate and Distributional Models</td>
+<td>Williams et al 2021 psych methods</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>Cognitive IRT models (e.g., DDM)</td>
+<td>F&amp;L 14, Burkner, 2019</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>Grabbag: Meta-analysis, missing data, power</td>
+<td>SR 15</td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -1,0 +1,95 @@
+---
+title: "Syllabus"
+---
+
+
+**Instructor**: Joshua Jackson  
+**Office**: Spare Bedroom  
+**Office hours**: By appointment  
+
+
+
+#### Course Description#### 
+
+Bayesian parameter estimation and hypothesis testing offer a useful alternative to the classic frequentist paradigm within psychological science. This class will cover the foundations of Bayesian inference and hypothesis testing with the primary emphasis on fitting multiple regression and multi-level models common within psychology. A variety of response distributions will be discussed: Gaussian, binary and count, ordinal, survival, probability, and zero-inflated models, among others. Topics include: model calibration, regularization, prior and posterior predictions, Bayes factors, missing data, Bayesian power, cross-validation, Bayesian meta-analysis, distributional models, and multivariate response models.  
+
+<br>  
+
+#### Class textbook
+
+-McElreath, R. (2020). Statistical Rethinking: A Bayesian Course with Examples in R. SECOND EDITION CRC Press. 
+
+Note that McElreath also has lectures from his book posted on his youtube. They are excellent. While some bits of the class materials are covered in his lectures I believe the content of this course and his course compliment one another. His focus is making the content digestible, viewing the broader picture, and delving into philosophy of science more so. We will focus more on the applied aspects, using specific programs and making sure we are comfortable "doing" the work rather than just understanding it at the high level. 
+
+Please check them out, especially if you are lost: 
+https://tinyurl.com/yckrrzjy
+
+*Recommended text (not required)*
+
+- Kruschke, J. (2015). Doing Bayesian Data Analysis. SECOND EDITION. 
+
+(This is more of a traditional stats textbook from a psychologist. It is more comprehensive but less readable. Some practices are no longer standard, the structure of the book isn't how I would present everything and it misses some important details developed in the past 7 or so years. Yes a 7 year old book is now wildly out of date. That said I still use it often as a reference).
+
+- Farrell, S., & Lewandowsky, S. (2018). Computational modeling of cognition and behavior. Cambridge University Press
+
+(Very good for those who predominantly do cognitive models/behavioral tasks. These are more advanced models that we will touch on at the end of the semester, however, go ahead and read this earlier if you are inclined.)
+
+- Gelman, A., Hill, J., & Vehtari, A. (2020). Regression and other stories. Cambridge University Press. 
+
+(A practical compendium of how to approach GLMs. If you feel like you need a refresher on GLM or are lost at any point in the semester with concepts you feel like "should have" learned prior this book will help. Very readable. It is bayesian but also not, focusing more on regression basics.)
+
+- Lee, M. D., & Wagenmakers, E. J. (2014). Bayesian cognitive modeling: A practical course. Cambridge university press 
+
+(Terse but technically correct intro of Bayesian stats, best for completing your collection of Bayesian books by psychologists. I would not recommend as an intro book)
+
+<br>  
+
+#### Grading
+
+Grades consist of two components: (semi)weekly homework and a takehome project. Each will count for half of your grade.
+
+Homework consists of thought questions, as well as computations. Homework may be worked on together in groups. However, short answer portions should be in your own words. Each homework is graded on a scale of 1-10. 
+
+You will also have random "quizzes," which are not graded but are submitted. These serves as progress checks for both me and you. 
+
+The takehome project is a series of models and visualizations using your own data. We (you and Josh) will work together to go over what your data are, and what sort of analyses, checks and visualizations you should do. The sooner in the semester you have these conversations with me, the better. By week 6 you need to have a plan approved.  
+
+**Grades**:   
+100%   - A+  
+99-92 - A  
+90-91 - A-  
+89    - B+  
+88-81 - B  
+80    - B-  
+79-70 - C  
+69-60 - D  
+<60   - F  
+  
+  <br>  
+  
+#### Class procedure
+
+I prepare slides and code. We then walk through them together. If you have questions, ask! 
+  
+#### Schedule####  
+
+Note that dates and readings are tentative. Topics will likely shift; all changes will be updated on the homepage, not necessarily in the syllabus below. 
+
+| Week | Topic                                 |Readings        |
+-------|----------------------------------------|-----------------|
+| 1    | Basics of Bayes  | SR 1 & 2  |
+| 2    | Linear model basics |SR 3 |
+| 3    | Linear Models continued |  SR 4      |
+| 4    | Markov Chain Monte Carlo Estimation (MCMC)     |                   |
+| 5    | Multiple regression   | SR 9           |
+| 6    | Interactions         | SR 5                   |
+| 7    | Information, NHST and model fit              |  SR 8      |
+| 8    | Generalized Linear Models    | SR 7|
+| 9    | Multilevel Models   |  SR 10 - 12                |
+| 10   | Multilevel Models         |  SR 13 & 14                                |
+| 11   | Multilevel Models         |                                   |
+| 12   | Multivariate and Distributional Models     | Williams et al 2021 psych methods        |
+| 13   | Cognitive IRT models (e.g., DDM)         |      F&L 14, Burkner, 2019            |
+| 14   | Grabbag: Meta-analysis, missing data,  power  |        SR 15      |
+
+

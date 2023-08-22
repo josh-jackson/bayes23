@@ -1,0 +1,42 @@
+---
+title: "HW-1"
+output: html_document
+---
+
+
+1. To get refreshed with thinking in terms of distributions (as well as ggplot), please plot 2 different versions of each of the following probability distributions (ie change up the parameters). It is your choice on choosing the different parameters of each of the distributions. If you are unfamiliar with these distributions, wikipedia has a pretty good section for each. These are distributions we will use throughout the class
+
+a) t-distribution
+b) Beta distribution
+c) Cauchy distribution
+d) Gamma distribution
+e) Exponential distribution
+f) uniform distribution
+
+
+2. Based on what you know about the normal distribution and your substantive area of research, please describe two types of priors you might put around one of your recent analyses or a future one. First, briefly describe what your parameter you want to estimate is (eg comparison of two groups with a regression coefficient) and the corresponding effect size you found for that parameter (eg d =.3). Then describe:
+
+a) a prior distribution that represents your "best guess" for the parameter if you replicated this study. This is an "informed" prior. Bonus points for plotting the distribution. 
+
+b) a prior distribution that would serve to regularize the data i.e. a weakly informative prior. 
+ 
+
+3. Run a simple regression using your own data using: 
+  a. lm function
+  b. brms and meaningful (to you) priors
+
+4. For the brms model, graph the posterior of your predictor. Interpret and compare with the the lm results. 
+
+5. Calculate the posterior estimate for the mode/median/mean and hdi/qi. Do you notice any differences?  
+```{r, eval = FALSE}
+# i.e., use: 
+mode_hdi()
+mean_qi()
+```
+
+6. How many samples do are there in the posterior? Why are there that many? Run a new model with 4x the samples. What happens to your model? 
+
+7. Run a new model with a very different prior. How does this new prior impact the interpretation of the posterior? 
+
+8. Graph the modeled derived regression line with a confidence band, a prediction band, and the raw data (for categorical predictor see the many options: http://mjskay.github.io/tidybayes/articles/tidy-brms.html).    
+
