@@ -9,6 +9,7 @@ html:
     code-summary: "Show the code"
 ---
 
+
 ## Goals for the semester
 
 1.  Take what you know (regression) and do it Bayesian (and more!)
