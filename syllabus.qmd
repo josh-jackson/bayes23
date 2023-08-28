@@ -93,3 +93,12 @@ Note that dates and readings are tentative. Topics will likely shift; all change
 | 14   | Grabbag: Meta-analysis, missing data,  power  |        SR 15      |
 
 
+## Chat-GPT and other AI overlord helpers
+
+New Artificial Intelligence tools like Chat-GPT are rapidly changing the landscape of how we write code. These tools are truly wonderful for writing code quickly (rather than going down crazy rabbit holes). It is used frequently outside of the classroom for writing code in a variety of languages, including R. It would be CRAZY not to incorporate this tool into your learning.
+
+That said, Chat-GPT very, very often gives you the wrong code. My goal is to get you to a place where you can use Chat-GPT and be able to understand if the code it provides will give you the right answer or the wrong one. Here is my policy for this class:
+
+You are allowed to use Chat-GPT. If you do, in your assignment, please say “I used Chat-GPT and here is the prompt that I used to generate this code: ____” and provide the prompt. This way, I can help make sure you understand why the code works or does not work.
+
+

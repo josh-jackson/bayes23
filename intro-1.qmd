@@ -48,10 +48,11 @@ What are Bayesian models?
 
 ## Step 1 is easy
 
--   Bayes gives you basically the same results
+-   Bayes gives you basically the same results. We will talk about the algo later, but right now just think of it as different but the same. 
 
 ::: incremental
--   So why use it? Many reasons, but the most direct is manipulating, visualizing, and extrapolating from results. Others include better convergence, able to include regularization, easier to simulate - plus many more
+-   So why use it? It is a better swiss army knife. Always works. Fewer assumptions than ML. Some problems NEED it. Extra bonus benefits such as regularization, easier to simulate - plus many more. 
+
 :::
 
 ## 2. Think of results in terms of distributions
@@ -109,7 +110,7 @@ ggplot(aes(x = b_parent)) +
 
 -   Is made up of a series of educated guesses (via our algorithm), each of which is consistent with the data.
 
--   Great density, greater likelihood.
+-   Greater density, greater likelihood of our parameter.
 
 -   Unlike CI which every value is equally plausible until it is implausible because it is out of the CI. Not just a best guess and an SE around the best guess (as with Maximum Likelihood).
 
@@ -126,6 +127,16 @@ spread_draws(b_Intercept, b_parent) %>%
 ggplot(aes(x = b_parent)) +
   stat_dotsinterval()
 ```
+
+
+## Posterior distribution (ie results)
+
+```{r}
+#| code-fold: true
+fit.1.bayesian %>% 
+spread_draws(b_Intercept, b_parent)
+```
+
 
 ## How does the algorithm work?
 
@@ -182,8 +193,10 @@ plot(loglike)
 
 ------------------------------------------------------------------------
 
--   The Bayesian (MCMC) algorithm tries out a bunch of parameter values. The one's that are *more likely* will appear more often.
--   What do I mean "appear" more often. The algorithm lands on that just as our coin flipping example finds .2 to be most likely.
+-   The Bayesian (MCMC) algorithm tries out a bunch of parameter values. The ones that are *more likely* will appear more often.
+
+-   What do I mean "appear" more often? The algorithm lands on that just as our coin flipping example finds .2 to be most likely, but doesn't rule out other possibilities.
+
 
 ```{r}
 #| code-fold: true
@@ -267,6 +280,8 @@ p.0
 
 -   Let's center it around zero, saying that the most plausible estimate is no association, but that we are willing to entertain some strong effects in either direction.
 
+- In sum: we tend not to make guesses on the average parameter estimate, but instead constraints on the range of possible values. Constraints tell us how "surpised" we'd be if we get some estimate 
+
 ------------------------------------------------------------------------
 
 ```{r}
@@ -330,13 +345,26 @@ g.pp
 2.  Think of results in terms of distributions
 3.  Be comfortable integrating prior knowledge
 
+
+## Tying it together
+
 $$p(\theta | data) \propto \frac{p(data | \theta) \times p(\theta )}{p(data)}$$ P(θ\|data) is the posterior probability.
 
 P(θ) is the prior probability.
 
-p(data\| $\theta$ ) is the likelihood.
+p(data\| $\theta$ ) is the likelihood (really no different than ML).
 
 p(data) can be ignored, it is just a normalized coefficient
+
+
+
+## Tying it together
+
+- p(data | \theta) is what we typically work with. What is the definition of a p-value? 
+
+- We (scientists and those wanting to make decisions based on the science) don't want that, but rather they want p($\theta$ | data)
+
+- Bayes gives us this. 
 
 ## Combining the three components
 
@@ -526,8 +554,19 @@ data_grid(parent = seq_range(parent, n = 101)) %>%
 ## What is confusing:
 
 ::: incremental
--   Is it a philosophically different frame work? We can talk about how it is p(H0\|d) vs p(d\|H0) but it really doesn't matter. Become a Bayesian just means using the algorithm, and again, most of us don't have strong algo preferences
--   Technically we don't have P-values, but Bayesian has analogues. Technically there isn't NHST (because no null distribution to create sampling distribution) but you can easily do "it".
--   Why don't we do this already? Isn't frequentist better? Historical accident due to computation limitations
+-   Is it a philosophically different framework? p(H0\|d) vs p(d\|H0) but it  doesn't really matter. Bayesian just means using the algorithm, and again, most of us don't have strong algo preferences. Assuming a flat prior basically makes p(H0\|d) = p(d\|H0) so if you want (don't tell Bayesians) you can interpret frequentist stats as Bayesian. And that means CIs too!  (don't tell frequentists) 
+
+-   Why don't we do this already? Isn't frequentist better? History doesn't progress due to fair and even fights (i.e. the correct doesn't always prevail). Computation limitations and Fisher held progress back.  
+
+:::
+
+## What is confusing:
+
+::: incremental
+-   Technically, we don't have p-values, but Bayesian has analogues. 
+
+- Technically, there isn't NHST (because no null distribution to create sampling distribution) but you can easily do "it". Remember how model comparisons are equivalent to typical NHST tests?  
+
 -   Bayes Factors. Mostly garbage (imho) as they can be easily manipulated. But they have their place. BFs =/= Bayesian.
+
 :::

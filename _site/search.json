@@ -32,7 +32,7 @@
     "href": "intro-1.html#step-1-is-easy",
     "title": "Intro to Bayes",
     "section": "Step 1 is easy",
-    "text": "Step 1 is easy\n\nBayes gives you basically the same results\n\n\n\nSo why use it? Many reasons, but the most direct is manipulating, visualizing, and extrapolating from results. Others include better convergence, able to include regularization, easier to simulate - plus many more"
+    "text": "Step 1 is easy\n\nBayes gives you basically the same results. We will talk about the algo later, but right now just think of it as different but the same.\n\n\n\nSo why use it? It is a better swiss army knife. Always works. Fewer assumptions than ML. Some problems NEED it. Extra bonus benefits such as regularization, easier to simulate - plus many more."
   },
   {
     "objectID": "intro-1.html#think-of-results-in-terms-of-distributions",
@@ -67,7 +67,7 @@
     "href": "intro-1.html#posterior-distribution-ie-results",
     "title": "Intro to Bayes",
     "section": "Posterior distribution (ie results)",
-    "text": "Posterior distribution (ie results)\n\nIs made up of a series of educated guesses (via our algorithm), each of which is consistent with the data.\nGreat density, greater likelihood.\nUnlike CI which every value is equally plausible until it is implausible because it is out of the CI. Not just a best guess and an SE around the best guess (as with Maximum Likelihood).\nIn standard practice we can assume this distribution (typically normal), but with bayes it can be flexible!"
+    "text": "Posterior distribution (ie results)\n\nIs made up of a series of educated guesses (via our algorithm), each of which is consistent with the data.\nGreater density, greater likelihood of our parameter.\nUnlike CI which every value is equally plausible until it is implausible because it is out of the CI. Not just a best guess and an SE around the best guess (as with Maximum Likelihood).\nIn standard practice we can assume this distribution (typically normal), but with bayes it can be flexible!"
   },
   {
     "objectID": "intro-1.html#posterior-distribution-ie-results-1",
@@ -137,7 +137,7 @@
     "href": "intro-1.html#tying-it-together",
     "title": "Intro to Bayes",
     "section": "Tying it together",
-    "text": "Tying it together\n\nBe comfortable with a different estimation algorithm\nThink of results in terms of distributions\nBe comfortable integrating prior knowledge\n\n\\[p(\\theta | data) \\propto \\frac{p(data | \\theta) \\times p(\\theta )}{p(data)}\\] P(θ|data) is the posterior probability.\nP(θ) is the prior probability.\np(data| \\(\\theta\\) ) is the likelihood.\np(data) can be ignored, it is just a normalized coefficient"
+    "text": "Tying it together\n\nBe comfortable with a different estimation algorithm\nThink of results in terms of distributions\nBe comfortable integrating prior knowledge"
   },
   {
     "objectID": "intro-1.html#combining-the-three-components",
@@ -179,7 +179,7 @@
     "href": "intro-1.html#what-is-confusing",
     "title": "Intro to Bayes",
     "section": "What is confusing:",
-    "text": "What is confusing:\n\n\nIs it a philosophically different frame work? We can talk about how it is p(H0|d) vs p(d|H0) but it really doesn’t matter. Become a Bayesian just means using the algorithm, and again, most of us don’t have strong algo preferences\nTechnically we don’t have P-values, but Bayesian has analogues. Technically there isn’t NHST (because no null distribution to create sampling distribution) but you can easily do “it”.\nWhy don’t we do this already? Isn’t frequentist better? Historical accident due to computation limitations\nBayes Factors. Mostly garbage (imho) as they can be easily manipulated. But they have their place. BFs =/= Bayesian."
+    "text": "What is confusing:\n\n\nIs it a philosophically different framework? p(H0|d) vs p(d|H0) but it doesn’t really matter. Bayesian just means using the algorithm, and again, most of us don’t have strong algo preferences. Assuming a flat prior basically makes p(H0|d) = p(d|H0) so if you want (don’t tell Bayesians) you can interpret frequentist stats as Bayesian. And that means CIs too! (don’t tell frequentists)\nWhy don’t we do this already? Isn’t frequentist better? History doesn’t progress due to fair and even fights (i.e. the correct doesn’t always prevail). Computation limitations and Fisher held progress back."
   },
   {
     "objectID": "regression-2.html#goals-for-the-lecture",
@@ -935,6 +935,41 @@
     "href": "syllabus.html",
     "title": "Syllabus",
     "section": "",
-    "text": "Instructor: Joshua Jackson\nOffice: 315b Somers\nOffice hours: By appointment. I’m usually around so please let me know.\n\nCourse Description\nBayesian parameter estimation and hypothesis testing offer a useful alternative to the classic frequentist paradigm within psychological science. This class will cover the foundations of Bayesian inference and hypothesis testing with the primary emphasis on fitting multiple regression and multi-level models common within psychology. A variety of response distributions will be discussed: Gaussian, binary and count, ordinal, survival, probability, and zero-inflated models, among others. Topics include: model calibration, regularization, prior and posterior predictions, Bayes factors, missing data, Bayesian power, cross-validation, Bayesian meta-analysis, distributional models, and multivariate response models.\n\n\n\nClass textbook\n-McElreath, R. (2020). Statistical Rethinking: A Bayesian Course with Examples in R. SECOND EDITION CRC Press.\nNote that McElreath also has lectures from his book posted on his youtube. They are excellent. While some bits of the class materials are covered in his lectures I believe the content of this course and his course compliment one another. His focus is making the content digestible, viewing the broader picture, and delving into philosophy of science more so. We will focus more on the applied aspects, using specific programs and making sure we are comfortable “doing” the work rather than just understanding it at the high level.\nPlease check them out, especially if you are lost: https://tinyurl.com/yckrrzjy\nRecommended text (not required)\n\nKruschke, J. (2015). Doing Bayesian Data Analysis. SECOND EDITION.\n\n(This is more of a traditional stats textbook from a psychologist. It is more comprehensive but less readable. Some practices are no longer standard, the structure of the book isn’t how I would present everything and it misses some important details developed in the past 7 or so years. Yes a 7 year old book is now wildly out of date. That said I still use it often as a reference).\n\nFarrell, S., & Lewandowsky, S. (2018). Computational modeling of cognition and behavior. Cambridge University Press\n\n(Very good for those who predominantly do cognitive models/behavioral tasks. These are more advanced models that we will touch on at the end of the semester, however, go ahead and read this earlier if you are inclined.)\n\nGelman, A., Hill, J., & Vehtari, A. (2020). Regression and other stories. Cambridge University Press.\n\n(A practical compendium of how to approach GLMs. If you feel like you need a refresher on GLM or are lost at any point in the semester with concepts you feel like “should have” learned prior this book will help. Very readable. It is bayesian but also not, focusing more on regression basics.)\n\nLee, M. D., & Wagenmakers, E. J. (2014). Bayesian cognitive modeling: A practical course. Cambridge university press\n\n(Terse but technically correct intro of Bayesian stats, best for completing your collection of Bayesian books by psychologists. I would not recommend as an intro book)\n\n\n\nGrading\nGrades consist of two components: (semi)weekly homework and a takehome project. Each will count for half of your grade.\nHomework consists of thought questions, as well as computations. Homework may be worked on together in groups. However, short answer portions should be in your own words. Each homework is graded on a scale of 1-10.\nYou will also have random “quizzes,” which are not graded but are submitted. These serves as progress checks for both me and you.\nThe takehome project is a series of models and visualizations using your own data. We (you and Josh) will work together to go over what your data are, and what sort of analyses, checks and visualizations you should do. The sooner in the semester you have these conversations with me, the better. By week 6 you need to have a plan approved.\nGrades:\n100% - A+\n99-92 - A\n90-91 - A-\n89 - B+\n88-81 - B\n80 - B-\n79-70 - C\n69-60 - D\n&lt;60 - F\n\n\n\nClass procedure\nI prepare slides and code. We then walk through them together. If you have questions, ask!\n\n\nSchedule\nNote that dates and readings are tentative. Topics will likely shift; all changes will be updated on the homepage, not necessarily in the syllabus below.\n\n\n\n\n\n\n\n\nWeek\nTopic\nReadings\n\n\n\n\n1\nBasics of Bayes\nSR 1 & 2\n\n\n2\nLinear model basics\nSR 3\n\n\n3\nLinear Models continued\nSR 4\n\n\n4\nMarkov Chain Monte Carlo Estimation (MCMC)\n\n\n\n5\nMultiple regression\nSR 9\n\n\n6\nInteractions\nSR 5\n\n\n7\nInformation, NHST and model fit\nSR 8\n\n\n8\nGeneralized Linear Models\nSR 7\n\n\n9\nMultilevel Models\nSR 10 - 12\n\n\n10\nMultilevel Models\nSR 13 & 14\n\n\n11\nMultilevel Models\n\n\n\n12\nMultivariate and Distributional Models\nWilliams et al 2021 psych methods\n\n\n13\nCognitive IRT models (e.g., DDM)\nF&L 14, Burkner, 2019\n\n\n14\nGrabbag: Meta-analysis, missing data, power\nSR 15"
+    "text": "Instructor: Joshua Jackson\nOffice: 315b Somers\nOffice hours: By appointment. I’m usually around so please let me know."
+  },
+  {
+    "objectID": "intro-1.html#posterior-distribution-ie-results-2",
+    "href": "intro-1.html#posterior-distribution-ie-results-2",
+    "title": "Intro to Bayes",
+    "section": "Posterior distribution (ie results)",
+    "text": "Posterior distribution (ie results)\n\n\nCode\nfit.1.bayesian %&gt;% \nspread_draws(b_Intercept, b_parent)\n\n\n# A tibble: 4,000 × 5\n   .chain .iteration .draw b_Intercept b_parent\n    &lt;int&gt;      &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;    &lt;dbl&gt;\n 1      1          1     1        27.1    0.598\n 2      1          2     2        25.9    0.617\n 3      1          3     3        25.8    0.620\n 4      1          4     4        20.2    0.702\n 5      1          5     5        24.2    0.641\n 6      1          6     6        23.3    0.655\n 7      1          7     7        24.4    0.642\n 8      1          8     8        25.8    0.620\n 9      1          9     9        25.4    0.625\n10      1         10    10        23.1    0.660\n# ℹ 3,990 more rows"
+  },
+  {
+    "objectID": "syllabus.html#chat-gpt-and-other-ai-overlord-helpers",
+    "href": "syllabus.html#chat-gpt-and-other-ai-overlord-helpers",
+    "title": "Syllabus",
+    "section": "Chat-GPT and other AI overlord helpers",
+    "text": "Chat-GPT and other AI overlord helpers\nNew Artificial Intelligence tools like Chat-GPT are rapidly changing the landscape of how we write code. These tools are truly wonderful for writing code quickly (rather than going down crazy rabbit holes). It is used frequently outside of the classroom for writing code in a variety of languages, including R. It would be CRAZY not to incorporate this tool into your learning.\nThat said, Chat-GPT very, very often gives you the wrong code. My goal is to get you to a place where you can use Chat-GPT and be able to understand if the code it provides will give you the right answer or the wrong one. Here is my policy for this class:\nYou are allowed to use Chat-GPT. If you do, in your assignment, please say “I used Chat-GPT and here is the prompt that I used to generate this code: ____” and provide the prompt. This way, I can help make sure you understand why the code works or does not work."
+  },
+  {
+    "objectID": "intro-1.html#tying-it-together-1",
+    "href": "intro-1.html#tying-it-together-1",
+    "title": "Intro to Bayes",
+    "section": "Tying it together",
+    "text": "Tying it together\n\\[p(\\theta | data) \\propto \\frac{p(data | \\theta) \\times p(\\theta )}{p(data)}\\] P(θ|data) is the posterior probability.\nP(θ) is the prior probability.\np(data| \\(\\theta\\) ) is the likelihood (really no different than ML).\np(data) can be ignored, it is just a normalized coefficient"
+  },
+  {
+    "objectID": "intro-1.html#tying-it-together-2",
+    "href": "intro-1.html#tying-it-together-2",
+    "title": "Intro to Bayes",
+    "section": "Tying it together",
+    "text": "Tying it together\n\np(data | ) is what we typically work with. What is the definition of a p-value?\nWe (scientists and those wanting to make decisions based on the science) don’t want that, but rather they want p(\\(\\theta\\) | data)\nBayes gives us this."
+  },
+  {
+    "objectID": "intro-1.html#what-is-confusing-1",
+    "href": "intro-1.html#what-is-confusing-1",
+    "title": "Intro to Bayes",
+    "section": "What is confusing:",
+    "text": "What is confusing:\n\n\nTechnically, we don’t have p-values, but Bayesian has analogues.\nTechnically, there isn’t NHST (because no null distribution to create sampling distribution) but you can easily do “it”. Remember how model comparisons are equivalent to typical NHST tests?\nBayes Factors. Mostly garbage (imho) as they can be easily manipulated. But they have their place. BFs =/= Bayesian."
   }
 ]
