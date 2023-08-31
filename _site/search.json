@@ -185,8 +185,8 @@
     "objectID": "regression-2.html#goals-for-the-lecture",
     "href": "regression-2.html#goals-for-the-lecture",
     "title": "Intro to Regression",
-    "section": "",
-    "text": "Example using brms to help with nomenclature and procedure."
+    "section": "Goals for the lecture",
+    "text": "Goals for the lecture\nExample using brms to help with nomenclature and procedure."
   },
   {
     "objectID": "regression-2.html#distributions-and-model-descriptions",
@@ -221,14 +221,14 @@
     "href": "regression-2.html#example",
     "title": "Intro to Regression",
     "section": "Example",
-    "text": "Example\nLet’s fit some simple data.\n\n\nCode\nlibrary(psychTools)\ngalton.data &lt;- galton\nlibrary(tidyverse)\n\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.2     ✔ readr     2.1.4\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.4.3     ✔ tibble    3.2.1\n✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\n✖ dplyr::recode() masks psychTools::recode()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\n\nCode\nglimpse(galton.data)\n\n\nRows: 928\nColumns: 2\n$ parent &lt;dbl&gt; 70.5, 68.5, 65.5, 64.5, 64.0, 67.5, 67.5, 67.5, 66.5, 66.5, 66.…\n$ child  &lt;dbl&gt; 61.7, 61.7, 61.7, 61.7, 61.7, 62.2, 62.2, 62.2, 62.2, 62.2, 62.…\n\n\n\n\n\nCode\ngalton.data %&gt;% \n  ggplot(aes(x = parent, y = child)) +\n  geom_jitter(alpha = 1/2)"
+    "text": "Example\nLet’s fit some simple data.\n\n\nCode\nlibrary(psychTools)\ngalton.data &lt;- galton\nlibrary(tidyverse)\nglimpse(galton.data)\n\n\nRows: 928\nColumns: 2\n$ parent &lt;dbl&gt; 70.5, 68.5, 65.5, 64.5, 64.0, 67.5, 67.5, 67.5, 66.5, 66.5, 66.…\n$ child  &lt;dbl&gt; 61.7, 61.7, 61.7, 61.7, 61.7, 62.2, 62.2, 62.2, 62.2, 62.2, 62.…"
   },
   {
     "objectID": "regression-2.html#height-data",
     "href": "regression-2.html#height-data",
     "title": "Intro to Regression",
     "section": "Height data",
-    "text": "Height data\n\n\n\n\nCode\ngalton.data %&gt;% \nggplot(aes(x = child)) +geom_density()\n\n\n\n\n\n\n\n\nCode\nlibrary(easystats)\n\n\n# Attaching packages: easystats 0.6.0\n✔ bayestestR  0.13.1   ✔ correlation 0.8.4 \n✔ datawizard  0.8.0    ✔ effectsize  0.8.5 \n✔ insight     0.19.3   ✔ modelbased  0.8.6 \n✔ performance 0.10.4   ✔ parameters  0.21.1\n✔ report      0.5.7    ✔ see         0.8.0 \n\n\nCode\nreport_sample(galton.data)\n\n\n# Descriptive Statistics\n\nVariable         |      Summary\n-------------------------------\nMean parent (SD) | 68.31 (1.79)\nMean child (SD)  | 68.09 (2.52)"
+    "text": "Height data\n\n\n\n\nCode\ngalton.data %&gt;% \nggplot(aes(x = child)) +geom_density()\n\n\n\n\n\n\n\n\nCode\nlibrary(easystats)\nreport_sample(galton.data)\n\n\n# Descriptive Statistics\n\nVariable         |      Summary\n-------------------------------\nMean parent (SD) | 68.31 (1.79)\nMean child (SD)  | 68.09 (2.52)"
   },
   {
     "objectID": "regression-2.html#describe-our-model",
@@ -291,7 +291,7 @@
     "href": "regression-2.html#brms-2",
     "title": "Intro to Regression",
     "section": "brms",
-    "text": "brms\n\nlibrary(brms)\n\nLoading required package: Rcpp\n\n\nLoading 'brms' package (version 2.20.1). Useful instructions\ncan be found by typing help('brms'). A more detailed introduction\nto the package is available through vignette('brms_overview').\n\n\n\nAttaching package: 'brms'\n\n\nThe following object is masked from 'package:stats':\n\n    ar\n\nfit.1 &lt;- \n  brm(family = gaussian,\n      child ~ 1 + parent.c,\n      prior = c(prior(normal(68, 5), class = Intercept),\n                prior(normal(0, 5), class = b),\n                prior(cauchy(0, 1), class = sigma)),\n      data = galton.data, \n      backend = \"cmdstanr\",\n      iter = 1000, warmup = 500, chains = 2, cores = 2, \n      file = \"fit.1\")"
+    "text": "brms\n\nlibrary(brms)\nfit.1 &lt;- \n  brm(family = gaussian,\n      child ~ 1 + parent.c,\n      prior = c(prior(normal(68, 5), class = Intercept),\n                prior(normal(0, 5), class = b),\n                prior(cauchy(0, 1), class = sigma)),\n      data = galton.data, \n      backend = \"cmdstanr\",\n      iter = 1000, warmup = 500, chains = 2, cores = 2, \n      file = \"fit.1\")"
   },
   {
     "objectID": "regression-2.html#brms-3",
@@ -305,7 +305,7 @@
     "href": "regression-2.html#compare-with-lm",
     "title": "Intro to Regression",
     "section": "compare with lm",
-    "text": "compare with lm\n\n\nCode\nsummary(lm(child ~ parent.c, data = galton.data))\n\n\n\nCall:\nlm(formula = child ~ parent.c, data = galton.data)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-7.8050 -1.3661  0.0487  1.6339  5.9264 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept) 68.08847    0.07348  926.58   &lt;2e-16 ***\nparent.c     0.64629    0.04114   15.71   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 2.239 on 926 degrees of freedom\nMultiple R-squared:  0.2105,    Adjusted R-squared:  0.2096 \nF-statistic: 246.8 on 1 and 926 DF,  p-value: &lt; 2.2e-16\n\n\n\n\nplot(fit.1)\n\n\n\n\n\n\n\nCode\nplot(conditional_effects(fit.1), points = TRUE)"
+    "text": "compare with lm\n\n\nCode\nsummary(lm(child ~ parent.c, data = galton.data))\n\n\n\nCall:\nlm(formula = child ~ parent.c, data = galton.data)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-7.8050 -1.3661  0.0487  1.6339  5.9264 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept) 68.08847    0.07348  926.58   &lt;2e-16 ***\nparent.c     0.64629    0.04114   15.71   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 2.239 on 926 degrees of freedom\nMultiple R-squared:  0.2105,    Adjusted R-squared:  0.2096 \nF-statistic: 246.8 on 1 and 926 DF,  p-value: &lt; 2.2e-16"
   },
   {
     "objectID": "regression-2.html#posterior",
@@ -347,7 +347,7 @@
     "href": "regression-2.html#posterior-1",
     "title": "Intro to Regression",
     "section": "Posterior",
-    "text": "Posterior\n\nOnce we have the posterior in an easy to use format, we can:\n\n\nVisualize it. (Distributions, predicted values)\nCalculate values from it. (Summary statistics, contrasts, new parameters)\n\n\nAnything we want to accomplish with our model is IN the posterior\n\n\n\n\nCode\nfit.1 %&gt;% \nspread_draws(b_Intercept, b_parent.c) %&gt;% \n  ggplot(aes(x = b_parent.c)) +\n  stat_dotsinterval()\n\n\n\n\n\n\n\n\nCode\nfit.1 %&gt;% \nspread_draws(b_Intercept, b_parent.c) %&gt;%  \n  select(b_parent.c) %&gt;% \n  mean_qi(.width = c(.5, .89, .95, .99))\n\n\n# A tibble: 4 × 6\n  b_parent.c .lower .upper .width .point .interval\n       &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    \n1      0.645  0.617  0.676   0.5  mean   qi       \n2      0.645  0.576  0.712   0.89 mean   qi       \n3      0.645  0.561  0.724   0.95 mean   qi       \n4      0.645  0.532  0.741   0.99 mean   qi       \n\n\n\n\nCode\nfit.1 %&gt;% \nspread_draws(b_Intercept, b_parent.c) %&gt;% \n  select(b_parent.c) %&gt;% \n  mode_hdi(.width = c(.55, .89, .95, .99))\n\n\n# A tibble: 4 × 6\n  b_parent.c .lower .upper .width .point .interval\n       &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    \n1      0.626  0.614  0.679   0.55 mode   hdi      \n2      0.626  0.581  0.714   0.89 mode   hdi      \n3      0.626  0.566  0.729   0.95 mode   hdi      \n4      0.626  0.542  0.745   0.99 mode   hdi      \n\n\n\n\n\nCode\n  fit.1 %&gt;% \n  spread_draws(b_parent.c) %&gt;% \n  mode_hdi(.width = c(.55, .89, .95, .99)) %&gt;%  \nggplot(aes(y = as.factor(.width), x = b_parent.c, xmin = .lower, xmax = .upper)) + geom_pointinterval() \n\n\n\n\n\n\n\n\nCode\nfit.1 %&gt;% \n  spread_draws(b_parent.c) %&gt;% \n  ggplot(aes(x = b_parent.c)) +\n  stat_halfeye()"
+    "text": "Posterior\n\nOnce we have the posterior in an easy to use format, we can:\n\n\nVisualize it. (Distributions, predicted values)\nCalculate values from it. (Summary statistics, contrasts, new parameters)\n\n\nAnything we want to accomplish with our model is IN the posterior"
   },
   {
     "objectID": "regression-2.html#prior-and-posterior-plotted-together",
@@ -375,7 +375,7 @@
     "href": "regression-2.html#predictedfitted-values-2",
     "title": "Intro to Regression",
     "section": "Predicted/fitted values",
-    "text": "Predicted/fitted values\nOne reason fitted values are helpful is to showcase uncertainty. That is what our posterior is highlighting: that there is no ONE result, that there are many possible results.\n\n\nCode\nggplot(galton.data, aes(x = child, y = parent)) + \n  geom_point() +\n  stat_smooth(method = \"lm\")\n\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\nThe confidence band tells us potential expected values of Y given X (Y|X)"
+    "text": "Predicted/fitted values\nOne reason fitted values are helpful is to showcase uncertainty. That is what our posterior is highlighting: that there is no ONE result, that there are many possible results.\n\n\nCode\nggplot(galton.data, aes(x = child, y = parent)) + \n  geom_point() +\n  stat_smooth(method = \"lm\")\n\n\n\nThe confidence band tells us potential expected values of Y given X (Y|X)"
   },
   {
     "objectID": "regression-2.html#predictedfitted-values-3",
@@ -473,7 +473,7 @@
     "href": "regression-2.html#predicted-values-1",
     "title": "Intro to Regression",
     "section": "predicted values",
-    "text": "predicted values\nEach .prediction is feeding in a parent.c value we prespecified into our model \\(\\hat{Y}_i = \\beta_0 + \\beta_1 X + \\epsilon_i\\). Each row of the posterior has different estimates for each of the three parameters. With epred we were only including 2 parameters.\n\n\nCode\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 10)) %&gt;% \n  add_predicted_draws(fit.1)\n\n\n# A tibble: 10,000 × 6\n# Groups:   parent.c, .row [10]\n   parent.c  .row .chain .iteration .draw .prediction\n      &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;\n 1    -4.31     1     NA         NA     1        69.7\n 2    -4.31     1     NA         NA     2        68.1\n 3    -4.31     1     NA         NA     3        68.4\n 4    -4.31     1     NA         NA     4        65.2\n 5    -4.31     1     NA         NA     5        66.9\n 6    -4.31     1     NA         NA     6        65.1\n 7    -4.31     1     NA         NA     7        66.8\n 8    -4.31     1     NA         NA     8        63.3\n 9    -4.31     1     NA         NA     9        64.1\n10    -4.31     1     NA         NA    10        64.3\n# ℹ 9,990 more rows"
+    "text": "predicted values\nEach .prediction is feeding in a parent.c value we prespecified into our model \\(\\hat{Y}_i = \\beta_0 + \\beta_1 X + \\epsilon_i\\). Each row of the posterior has different estimates for each of the three parameters. With epred we were only including 2 parameters.\n\n\nCode\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 10)) %&gt;% \n  add_predicted_draws(fit.1)\n\n\n# A tibble: 10,000 × 6\n# Groups:   parent.c, .row [10]\n   parent.c  .row .chain .iteration .draw .prediction\n      &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;\n 1    -4.31     1     NA         NA     1        65.6\n 2    -4.31     1     NA         NA     2        67.0\n 3    -4.31     1     NA         NA     3        65.5\n 4    -4.31     1     NA         NA     4        64.1\n 5    -4.31     1     NA         NA     5        63.0\n 6    -4.31     1     NA         NA     6        68.1\n 7    -4.31     1     NA         NA     7        65.2\n 8    -4.31     1     NA         NA     8        63.2\n 9    -4.31     1     NA         NA     9        64.5\n10    -4.31     1     NA         NA    10        64.5\n# ℹ 9,990 more rows"
   },
   {
     "objectID": "regression-2.html#predicted-values-2",
@@ -494,7 +494,7 @@
     "href": "regression-2.html#posterior-predictive-distribution",
     "title": "Intro to Regression",
     "section": "posterior predictive distribution",
-    "text": "posterior predictive distribution\n\n\n\nOne way to check whether our model is a good is to see if the predictions match up with our observed data. After all, our model is supposed to mimic how the world works.\n‘pp_check’ asks: do those simulated samples match the observed?\n\n\n\npp_check(fit.1)\n\nUsing 10 posterior draws for ppc type 'dens_overlay' by default."
+    "text": "posterior predictive distribution\n\n\n\nOne way to check whether our model is a good is to see if the predictions match up with our observed data. After all, our model is supposed to mimic how the world works.\n‘pp_check’ asks: do those simulated samples match the observed?\n\n\n\npp_check(fit.1)"
   },
   {
     "objectID": "regression-2.html#prior-predictive-by-only-sampling-prior",
@@ -522,7 +522,7 @@
     "href": "regression-2.html#prior-predictive-distribution",
     "title": "Intro to Regression",
     "section": "prior predictive distribution",
-    "text": "prior predictive distribution\n\n\nCode\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 101)) %&gt;% \n add_predicted_draws(fit.1p) %&gt;% \n  ggplot(aes(x = .prediction)) +\n  stat_halfeye() + xlim(0,150) \n\n\nWarning: Removed 1058 rows containing missing values (`stat_slabinterval()`)."
+    "text": "prior predictive distribution\n\n\nCode\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 101)) %&gt;% \n add_predicted_draws(fit.1p) %&gt;% \n  ggplot(aes(x = .prediction)) +\n  stat_halfeye() + xlim(0,150)"
   },
   {
     "objectID": "index.html",
@@ -557,7 +557,7 @@
     "href": "regression-2.html#prior-for-sigma",
     "title": "Intro to Regression",
     "section": "Prior for sigma",
-    "text": "Prior for sigma\n\n\nCode\np.s &lt;- ggplot(data.frame(x = c(0, 10)), aes(x)) +\n  stat_function(fun = dcauchy, n = 200, args = list(0, 1)) +\n  labs(title = \"sigma ~ HalfCauchy(0,1)\")\np.s\n\n\n\n\n\n\nWe know that variances are going to be positive.\nWhat is an upper bound possibility?"
+    "text": "Prior for sigma\n\n\nCode\np.s &lt;- ggplot(data.frame(x = c(0, 10)), aes(x)) +\n  stat_function(fun = dcauchy, n = 200, args = list(0, 1)) +\n  labs(title = \"sigma ~ HalfCauchy(0,1)\")\np.s\n\n\n\n\nWe know that variances are going to be positive.\nWhat is an upper bound possibility?"
   },
   {
     "objectID": "regression-2.html#brms-4",
@@ -571,7 +571,7 @@
     "href": "regression-2.html#whats-in-the-brms-object-1",
     "title": "Intro to Regression",
     "section": "whats in the brms object?",
-    "text": "whats in the brms object?\n\n\nCode\nlibrary(tidybayes)\n\n\n\nAttaching package: 'tidybayes'\n\n\nThe following objects are masked from 'package:brms':\n\n    dstudent_t, pstudent_t, qstudent_t, rstudent_t\n\n\nThe following object is masked from 'package:parameters':\n\n    parameters\n\n\nThe following object is masked from 'package:bayestestR':\n\n    hdi\n\n\nCode\nget_variables(fit.1)\n\n\n [1] \"b_Intercept\"   \"b_parent.c\"    \"sigma\"         \"lprior\"       \n [5] \"lp__\"          \"accept_stat__\" \"treedepth__\"   \"stepsize__\"   \n [9] \"divergent__\"   \"n_leapfrog__\"  \"energy__\""
+    "text": "whats in the brms object?\n\n\nCode\nlibrary(tidybayes)\nget_variables(fit.1)\n\n\n [1] \"b_Intercept\"   \"b_parent.c\"    \"sigma\"         \"lprior\"       \n [5] \"lp__\"          \"accept_stat__\" \"treedepth__\"   \"stepsize__\"   \n [9] \"divergent__\"   \"n_leapfrog__\"  \"energy__\""
   },
   {
     "objectID": "regression-2.html#pairs-plot",
@@ -585,7 +585,7 @@
     "href": "regression-2.html#how-do-we-feed-it",
     "title": "Intro to Regression",
     "section": "How do we feed it?",
-    "text": "How do we feed it?\n\n\nFirst step is to get a data grid. There are many options. base::expand.grid, tidyr::expand_grid, modelr::data_grid, marginaleffects::datagrid, modelbased::visualization_grid, emmeans::ref_grid\nWe will discuss two, which I find to be the most user friendly. 1. Modelr, which works well with tidyverse and tidybayes. 2. marginaleffects.\n\n\n\nCode\nlibrary(modelr)\n\n\n\nAttaching package: 'modelr'\n\n\nThe following object is masked from 'package:broom':\n\n    bootstrap\n\n\nThe following objects are masked from 'package:performance':\n\n    mae, mse, rmse\n\n\nThe following object is masked from 'package:psychTools':\n\n    heights\n\n\nCode\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 10))\n\n\n# A tibble: 10 × 1\n   parent.c\n      &lt;dbl&gt;\n 1   -4.31 \n 2   -3.31 \n 3   -2.31 \n 4   -1.31 \n 5   -0.308\n 6    0.692\n 7    1.69 \n 8    2.69 \n 9    3.69 \n10    4.69"
+    "text": "How do we feed it?\n\n\nFirst step is to get a data grid. There are many options. base::expand.grid, tidyr::expand_grid, modelr::data_grid, marginaleffects::datagrid, modelbased::visualization_grid, emmeans::ref_grid\nWe will discuss two, which I find to be the most user friendly. 1. Modelr, which works well with tidyverse and tidybayes. 2. marginaleffects.\n\n\n\nCode\nlibrary(modelr)\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 10))\n\n\n# A tibble: 10 × 1\n   parent.c\n      &lt;dbl&gt;\n 1   -4.31 \n 2   -3.31 \n 3   -2.31 \n 4   -1.31 \n 5   -0.308\n 6    0.692\n 7    1.69 \n 8    2.69 \n 9    3.69 \n10    4.69"
   },
   {
     "objectID": "regression-2.html#marginaleffects",
@@ -627,7 +627,7 @@
     "href": "regression-2.html#marginal-meanseffects-1",
     "title": "Intro to Regression",
     "section": "Marginal means/effects",
-    "text": "Marginal means/effects\n{emmeans} has that name because of “estimated marginal means.” When we are dealing with multiple regression, we sometimes want to get a slope or estimate at different levels of other variables. From {marginalmeans} we can use the slopes function. Note that our slope shoule be the same at all levels of X.\n\n\nCode\nslopes(\n  fit.1,\n  newdata = datagrid(\n    parent.c = -4.3))\n\n\n\n     Term parent.c Estimate 2.5 % 97.5 %\n parent.c     -4.3    0.645 0.561  0.724\n\nColumns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, predicted_hi, predicted, tmp_idx, child \n\n\n\n\n\nCode\nslopes(fit.1,\n  newdata = datagrid(\n    parent.c = -4.3)) %&gt;% \n  posterior_draws() %&gt;% \n  ggplot(aes(x = draw)) +\n  stat_halfeye( .width = c(.95))"
+    "text": "Marginal means/effects\n{emmeans} has that name because of “estimated marginal means.” When we are dealing with multiple regression, we sometimes want to get a slope or estimate at different levels of other variables. From {marginalmeans} we can use the slopes function. Note that our slope shoule be the same at all levels of X.\n\n\nCode\nslopes(\n  fit.1,\n  newdata = datagrid(\n    parent.c = -4.3))\n\n\n\n     Term parent.c Estimate 2.5 % 97.5 %\n parent.c     -4.3    0.645 0.561  0.724\n\nColumns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, predicted_hi, predicted, tmp_idx, child"
   },
   {
     "objectID": "regression-2.html#summary",
