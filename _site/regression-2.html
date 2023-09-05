@@ -2020,7 +2020,7 @@ $lprior
 <ul>
 <li><p>What did we do? We calculated the value of our DV when our predictor = -4.3.</p></li>
 <li><p>How did we do it? We fed our model an X that we were interested in to calculate a Y-hat.</p></li>
-<li><p>We will be using this idea A. LOT. This isn’t Bayesian specific. Instead it is a way you should think about all models. It is often useful very to use (e.g., getting group values when using dummy’s, testing contrasts, etc).</p></li>
+<li><p>We will be using this idea A. LOT. This isn’t Bayesian specific. Instead it is a way you should think about all models. It is often VERY useful to use (e.g., getting group values when using dummy’s, testing contrasts, etc).</p></li>
 </ul>
 </section>
 <section id="feed-your-model" class="slide level2">
@@ -2095,6 +2095,9 @@ $lprior
 <section id="feed-reference-grid-to-tidybayes" class="slide level2">
 <h2>Feed reference grid to tidybayes</h2>
 <p>The second step after you have the data/reference grid is to feed it into the model. You may have done something similar using the ‘predict’ functions of base R or {lme4}. We will use the functions from {marginaleffects} or {tidybayes}, both of which operate similarly. {brms} also has a predict function, but its not as user friendly</p>
+</section>
+<section class="slide level2">
+
 <ol type="1">
 <li>Notice how the predicted values are “.epred”</li>
 <li>Notice the number of rows. Where did it come from?</li>
@@ -12296,16 +12299,16 @@ Columns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, pre
 # Groups:   parent.c, .row [10]
    parent.c  .row .chain .iteration .draw .prediction
       &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;
- 1    -4.31     1     NA         NA     1        65.6
- 2    -4.31     1     NA         NA     2        67.0
- 3    -4.31     1     NA         NA     3        65.5
- 4    -4.31     1     NA         NA     4        64.1
- 5    -4.31     1     NA         NA     5        63.0
- 6    -4.31     1     NA         NA     6        68.1
- 7    -4.31     1     NA         NA     7        65.2
- 8    -4.31     1     NA         NA     8        63.2
- 9    -4.31     1     NA         NA     9        64.5
-10    -4.31     1     NA         NA    10        64.5
+ 1    -4.31     1     NA         NA     1        63.9
+ 2    -4.31     1     NA         NA     2        63.8
+ 3    -4.31     1     NA         NA     3        63.0
+ 4    -4.31     1     NA         NA     4        67.3
+ 5    -4.31     1     NA         NA     5        63.8
+ 6    -4.31     1     NA         NA     6        67.2
+ 7    -4.31     1     NA         NA     7        65.1
+ 8    -4.31     1     NA         NA     8        66.0
+ 9    -4.31     1     NA         NA     9        70.1
+10    -4.31     1     NA         NA    10        64.1
 # ℹ 9,990 more rows</code></pre>
 </div>
 </div>

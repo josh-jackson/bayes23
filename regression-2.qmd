@@ -471,7 +471,7 @@ fit.1 %>%
 
 -   How did we do it? We fed our model an X that we were interested in to calculate a Y-hat.
 
--   We will be using this idea A. LOT. This isn't Bayesian specific. Instead it is a way you should think about all models. It is often useful very to use (e.g., getting group values when using dummy's, testing contrasts, etc).
+-   We will be using this idea A. LOT. This isn't Bayesian specific. Instead it is a way you should think about all models. It is often VERY useful to use (e.g., getting group values when using dummy's, testing contrasts, etc).
 
 ## FEED your model
 
@@ -521,6 +521,8 @@ datagrid(parent.c = seq(from = min(galton.data$parent.c), to = max(galton.data$p
 ## Feed reference grid to tidybayes
 
 The second step after you have the data/reference grid is to feed it into the model. You may have done something similar using the 'predict' functions of base R or {lme4}. We will use the functions from {marginaleffects} or {tidybayes}, both of which operate similarly. {brms} also has a predict function, but its not as user friendly
+
+-------
 
 1.  Notice how the predicted values are ".epred"
 2.  Notice the number of rows. Where did it come from?
