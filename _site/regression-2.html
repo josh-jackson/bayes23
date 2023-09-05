@@ -12194,7 +12194,18 @@ $lprior
 <img data-src="regression-2_files/figure-revealjs/unnamed-chunk-39-1.png" width="960" class="r-stretch"></section>
 <section id="confidence-band-many-regression-lines" class="slide level2">
 <h2>Confidence Band = many regression lines</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
+<span id="cb58-2"><a href="#cb58-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb58-3"><a href="#cb58-3"></a> <span class="fu">add_epred_draws</span>(fit<span class="fl">.1</span>, <span class="at">ndraws =</span> <span class="dv">50</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb58-4"><a href="#cb58-4"></a>   <span class="fu">mutate</span>(<span class="at">parent.c =</span> parent.c <span class="sc">+</span> <span class="fl">68.31</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb58-5"><a href="#cb58-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> parent.c, <span class="at">y =</span> child)) <span class="sc">+</span></span>
+<span id="cb58-6"><a href="#cb58-6"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .epred, <span class="at">group =</span> .draw), <span class="at">alpha =</span> .<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 
+</div>
 <img data-src="regression-2_files/figure-revealjs/unnamed-chunk-40-1.png" width="960" class="r-stretch"></section>
 <section id="marginal-meanseffects" class="slide level2">
 <h2>marginal means/effects</h2>
@@ -12202,11 +12213,11 @@ $lprior
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
-<span id="cb58-2"><a href="#cb58-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="sc">-</span><span class="fl">4.3</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb58-3"><a href="#cb58-3"></a> <span class="fu">add_epred_draws</span>(fit<span class="fl">.1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb58-4"><a href="#cb58-4"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> .epred)) <span class="sc">+</span></span>
-<span id="cb58-5"><a href="#cb58-5"></a>  <span class="fu">stat_halfeye</span>( <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
+<span id="cb59-2"><a href="#cb59-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="sc">-</span><span class="fl">4.3</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb59-3"><a href="#cb59-3"></a> <span class="fu">add_epred_draws</span>(fit<span class="fl">.1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb59-4"><a href="#cb59-4"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> .epred)) <span class="sc">+</span></span>
+<span id="cb59-5"><a href="#cb59-5"></a>  <span class="fu">stat_halfeye</span>( <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -12217,10 +12228,10 @@ $lprior
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">slopes</span>(</span>
-<span id="cb59-2"><a href="#cb59-2"></a>  fit<span class="fl">.1</span>,</span>
-<span id="cb59-3"><a href="#cb59-3"></a>  <span class="at">newdata =</span> <span class="fu">datagrid</span>(</span>
-<span id="cb59-4"><a href="#cb59-4"></a>    <span class="at">parent.c =</span> <span class="sc">-</span><span class="fl">4.3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">slopes</span>(</span>
+<span id="cb60-2"><a href="#cb60-2"></a>  fit<span class="fl">.1</span>,</span>
+<span id="cb60-3"><a href="#cb60-3"></a>  <span class="at">newdata =</span> <span class="fu">datagrid</span>(</span>
+<span id="cb60-4"><a href="#cb60-4"></a>    <span class="at">parent.c =</span> <span class="sc">-</span><span class="fl">4.3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -12236,19 +12247,19 @@ Columns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, pre
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">slopes</span>(fit<span class="fl">.1</span>,</span>
-<span id="cb61-2"><a href="#cb61-2"></a>  <span class="at">newdata =</span> <span class="fu">datagrid</span>(</span>
-<span id="cb61-3"><a href="#cb61-3"></a>    <span class="at">parent.c =</span> <span class="sc">-</span><span class="fl">4.3</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb61-4"><a href="#cb61-4"></a>  <span class="fu">posterior_draws</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb61-5"><a href="#cb61-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> draw)) <span class="sc">+</span></span>
-<span id="cb61-6"><a href="#cb61-6"></a>  <span class="fu">stat_halfeye</span>( <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="fu">slopes</span>(fit<span class="fl">.1</span>,</span>
+<span id="cb62-2"><a href="#cb62-2"></a>  <span class="at">newdata =</span> <span class="fu">datagrid</span>(</span>
+<span id="cb62-3"><a href="#cb62-3"></a>    <span class="at">parent.c =</span> <span class="sc">-</span><span class="fl">4.3</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb62-4"><a href="#cb62-4"></a>  <span class="fu">posterior_draws</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb62-5"><a href="#cb62-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> draw)) <span class="sc">+</span></span>
+<span id="cb62-6"><a href="#cb62-6"></a>  <span class="fu">stat_halfeye</span>( <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
 <img data-src="regression-2_files/figure-revealjs/unnamed-chunk-43-1.png" width="960" class="r-stretch"></section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
-<p>By feeding our model numbers we can accomplish a number of handy things. - individual level predictions (y-hats) - Plot/visualize predictions across X - Distribution/Standard errors at certain levels of X - Coefficients/parameters at different levels of X - Post hoc comparisons (more later)</p>
+<p>By feeding our model numbers we can accomplish a number of handy things. - Individual level predictions (y-hats) - Plot/visualize predictions across X - Distribution/Standard errors at certain levels of X - Coefficients/parameters at different levels of X - Post hoc comparisons (more later)</p>
 </section>
 <section id="types-of-predictions" class="slide level2">
 <h2>3 types of predictions</h2>
@@ -12271,15 +12282,15 @@ Columns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, pre
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
-<span id="cb62-2"><a href="#cb62-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb62-3"><a href="#cb62-3"></a>  <span class="fu">add_predicted_draws</span>(fit<span class="fl">.1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb62-4"><a href="#cb62-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> parent.c, <span class="at">y =</span> child)) <span class="sc">+</span></span>
-<span id="cb62-5"><a href="#cb62-5"></a>     <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> .prediction), </span>
-<span id="cb62-6"><a href="#cb62-6"></a>                  <span class="at">.width =</span> .<span class="dv">95</span>, </span>
-<span id="cb62-7"><a href="#cb62-7"></a>                  <span class="at">alpha =</span> .<span class="dv">5</span>,</span>
-<span id="cb62-8"><a href="#cb62-8"></a>                  <span class="at">show.legend =</span> F) <span class="sc">+</span></span>
-<span id="cb62-9"><a href="#cb62-9"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> galton.data, <span class="at">size =</span> <span class="dv">2</span>,<span class="at">alpha =</span> .<span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
+<span id="cb63-2"><a href="#cb63-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb63-3"><a href="#cb63-3"></a>  <span class="fu">add_predicted_draws</span>(fit<span class="fl">.1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb63-4"><a href="#cb63-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> parent.c, <span class="at">y =</span> child)) <span class="sc">+</span></span>
+<span id="cb63-5"><a href="#cb63-5"></a>     <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> .prediction), </span>
+<span id="cb63-6"><a href="#cb63-6"></a>                  <span class="at">.width =</span> .<span class="dv">95</span>, </span>
+<span id="cb63-7"><a href="#cb63-7"></a>                  <span class="at">alpha =</span> .<span class="dv">5</span>,</span>
+<span id="cb63-8"><a href="#cb63-8"></a>                  <span class="at">show.legend =</span> F) <span class="sc">+</span></span>
+<span id="cb63-9"><a href="#cb63-9"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> galton.data, <span class="at">size =</span> <span class="dv">2</span>,<span class="at">alpha =</span> .<span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -12290,25 +12301,25 @@ Columns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, pre
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
-<span id="cb63-2"><a href="#cb63-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb63-3"><a href="#cb63-3"></a>  <span class="fu">add_predicted_draws</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
+<span id="cb64-2"><a href="#cb64-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb64-3"><a href="#cb64-3"></a>  <span class="fu">add_predicted_draws</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10,000 × 6
 # Groups:   parent.c, .row [10]
    parent.c  .row .chain .iteration .draw .prediction
       &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;
- 1    -4.31     1     NA         NA     1        63.9
- 2    -4.31     1     NA         NA     2        63.8
- 3    -4.31     1     NA         NA     3        63.0
- 4    -4.31     1     NA         NA     4        67.3
+ 1    -4.31     1     NA         NA     1        64.2
+ 2    -4.31     1     NA         NA     2        62.9
+ 3    -4.31     1     NA         NA     3        64.9
+ 4    -4.31     1     NA         NA     4        68.0
  5    -4.31     1     NA         NA     5        63.8
- 6    -4.31     1     NA         NA     6        67.2
- 7    -4.31     1     NA         NA     7        65.1
- 8    -4.31     1     NA         NA     8        66.0
- 9    -4.31     1     NA         NA     9        70.1
-10    -4.31     1     NA         NA    10        64.1
+ 6    -4.31     1     NA         NA     6        63.9
+ 7    -4.31     1     NA         NA     7        67.0
+ 8    -4.31     1     NA         NA     8        68.1
+ 9    -4.31     1     NA         NA     9        66.4
+10    -4.31     1     NA         NA    10        64.3
 # ℹ 9,990 more rows</code></pre>
 </div>
 </div>
@@ -12318,16 +12329,16 @@ Columns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, pre
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">predictions</span>(<span class="at">model =</span> fit<span class="fl">.1</span>,</span>
-<span id="cb65-2"><a href="#cb65-2"></a>            <span class="at">type =</span> <span class="st">"prediction"</span>,</span>
-<span id="cb65-3"><a href="#cb65-3"></a>             <span class="fu">datagrid</span>(<span class="at">parent.c =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fu">min</span>(galton.data<span class="sc">$</span>parent.c), <span class="at">to =</span> <span class="fu">max</span>(galton.data<span class="sc">$</span>parent.c), <span class="at">length.out =</span> <span class="dv">10</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb65-4"><a href="#cb65-4"></a>  <span class="fu">posterior_draws</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb65-5"><a href="#cb65-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> parent.c, <span class="at">y =</span> child)) <span class="sc">+</span></span>
-<span id="cb65-6"><a href="#cb65-6"></a>     <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> draw), </span>
-<span id="cb65-7"><a href="#cb65-7"></a>                  <span class="at">.width =</span> .<span class="dv">95</span>, </span>
-<span id="cb65-8"><a href="#cb65-8"></a>                  <span class="at">alpha =</span> .<span class="dv">5</span>,</span>
-<span id="cb65-9"><a href="#cb65-9"></a>                  <span class="at">show.legend =</span> F) <span class="sc">+</span></span>
-<span id="cb65-10"><a href="#cb65-10"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> galton.data, <span class="at">size =</span> <span class="dv">2</span>,<span class="at">alpha =</span> .<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="fu">predictions</span>(<span class="at">model =</span> fit<span class="fl">.1</span>,</span>
+<span id="cb66-2"><a href="#cb66-2"></a>            <span class="at">type =</span> <span class="st">"prediction"</span>,</span>
+<span id="cb66-3"><a href="#cb66-3"></a>             <span class="fu">datagrid</span>(<span class="at">parent.c =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fu">min</span>(galton.data<span class="sc">$</span>parent.c), <span class="at">to =</span> <span class="fu">max</span>(galton.data<span class="sc">$</span>parent.c), <span class="at">length.out =</span> <span class="dv">10</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb66-4"><a href="#cb66-4"></a>  <span class="fu">posterior_draws</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb66-5"><a href="#cb66-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> parent.c, <span class="at">y =</span> child)) <span class="sc">+</span></span>
+<span id="cb66-6"><a href="#cb66-6"></a>     <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> draw), </span>
+<span id="cb66-7"><a href="#cb66-7"></a>                  <span class="at">.width =</span> .<span class="dv">95</span>, </span>
+<span id="cb66-8"><a href="#cb66-8"></a>                  <span class="at">alpha =</span> .<span class="dv">5</span>,</span>
+<span id="cb66-9"><a href="#cb66-9"></a>                  <span class="at">show.legend =</span> F) <span class="sc">+</span></span>
+<span id="cb66-10"><a href="#cb66-10"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> galton.data, <span class="at">size =</span> <span class="dv">2</span>,<span class="at">alpha =</span> .<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -12350,7 +12361,7 @@ Columns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, pre
 </ul>
 </div><div class="column" style="width:60%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="fu">pp_check</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="fu">pp_check</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img data-src="regression-2_files/figure-revealjs/unnamed-chunk-47-1.png" width="960"></p>
 </div>
@@ -12364,24 +12375,24 @@ Columns: rowid, term, estimate, conf.low, conf.high, parent.c, predicted_lo, pre
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>fit<span class="fl">.1</span>p <span class="ot">&lt;-</span> </span>
-<span id="cb67-2"><a href="#cb67-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
-<span id="cb67-3"><a href="#cb67-3"></a>      child <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> parent.c,</span>
-<span id="cb67-4"><a href="#cb67-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">68</span>, <span class="dv">5</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb67-5"><a href="#cb67-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> b),</span>
-<span id="cb67-6"><a href="#cb67-6"></a>                <span class="fu">prior</span>(<span class="fu">cauchy</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
-<span id="cb67-7"><a href="#cb67-7"></a>      <span class="at">data =</span> galton.data,</span>
-<span id="cb67-8"><a href="#cb67-8"></a>      <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb67-9"><a href="#cb67-9"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb67-10"><a href="#cb67-10"></a>      <span class="at">iter =</span> <span class="dv">1000</span>, <span class="at">warmup =</span> <span class="dv">500</span>, <span class="at">chains =</span> <span class="dv">2</span>, <span class="at">cores =</span> <span class="dv">2</span>, </span>
-<span id="cb67-11"><a href="#cb67-11"></a>      <span class="at">file =</span> <span class="st">"fit.1p"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a>fit<span class="fl">.1</span>p <span class="ot">&lt;-</span> </span>
+<span id="cb68-2"><a href="#cb68-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
+<span id="cb68-3"><a href="#cb68-3"></a>      child <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> parent.c,</span>
+<span id="cb68-4"><a href="#cb68-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">68</span>, <span class="dv">5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb68-5"><a href="#cb68-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> b),</span>
+<span id="cb68-6"><a href="#cb68-6"></a>                <span class="fu">prior</span>(<span class="fu">cauchy</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb68-7"><a href="#cb68-7"></a>      <span class="at">data =</span> galton.data,</span>
+<span id="cb68-8"><a href="#cb68-8"></a>      <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb68-9"><a href="#cb68-9"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb68-10"><a href="#cb68-10"></a>      <span class="at">iter =</span> <span class="dv">1000</span>, <span class="at">warmup =</span> <span class="dv">500</span>, <span class="at">chains =</span> <span class="dv">2</span>, <span class="at">cores =</span> <span class="dv">2</span>, </span>
+<span id="cb68-11"><a href="#cb68-11"></a>      <span class="at">file =</span> <span class="st">"fit.1p"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="prior-predictive-summary" class="slide level2">
 <h2>prior predictive summary</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -12410,11 +12421,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
-<span id="cb70-2"><a href="#cb70-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">101</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb70-3"><a href="#cb70-3"></a> <span class="fu">add_epred_draws</span>(fit<span class="fl">.1</span>p, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb70-4"><a href="#cb70-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> parent.c, <span class="at">y =</span> child)) <span class="sc">+</span></span>
-<span id="cb70-5"><a href="#cb70-5"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .epred, <span class="at">group =</span> .draw), <span class="at">alpha =</span> .<span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
+<span id="cb71-2"><a href="#cb71-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">101</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-3"><a href="#cb71-3"></a> <span class="fu">add_epred_draws</span>(fit<span class="fl">.1</span>p, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-4"><a href="#cb71-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> parent.c, <span class="at">y =</span> child)) <span class="sc">+</span></span>
+<span id="cb71-5"><a href="#cb71-5"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .epred, <span class="at">group =</span> .draw), <span class="at">alpha =</span> .<span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -12424,11 +12435,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
-<span id="cb71-2"><a href="#cb71-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">101</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb71-3"><a href="#cb71-3"></a> <span class="fu">add_predicted_draws</span>(fit<span class="fl">.1</span>p) <span class="sc">%&gt;%</span> </span>
-<span id="cb71-4"><a href="#cb71-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> .prediction)) <span class="sc">+</span></span>
-<span id="cb71-5"><a href="#cb71-5"></a>  <span class="fu">stat_halfeye</span>() <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">150</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a>galton.data <span class="sc">%&gt;%</span> </span>
+<span id="cb72-2"><a href="#cb72-2"></a><span class="fu">data_grid</span>(<span class="at">parent.c =</span> <span class="fu">seq_range</span>(parent.c, <span class="at">n =</span> <span class="dv">101</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb72-3"><a href="#cb72-3"></a> <span class="fu">add_predicted_draws</span>(fit<span class="fl">.1</span>p) <span class="sc">%&gt;%</span> </span>
+<span id="cb72-4"><a href="#cb72-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> .prediction)) <span class="sc">+</span></span>
+<span id="cb72-5"><a href="#cb72-5"></a>  <span class="fu">stat_halfeye</span>() <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">150</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
