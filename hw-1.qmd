@@ -4,6 +4,9 @@ output: html_document
 ---
 
 
+HW #1 is due 9/12. Please knit to a pdf (or html), attach to an email and send it to: homewor.zrglg7gubrpie1bm@u.box.com
+
+
 1. To get refreshed with thinking in terms of distributions (as well as ggplot), please plot 2 different versions of each of the following probability distributions (ie change up the parameters). It is your choice on choosing the different parameters of each of the distributions. If you are unfamiliar with these distributions, wikipedia has a pretty good section for each. These are distributions we will use throughout the class
 
 a) t-distribution

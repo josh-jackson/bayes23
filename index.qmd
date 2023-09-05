@@ -2,6 +2,8 @@
 title: "Bayesian Data Analyses"
 ---
 
+9/5: HW #1 is due 9/12. Please knit to a pdf and send it to: homewor.zrglg7gubrpie1bm@u.box.com
+
 8/29: Welcome to the first day of class! If you want to follow along with examples, head over to github for all of the code and data. https://github.com/josh-jackson/bayes23
 
 Please check the homepage regularly for class updates and announcements.
