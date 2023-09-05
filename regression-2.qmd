@@ -635,12 +635,13 @@ slopes(fit.1,
 
 ## Summary
 
-By feeding our model numbers we can accomplish a number of handy things. 
+By feeding our model numbers we can accomplish a number of handy things:
+
 - Individual level predictions (y-hats) 
-- Plot/visualize predictions across X 
-- Distribution/Standard errors at certain levels of X 
-- Coefficients/parameters at different levels of X 
-- Post hoc comparisons (more later)
+- Plot/visualize predictions across X  
+- Distribution/Standard errors at certain levels of X  
+- Coefficients/parameters at different levels of X  
+- Post hoc comparisons (more later)  
 
 ## 3 types of predictions
 

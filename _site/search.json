@@ -473,7 +473,7 @@
     "href": "regression-2.html#predicted-values-1",
     "title": "Intro to Regression",
     "section": "predicted values",
-    "text": "predicted values\nEach .prediction is feeding in a parent.c value we prespecified into our model \\(\\hat{Y}_i = \\beta_0 + \\beta_1 X + \\epsilon_i\\). Each row of the posterior has different estimates for each of the three parameters. With epred we were only including 2 parameters.\n\n\nCode\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 10)) %&gt;% \n  add_predicted_draws(fit.1)\n\n\n# A tibble: 10,000 × 6\n# Groups:   parent.c, .row [10]\n   parent.c  .row .chain .iteration .draw .prediction\n      &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;\n 1    -4.31     1     NA         NA     1        64.2\n 2    -4.31     1     NA         NA     2        62.9\n 3    -4.31     1     NA         NA     3        64.9\n 4    -4.31     1     NA         NA     4        68.0\n 5    -4.31     1     NA         NA     5        63.8\n 6    -4.31     1     NA         NA     6        63.9\n 7    -4.31     1     NA         NA     7        67.0\n 8    -4.31     1     NA         NA     8        68.1\n 9    -4.31     1     NA         NA     9        66.4\n10    -4.31     1     NA         NA    10        64.3\n# ℹ 9,990 more rows"
+    "text": "predicted values\nEach .prediction is feeding in a parent.c value we prespecified into our model \\(\\hat{Y}_i = \\beta_0 + \\beta_1 X + \\epsilon_i\\). Each row of the posterior has different estimates for each of the three parameters. With epred we were only including 2 parameters.\n\n\nCode\ngalton.data %&gt;% \ndata_grid(parent.c = seq_range(parent.c, n = 10)) %&gt;% \n  add_predicted_draws(fit.1)\n\n\n# A tibble: 10,000 × 6\n# Groups:   parent.c, .row [10]\n   parent.c  .row .chain .iteration .draw .prediction\n      &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;\n 1    -4.31     1     NA         NA     1        65.9\n 2    -4.31     1     NA         NA     2        65.2\n 3    -4.31     1     NA         NA     3        63.5\n 4    -4.31     1     NA         NA     4        64.6\n 5    -4.31     1     NA         NA     5        62.5\n 6    -4.31     1     NA         NA     6        65.6\n 7    -4.31     1     NA         NA     7        62.5\n 8    -4.31     1     NA         NA     8        65.8\n 9    -4.31     1     NA         NA     9        65.7\n10    -4.31     1     NA         NA    10        63.1\n# ℹ 9,990 more rows"
   },
   {
     "objectID": "regression-2.html#predicted-values-2",
@@ -634,7 +634,7 @@
     "href": "regression-2.html#summary",
     "title": "Intro to Regression",
     "section": "Summary",
-    "text": "Summary\nBy feeding our model numbers we can accomplish a number of handy things. - Individual level predictions (y-hats) - Plot/visualize predictions across X - Distribution/Standard errors at certain levels of X - Coefficients/parameters at different levels of X - Post hoc comparisons (more later)"
+    "text": "Summary\nBy feeding our model numbers we can accomplish a number of handy things:\n\nIndividual level predictions (y-hats)\nPlot/visualize predictions across X\n\nDistribution/Standard errors at certain levels of X\n\nCoefficients/parameters at different levels of X\n\nPost hoc comparisons (more later)"
   },
   {
     "objectID": "regression-3.html#goals-for-this-section",
