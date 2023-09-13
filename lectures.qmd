@@ -5,3 +5,4 @@ title: "Lectures"
 1.  [Background and introduction](intro-1.qmd)
 2.  [Regression introduction](regression-2.qmd)
 3.  [Regression continued](regression-3.qmd)
+4.  [MCMC](mcmc-4.qmd)

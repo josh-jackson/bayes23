@@ -311,12 +311,13 @@ bayes_R2(h.1, summary = T) # use = true to get a summary
 
 -   We use: posterior predictive distribution & sigma. This incorporates uncertainty about our estimate.
 
-## Variable coding?
+## Categorical Variable coding
 
 Of course anytime we use group variables we need to assign them numeric values. How does that work in Bayesian land? Mostly the same but 
-1. we need to be careful about our priors\
 
-2. We will manipulate the posterior to get what we want\
+1. we need to be careful about our priors\ 
+
+2. We will manipulate the posterior to get what we want\ 
 
 3. there is an addition coding option that is often helpful
 
@@ -474,7 +475,7 @@ h.2 %>%
 
 -   While possible in a frequentist framework it is a little awkward because it is not easy to test the hypothesis that the groups differ
 
--   If you have 20 groups, that is a lot of priors (one for each dummy!), but this approach there is a single prior for all levels/factors
+-   If you have 20 groups, that is a lot of priors (one for each dummy!), but with this approach there is a single prior for all levels/factors
 
 ------------------------------------------------------------------------
 
@@ -607,8 +608,10 @@ pp_check(h.3,"violin_grouped", group = "mood.group.d")
 
 Now we have the basics down we can extend the model, tweaking different components of it. We have already seen what happens if we tweak the priors a little. Thus far they have been mostly inconsequential.
 
-What if we tweak the likelihood and model? 
+What if we tweak the likelihood and model?  
+
 1. Robust regression 
+
 2. Heterogeneous variances
 
 ## Robust regression
@@ -834,7 +837,7 @@ summary(h.7)
 
 ------------------------------------------------------------------------
 
-The sigmas are modeled through a log-link (to make them positive). Convert them back to the scale by exponential.
+The sigmas are modeled through a (natural) log-link (to constrain the values to be positive). Convert natural logs (which range from negative inf to positive inf) back to the original scale by exponentiating by e
 
 ```{r}
 #| code-fold: true
@@ -877,7 +880,8 @@ MR <- MR %>%
          FQ_c = `friendship.quality` - mean(`friendship.quality`),
          iv = `intervention.group`,
          iv = factor(iv))
-MR
+
+MR 
 ```
 
 ## ANOVA More than 2 groups
@@ -926,6 +930,9 @@ prior.a.1 %>%
   theme(panel.grid = element_blank(),
         legend.position = c(.84, .84))
 ```
+
+
+------------
 
 ```{r}
 get_variables(a.1)
