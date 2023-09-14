@@ -809,7 +809,7 @@
     "href": "regression-3.html#multiple-comparison-corrections",
     "title": "Regression",
     "section": "multiple comparison corrections",
-    "text": "multiple comparison corrections\n\nOne the one hand, multiple comparisons are about error rates, which reference NHST and dichotomous decisions, and we don’t have a null distribution in Bayes land\nOn the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences. Often decisions are needed.\nWith better priors “error rates” decrease. With less dichotomous thinking, error rates also vanish.\nBayes solution is better modelings + changing decision criteria"
+    "text": "multiple comparison corrections\n\nOne the one hand, multiple comparisons are about error rates, which reference NHST and dichotomous decisions, and we don’t have a null distribution in Bayes land\nOn the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences. Often decisions are needed.\nWith better priors “error rates” decrease. With less dichotomous thinking, error rates also vanish.\nBayes solution is better modeling + changing decision criteria"
   },
   {
     "objectID": "regression-3.html#posterior-predictive-checks",
@@ -1139,5 +1139,12 @@
     "title": "Regression",
     "section": "",
     "text": "Prior choice\nGet more comfortable with posterior\nFit indices\nCategorical predictors\nRobust regression\nMultiple regression\nPost-hoc tests"
+  },
+  {
+    "objectID": "regression-3.html#extending-the-basic-model-1",
+    "href": "regression-3.html#extending-the-basic-model-1",
+    "title": "Regression",
+    "section": "Extending the basic model",
+    "text": "Extending the basic model\n\nWe will now be able to “tweak” this basic model into any model we want. All are still modeled the same, with a linear model.\nLogistic regression? Binomial plus a link. Shifted log normal? Now we have three parameters, similar to t dist. Drift Diffusion model? 4 parameter Weiner. Graded response IRT? Cumlative + logit. ZIP? Logistic plus Poisson!\nThe process is the same: we try to understand different parameters by looking at how they change with different levels of IVs. The only thing that differs across these models is what parameters, and if you need to covert the scale of a parameter."
   }
 ]

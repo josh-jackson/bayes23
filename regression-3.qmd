@@ -587,7 +587,7 @@ h.3 %>%
 
 -   With better priors "error rates" decrease. With less dichotomous thinking, error rates also vanish.
 
-- Bayes solution is better modelings + changing decision criteria
+- Bayes solution is better modeling + changing decision criteria
 
 ## posterior predictive checks
 
@@ -867,6 +867,16 @@ post.h7 %>%
   ggplot(aes(y = key, x = value)) +
   stat_halfeye()
 ```
+
+
+## Extending the basic model
+
+- We will now be able to "tweak" this basic model into any model we want. All are still modeled the same, with a linear model. 
+
+- Logistic regression? Binomial plus a link. Shifted log normal? Now we have three parameters, similar to t dist. Drift Diffusion model? 4 parameter Weiner. Graded response IRT? Cumlative + logit. ZIP? Logistic plus Poisson!     
+
+- The process is the same: we try to understand different parameters by looking at how they change with different levels of IVs. The only thing that differs across these models is what parameters, and if you need to covert the scale of a parameter.  
+
 
 ## ANOVA models
 
