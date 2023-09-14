@@ -581,11 +581,13 @@ h.3 %>%
 
 ## multiple comparison corrections
 
--   One the one hand, multiple comparisons are about error rates, which reference NHST, and we don't have a null distribution in bayes land
+-   One the one hand, multiple comparisons are about error rates, which reference NHST and dichotomous decisions, and we don't have a null distribution in Bayes land
 
--   On the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences.
+-   On the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences. Often decisions are needed. 
 
 -   With better priors "error rates" decrease. With less dichotomous thinking, error rates also vanish.
+
+- Bayes solution is better modelings + changing decision criteria
 
 ## posterior predictive checks
 

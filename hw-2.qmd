@@ -1,0 +1,41 @@
+---
+title: "hw-2"
+---
+
+
+```{r}
+library(tidyverse)
+library(modeldb)
+library(emmeans)
+
+set.seed(74)
+dat <- tibble(
+  a = rep(0:1, each=150),
+  b = as.factor(rep(rep(0:2, each=1), 100)))
+
+dat <- dat %>% 
+  add_dummy_variables(b, values = c(0,1,2), remove_original = F)
+
+y = 2 + rnorm(300,.7,.5)*dat$a + rnorm(300,.9,.5)*dat$b_1 +  rnorm(300,-.8,.5)*dat$b_2 + rnorm(300,.1,.5)*dat$a*dat$b_1 + rnorm(300,.19,.5)*dat$a*dat$b_2 + rnorm(300,0,.5)
+
+dat <- dat %>% 
+add_column(y)
+
+
+test <- lm(y ~ a + b_1 + b_2 + a*b_1 + a*b_2, data=dat)
+test2 <- lm(y ~ a*b, dat)
+summary(test2)
+
+
+```
+
+
+1. Run a factorial anova using brms. Interpret the summary output. 
+
+2. Graph 
+  a. The two simple main effects (assume no interactions)
+  b. A figure to demonstrate the interactions
+  c. The differences/contrasts between the main effects 
+  d. The differences/contrasts between each cell 
+  e. A prediction interval (95%?) for each cell
+  

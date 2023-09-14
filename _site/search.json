@@ -809,7 +809,7 @@
     "href": "regression-3.html#multiple-comparison-corrections",
     "title": "Regression",
     "section": "multiple comparison corrections",
-    "text": "multiple comparison corrections\n\nOne the one hand, multiple comparisons are about error rates, which reference NHST, and we don’t have a null distribution in bayes land\nOn the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences.\nWith better priors “error rates” decrease. With less dichotomous thinking, error rates also vanish."
+    "text": "multiple comparison corrections\n\nOne the one hand, multiple comparisons are about error rates, which reference NHST and dichotomous decisions, and we don’t have a null distribution in Bayes land\nOn the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences. Often decisions are needed.\nWith better priors “error rates” decrease. With less dichotomous thinking, error rates also vanish.\nBayes solution is better modelings + changing decision criteria"
   },
   {
     "objectID": "regression-3.html#posterior-predictive-checks",
