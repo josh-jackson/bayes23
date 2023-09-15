@@ -4,3 +4,4 @@ title: "Homework"
 
 
 1.  [Homework #1](hw-1.qmd)
+1.  [Homework #2](hw-2.qmd)

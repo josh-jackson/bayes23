@@ -3,10 +3,15 @@ title: "hw-2"
 ---
 
 
+Homework #2 can be turned in via email to: homewor.ze3fn14975p1zkr3@u.box.com
+Due date is 9/29
+
+
+We will be working with factorial model for this homework set. Below is some code to simulate some data that have two variables: "a" and "b". "a" has two levels, while "b" has 3 for a total of 6 cells in a 2x3 model. 
+
 ```{r}
 library(tidyverse)
 library(modeldb)
-library(emmeans)
 
 set.seed(74)
 dat <- tibble(
@@ -21,21 +26,23 @@ y = 2 + rnorm(300,.7,.5)*dat$a + rnorm(300,.9,.5)*dat$b_1 +  rnorm(300,-.8,.5)*d
 dat <- dat %>% 
 add_column(y)
 
-
-test <- lm(y ~ a + b_1 + b_2 + a*b_1 + a*b_2, data=dat)
-test2 <- lm(y ~ a*b, dat)
-summary(test2)
-
-
 ```
 
 
-1. Run a factorial anova using brms. Interpret the summary output. 
+1. Run a full factorial interaction model using brms with the above 'dat' dataset. Interpret the summary output. 
 
 2. Graph 
-  a. The two simple main effects (assume no interactions)
-  b. A figure to demonstrate the interactions
-  c. The differences/contrasts between the main effects 
+  a. The two simple main effects (i.e marginal effects)
+  b. A figure(s) to demonstrate the interaction effects 
+  c. The differences/contrasts between the simple main effects 
   d. The differences/contrasts between each cell 
   e. A prediction interval (95%?) for each cell
+  f. A plot (your choice) but with standardized, not raw, values
+  
+3. Test. Use a 97% CI
+  a. What are the medians and a 97% CI for the simple main effect estimates
+  b. What are the medians and a 97% CI for each of the cell estimates
+  c. Are and of the simple effects significantly different from one another? 
+  d. Are any of the cell comparisons significantly different from one another? 
+  e. Interpret the R2
   

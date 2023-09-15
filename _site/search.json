@@ -529,7 +529,7 @@
     "href": "index.html",
     "title": "Bayesian Data Analyses",
     "section": "",
-    "text": "9/5: HW #1 is due 9/12. Please knit to a pdf and send it to: homewor.zrglg7gubrpie1bm@u.box.com\n8/29: Welcome to the first day of class! If you want to follow along with examples, head over to github for all of the code and data. https://github.com/josh-jackson/bayes23\nPlease check the homepage regularly for class updates and announcements."
+    "text": "9/15: HW# 2 is posted. It is due 9/29\n9/5: HW #1 is due 9/12. Please knit to a pdf and send it to: homewor.zrglg7gubrpie1bm@u.box.com\n8/29: Welcome to the first day of class! If you want to follow along with examples, head over to github for all of the code and data. https://github.com/josh-jackson/bayes23\nPlease check the homepage regularly for class updates and announcements."
   },
   {
     "objectID": "lectures.html",
@@ -921,7 +921,7 @@
     "href": "homework.html",
     "title": "Homework",
     "section": "",
-    "text": "Homework #1"
+    "text": "Homework #1\nHomework #2"
   },
   {
     "objectID": "hw-1.html",
@@ -1146,5 +1146,12 @@
     "title": "Regression",
     "section": "Extending the basic model",
     "text": "Extending the basic model\n\nWe will now be able to “tweak” this basic model into any model we want. All are still modeled the same, with a linear model.\nLogistic regression? Binomial plus a link. Shifted log normal? Now we have three parameters, similar to t dist. Drift Diffusion model? 4 parameter Weiner. Graded response IRT? Cumlative + logit. ZIP? Logistic plus Poisson!\nThe process is the same: we try to understand different parameters by looking at how they change with different levels of IVs. The only thing that differs across these models is what parameters, and if you need to covert the scale of a parameter."
+  },
+  {
+    "objectID": "hw-2.html",
+    "href": "hw-2.html",
+    "title": "hw-2",
+    "section": "",
+    "text": "Homework #2 can be turned in via email to: homewor.ze3fn14975p1zkr3@u.box.com Due date is 9/29\nWe will be working with factorial model for this homework set. Below is some code to simulate some data that have two variables: “a” and “b”. “a” has two levels, while “b” has 3 for a total of 6 cells in a 2x3 model.\n\nlibrary(tidyverse)\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.2     ✔ readr     2.1.4\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.4.3     ✔ tibble    3.2.1\n✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(modeldb)\n\nset.seed(74)\ndat &lt;- tibble(\n  a = rep(0:1, each=150),\n  b = as.factor(rep(rep(0:2, each=1), 100)))\n\ndat &lt;- dat %&gt;% \n  add_dummy_variables(b, values = c(0,1,2), remove_original = F)\n\ny = 2 + rnorm(300,.7,.5)*dat$a + rnorm(300,.9,.5)*dat$b_1 +  rnorm(300,-.8,.5)*dat$b_2 + rnorm(300,.1,.5)*dat$a*dat$b_1 + rnorm(300,.19,.5)*dat$a*dat$b_2 + rnorm(300,0,.5)\n\ndat &lt;- dat %&gt;% \nadd_column(y)\n\n\nRun a full factorial interaction model using brms with the above ‘dat’ dataset. Interpret the summary output.\nGraph\n\n\nThe two simple main effects (i.e marginal effects)\nA figure(s) to demonstrate the interaction effects\nThe differences/contrasts between the simple main effects\nThe differences/contrasts between each cell\nA prediction interval (95%?) for each cell\nA plot (your choice) but with standardized, not raw, values\n\n\nTest. Use a 97% CI\n\n\nWhat are the medians and a 97% CI for the simple main effect estimates\nWhat are the medians and a 97% CI for each of the cell estimates\nAre and of the simple effects significantly different from one another?\nAre any of the cell comparisons significantly different from one another?\nInterpret the R2"
   }
 ]
