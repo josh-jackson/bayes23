@@ -3165,22 +3165,22 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <h2>Conditional plots</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>MR <span class="sc">%&gt;%</span> </span>
-<span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">data_grid</span>(<span class="at">SS_c =</span> <span class="fu">seq_range</span>(SS_c, <span class="at">n =</span> <span class="dv">10</span>), <span class="at">.model=</span>MR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">data_grid</span>(<span class="at">SS_c =</span> <span class="fu">seq_range</span>(SS_c, <span class="at">n =</span> <span class="dv">10</span>), <span class="at">.model=</span>MR) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a href="#cb27-3"></a>  <span class="fu">select</span>(SS_c, FQ_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 9
-     SS_c friendship.quality happiness schoool.success   SES intervention.group
-    &lt;dbl&gt;              &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt;              &lt;dbl&gt;
- 1 -8.71                7.75      5.34            8.52  2.31                  2
- 2 -6.78                7.75      5.34            8.52  2.31                  2
- 3 -4.86                7.75      5.34            8.52  2.31                  2
- 4 -2.94                7.75      5.34            8.52  2.31                  2
- 5 -1.01                7.75      5.34            8.52  2.31                  2
- 6  0.913               7.75      5.34            8.52  2.31                  2
- 7  2.84                7.75      5.34            8.52  2.31                  2
- 8  4.76                7.75      5.34            8.52  2.31                  2
- 9  6.69                7.75      5.34            8.52  2.31                  2
-10  8.61                7.75      5.34            8.52  2.31                  2
-# ℹ 3 more variables: FQ_c &lt;dbl&gt;, iv &lt;dbl&gt;, iv.d &lt;chr&gt;</code></pre>
+<pre><code># A tibble: 10 × 2
+     SS_c  FQ_c
+    &lt;dbl&gt; &lt;dbl&gt;
+ 1 -8.71  0.137
+ 2 -6.78  0.137
+ 3 -4.86  0.137
+ 4 -2.94  0.137
+ 5 -1.01  0.137
+ 6  0.913 0.137
+ 7  2.84  0.137
+ 8  4.76  0.137
+ 9  6.69  0.137
+10  8.61  0.137</code></pre>
 </div>
 </div>
 </section>

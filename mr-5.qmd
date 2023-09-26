@@ -452,7 +452,8 @@ Results in:
 
 ```{r}
 MR %>% 
-  data_grid(SS_c = seq_range(SS_c, n = 10), .model=MR)
+  data_grid(SS_c = seq_range(SS_c, n = 10), .model=MR) %>% 
+  select(SS_c, FQ_c)
 ```
 
 

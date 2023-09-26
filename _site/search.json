@@ -1222,7 +1222,7 @@
     "href": "mr-5.html#conditional-plots-3",
     "title": "Multiple Regression",
     "section": "Conditional plots",
-    "text": "Conditional plots\n\nMR %&gt;% \n  data_grid(SS_c = seq_range(SS_c, n = 10), .model=MR)\n\n# A tibble: 10 × 9\n     SS_c friendship.quality happiness schoool.success   SES intervention.group\n    &lt;dbl&gt;              &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt;              &lt;dbl&gt;\n 1 -8.71                7.75      5.34            8.52  2.31                  2\n 2 -6.78                7.75      5.34            8.52  2.31                  2\n 3 -4.86                7.75      5.34            8.52  2.31                  2\n 4 -2.94                7.75      5.34            8.52  2.31                  2\n 5 -1.01                7.75      5.34            8.52  2.31                  2\n 6  0.913               7.75      5.34            8.52  2.31                  2\n 7  2.84                7.75      5.34            8.52  2.31                  2\n 8  4.76                7.75      5.34            8.52  2.31                  2\n 9  6.69                7.75      5.34            8.52  2.31                  2\n10  8.61                7.75      5.34            8.52  2.31                  2\n# ℹ 3 more variables: FQ_c &lt;dbl&gt;, iv &lt;dbl&gt;, iv.d &lt;chr&gt;"
+    "text": "Conditional plots\n\nMR %&gt;% \n  data_grid(SS_c = seq_range(SS_c, n = 10), .model=MR) %&gt;% \n  select(SS_c, FQ_c)\n\n# A tibble: 10 × 2\n     SS_c  FQ_c\n    &lt;dbl&gt; &lt;dbl&gt;\n 1 -8.71  0.137\n 2 -6.78  0.137\n 3 -4.86  0.137\n 4 -2.94  0.137\n 5 -1.01  0.137\n 6  0.913 0.137\n 7  2.84  0.137\n 8  4.76  0.137\n 9  6.69  0.137\n10  8.61  0.137"
   },
   {
     "objectID": "mr-5.html#conditional-plots-4",
