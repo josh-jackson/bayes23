@@ -1,0 +1,1487 @@
+---
+title: Multiple Regression
+format: revealjs
+editor: visual
+execute:
+  echo: true
+html:
+  code-fold: true
+  code-summary: Show the code
+
+---
+
+
+
+## Moving to many predictors
+
+```{r}
+#| code-fold: true
+library(brms)
+library(patchwork)
+library(tidyverse)
+library(tidybayes)
+library(emmeans)
+
+# normal density
+p1 <-
+  tibble(x = seq(from = -3, to = 3, by = .1)) %>% 
+  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +
+  geom_ribbon(fill = "steelblue4", color = "steelblue4", alpha = .6) +
+  annotate(geom = "text",
+           x = 0, y = .2,
+           label = "normal",
+           size = 7) +
+  annotate(geom = "text",
+           x = c(0, 1.5), y = .6,
+           label = c("italic(M)[0]", "italic(S)[0]"), 
+           size = 7, family = "Times", parse = T) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme_void() +
+  theme(axis.line.x = element_line(size = 0.5))
+
+# a second normal density
+p2 <-
+  tibble(x = seq(from = -3, to = 3, by = .1)) %>% 
+  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +
+  geom_ribbon(fill = "steelblue4", color = "steelblue4", alpha = .6) +
+  annotate(geom = "text",
+           x = 0, y = .2,
+           label = "normal",
+           size = 7) +
+  annotate(geom = "text",
+           x = c(0, 1.5), y = .6,
+           label = c("italic(M)[italic(j)]", "italic(S)[italic(j)]"), 
+           size = 7, family = "Times", parse = T) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme_void() +
+  theme(axis.line.x = element_line(size = 0.5))
+
+## two annotated arrows
+# save our custom arrow settings
+my_arrow <- arrow(angle = 20, length = unit(0.35, "cm"), type = "closed")
+p3 <-
+  tibble(x    = c(.33, 1.67),
+         y    = c(1, 1),
+         xend = c(.67, 1.2),
+         yend = c(0, 0)) %>%
+  
+  ggplot(aes(x = x, xend = xend,
+             y = y, yend = yend)) +
+  geom_segment(arrow = my_arrow) +
+  annotate(geom = "text",
+  x = c(.35, 1.3), y = .5,
+  label = "'~'",
+  size = 10, family = "Times", parse = T) +
+  xlim(0, 2) +
+  theme_void()
+
+# exponential density
+p4 <-
+  tibble(x = seq(from = 0, to = 1, by = .01)) %>% 
+  ggplot(aes(x = x, ymin = 0, ymax = (dexp(x, 2) / max(dexp(x, 2))))) +
+  geom_ribbon(fill = "steelblue4", color = "steelblue4", alpha = .6) +
+  annotate(geom = "text",
+           x = .5, y = .2,
+           label = "exp",
+           size = 7) +
+  annotate(geom = "text",
+           x = .5, y = .6,
+           label = "italic(K)",
+           size = 7, family = "Times", parse = T) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme_void() +
+  theme(axis.line.x = element_line(size = 0.5))
+
+# likelihood formula
+p5 <-
+  tibble(x = .5,
+         y = .25,
+         label = "beta[0]+sum()[italic(j)]*beta[italic(j)]*italic(x)[italic(ji)]") %>% 
+  
+  ggplot(aes(x = x, y = y, label = label)) +
+  geom_text(size = 7, parse = T, family = "Times") +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  ylim(0, 1) +
+  theme_void()
+  
+  # half-normal density
+p6 <-
+  tibble(x = seq(from = 0, to = 3, by = .01)) %>% 
+  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +
+  geom_ribbon(fill = "steelblue4", color = "steelblue4", alpha = .6) +
+  annotate(geom = "text",
+           x = 1.5, y = .2,
+           label = "half-normal",
+           size = 7) +
+  annotate(geom = "text",
+           x = 1.5, y = .6,
+           label = "0*','*~italic(S)[sigma]", 
+           size = 7, family = "Times", parse = T) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme_void() +
+  theme(axis.line.x = element_line(size = 0.5))
+
+# three annotated arrows
+p7 <-
+  tibble(x    = c( .43, 1.5, 2.5),
+         y    = c( 1, 1, 1),
+         xend = c( 1.225, 1.5, 1.75),
+         yend = c( .15, .2, .2)) %>%
+  
+  ggplot(aes(x = x, xend = xend,
+             y = y, yend = yend)) +
+  geom_segment(arrow = my_arrow) +
+  annotate(geom = "text",
+           x = c( .7, 1.38, 2), y = c( .22, .65, .6),
+           label = c( "'~'", "'='", "'~'"),
+           size = 10, family = "Times", parse = T) +
+  #annotate(geom = "text",
+          # x = .43, y = .7,
+           #label = "nu*minute+1",
+           #size = 7, family = "Times", parse = T) +
+  xlim(0, 3) +
+  theme_void()
+
+# student-t density
+p8 <-
+  tibble(x = seq(from = -3, to = 3, by = .1)) %>% 
+  ggplot(aes(x = x, ymin = 0, ymax = (dt(x, 3) / max(dt(x, 3))))) +
+  geom_ribbon(fill = "steelblue4", color = "steelblue4", alpha = .6) +
+  annotate(geom = "text",
+           x = 0, y = .2,
+           label = "student t",
+           size = 7) +
+  annotate(geom = "text",
+           x = 0, y = .6,
+           label = "nu~~~mu[italic(i)]~~~sigma",
+           size = 7, family = "Times", parse = T) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme_void() +
+  theme(axis.line.x = element_line(size = 0.5))
+
+# the final annotated arrow
+p9 <-
+  tibble(x     = c(.375, .625),
+         y     = c(1/3, 1/3),
+         label = c("'~'", "italic(i)")) %>%
+
+  ggplot(aes(x = x, y = y, label = label)) +
+  geom_text(size = c(10, 7), parse = T, family = "Times") +
+  geom_segment(x = .5, xend = .5,
+               y = 1, yend = 0,
+               arrow = my_arrow) +
+  xlim(0, 1) +
+  theme_void()
+
+# some text
+p10 <-
+  tibble(x     = .5,
+         y     = .5,
+         label = "italic(y[i])") %>% 
+  
+  ggplot(aes(x = x, y = y, label = label)) +
+  geom_text(size = 7, parse = T, family = "Times") +
+  xlim(0, 1) +
+  theme_void()
+
+# define the layout
+layout <- c(
+  area(t = 1, b = 2, l = 3, r = 5),
+  area(t = 1, b = 2, l = 7, r = 9),
+  area(t = 4, b = 5, l = 1, r = 3),
+  area(t = 4, b = 5, l = 5, r = 7),
+  area(t = 4, b = 5, l = 9, r = 11),
+  area(t = 3, b = 4, l = 3, r = 9),
+  area(t = 7, b = 8, l = 5, r = 7),
+  area(t = 6, b = 7, l = 1, r = 11),
+  area(t = 9, b = 9, l = 5, r = 7),
+  area(t = 10, b = 10, l = 5, r = 7)
+)
+
+# combine and plot!
+(p1 + p2 + p4 + p5 + p6 + p3 + p8 + p7 + p9 + p10) + 
+  plot_layout(design = layout) &
+  ylim(0, 1) &
+  theme(plot.margin = margin(0, 5.5, 0, 5.5))
+```
+
+
+---
+
+Can you write this model equation? Assume two IVs. 
+
+
+## data 
+
+
+```{r}
+#| code-fold: true
+MR <-read.csv("https://raw.githubusercontent.com/josh-jackson/bayes/master/hw3.csv")
+MR <- MR %>% 
+  mutate(SS_c = `schoool.success` - mean(`schoool.success`),
+         FQ_c = `friendship.quality` - mean(`friendship.quality`),
+         iv = `intervention.group`,
+         iv.d = recode(`iv`, 
+                             `1` = "control", 
+                             `2` = "tx", 
+                             `3` = "tx"),
+         iv.d = factor(iv.d))
+
+MR
+```
+
+---
+
+```{r}
+#| code-fold: true
+library(psych)
+describe(MR)
+```
+
+
+
+
+## model 
+
+happiness ~ Normal( $\mu_i$ , $\sigma$ )  
+
+$\mu_i$ = $\beta_0$ + $\beta_1$ $SS\_c$ + $\beta_2$ $FQ\_c$     
+
+$\beta_0$ ~ Normal(0, 5)   
+$\beta_1$ ~ Normal(0, 5)   
+$\beta_2$ ~ Normal(0, 5)   
+$\sigma$  ~ HalfCauchy(0,10) 
+
+---
+
+```{r}
+#| code-fold: true
+mr.1 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c + FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, 2), class = b, coef = SS_c),
+                prior(normal(0, 2), class = b, coef = FQ_c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      backend = "cmdstanr",
+      sample_prior = T,
+      file = "mr.1")
+```
+
+---
+
+equivalent notation
+```{r, eval=FALSE}
+
+library(brms)
+mr.1 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c + FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, 2), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      backend = "cmdstanr",
+      file = "mr.1")
+
+```
+
+
+
+---
+
+```{r}
+#| code-fold: true
+prior.mr1<- prior_draws(mr.1)
+prior.mr1
+```
+
+
+## Prior predictive checks
+
+
+```{r}
+#| code-fold: true
+prior.mr1 %>% 
+  sample_n(size = 100) %>% 
+  rownames_to_column("draw") %>% 
+  expand(nesting(draw, Intercept, b_SS_c),
+         a = c(-10, 10)) %>% 
+  mutate(d = Intercept + b_SS_c * a) %>% 
+  
+  ggplot(aes(x = a, y = d)) +
+  geom_line(aes(group = draw), alpha = .4) +
+  labs(x = "Centered School Success",
+       y = "happiness") +
+  coord_cartesian(ylim = c(0, 10)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
+```
+
+
+
+## tighter priors? 
+
+```{r}
+#| code-fold: true
+mr.2 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c + FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, .2), class = b, coef = SS_c),
+                prior(normal(0, .2), class = b, coef = FQ_c),
+                prior(exponential(.5), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      backend = "cmdstanr",
+      file = "mr.2")
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+prior.mr2<- prior_samples(mr.2)
+prior.mr2 %>% 
+  sample_n(size = 100) %>% 
+  rownames_to_column("draw") %>% 
+  expand(nesting(draw, Intercept, b_SS_c),
+         a = c(-10, 10)) %>% 
+  mutate(d = Intercept + b_SS_c * a) %>% 
+  
+  ggplot(aes(x = a, y = d)) +
+  geom_line(aes(group = draw), alpha = .4) +
+  labs(x = "Centered School Success",
+       y = "happiness") +
+  coord_cartesian(ylim = c(0, 10)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+summary(mr.1)
+## weak/non-informative prior model
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+summary(mr.2)
+## modestly informative prior model
+```
+
+
+---
+
+```{r}
+plot(mr.1)
+```
+
+---
+
+```{r}
+conditional_effects(mr.1, effects = "FQ_c")
+```
+
+
+## Conditional plots 
+
+- Remember, anytime we have a multiple regression we are working with a 3d (or higher) response plane (in frequentist land), and in Bayesian we are working with a hyperdimensional mountain. 
+
+- Regardless of what estimation we are using, we need to communicate our effects in simple terms, usually by restricting to only one variable at a time. 
+
+- To do so, we need to either average across or pick a point on the other variables in the model to visualize our effect of interest
+
+
+## Whats in our posterior? 
+
+```{r}
+get_variables(mr.1)
+```
+
+
+
+```{r}
+head(mr.1 %>% 
+spread_draws(b_Intercept, b_SS_c, b_FQ_c, sigma))
+```
+
+
+## Conditional plots 
+
+```{r}
+#| code-fold: true
+library(tidybayes)
+library(modelr)
+
+MR %>% 
+  data_grid(SS_c = seq_range(SS_c, n = 101), .model=MR) %>%
+ add_epred_draws(mr.1) %>% 
+  ggplot(aes(x = SS_c, y = happiness)) +
+  stat_lineribbon(aes(y = .epred), .width = c(.95), color = "grey") + geom_point(data = MR, size = 2)  
+  
+```
+
+
+## Conditional plots
+
+```{r, eval = FALSE}
+MR %>% 
+  data_grid(SS_c = seq_range(SS_c, n = 101)) %>%
+ add_epred_draws(mr.1) 
+  
+```
+Results in: 
+" Error: The following variables can neither be found in 'data' nor in 'data2':
+'FQ_c'
+
+
+## Conditional plots 
+
+```{r}
+MR %>% 
+  data_grid(SS_c = seq_range(SS_c, n = 10), .model=MR)
+```
+
+
+## Conditional plots 
+
+```{r}
+MR %>% 
+  data_grid(SS_c = seq_range(SS_c, n = 10), FQ_c = 0) 
+```
+
+
+## Conditional plots 
+
+```{r}
+MR %>% 
+  data_grid(SS_c = seq_range(SS_c, n = 10), FQ_c = 0) %>% 
+   add_epred_draws(mr.1) 
+```
+Why do we have 20,000 rows? 
+
+-----
+
+```{r}
+#| code-fold: true
+
+MR %>% 
+  data_grid(SS_c = seq_range(SS_c, n = 101), FQ_c = 0) %>%
+ add_epred_draws(mr.1) %>% 
+  ggplot(aes(x = SS_c, y = happiness)) +
+  stat_lineribbon(aes(y = .epred), .width = c(.95), color = "grey") + geom_point(data = MR, size = 2)  
+  
+```
+
+
+--------
+
+FQ_c
+
+```{r}
+#| code-fold: true
+MR %>% 
+  data_grid(FQ_c = seq_range(FQ_c, n = 101), .model=MR) %>%
+ add_epred_draws(mr.1) %>% 
+  ggplot(aes(x = FQ_c, y = happiness)) +
+  stat_lineribbon(aes(y = .epred), .width = c(.95), color = "grey") + geom_point(data = MR, size = 2)  
+  
+```
+
+## Conditional prediction plot
+
+```{r}
+#| code-fold: true
+MR %>% 
+  data_grid(FQ_c = seq_range(FQ_c, n = 101),  SS_c = 0) %>% 
+  add_predicted_draws(mr.1) %>% 
+    ggplot(aes(x = FQ_c, y = happiness)) +
+  stat_lineribbon(aes(y = .prediction), alpha = .5, .width = c(.95)) + 
+  geom_point(data = MR, size = 2) 
+```
+
+
+
+
+## Fitted values at different levels of the other variable
+
+
+```{r}
+#| code-fold: true
+MR %>% 
+  data_grid(SS_c = seq_range(SS_c, n = 101), FQ_c = -7, .model=MR) %>%
+ add_epred_draws(mr.1) %>% 
+  ggplot(aes(x = SS_c, y = happiness)) +
+  stat_lineribbon(aes(y = .epred), .width = c(.95), color = "grey") + geom_point(data = MR, size = 2)  
+```
+
+
+
+
+--------
+
+```{r}
+#| code-fold: true
+pp_check(mr.1)
+```
+
+
+
+## Create our own Posterior Predictive Distribution
+
+```{r}
+#| code-fold: true
+MR %>% 
+  select(-SES, -'intervention.group') %>% 
+ add_predicted_draws(mr.1) %>% 
+    sample_draws(1) 
+```
+
+
+
+--------
+
+50*118 = 5900
+```{r}
+#| code-fold: true
+MR %>% 
+  select(-SES, -'intervention.group') %>% 
+ add_predicted_draws(mr.1) %>% 
+    sample_draws(50) 
+```
+
+
+--------
+
+
+```{r}
+#| code-fold: true
+MR %>% 
+  select(-SES, -'intervention.group') %>% 
+ add_predicted_draws(mr.1) %>% 
+    sample_draws(50) %>% 
+    ggplot(aes(.prediction, group = .draw)) +
+   geom_line(stat = "density", alpha = .1) +
+  geom_density(aes(happiness, group = .draw))+
+  theme_classic()
+```
+
+
+
+
+--------
+
+The model’s epred/fitted against the observed data
+```{r}
+#| code-fold: true
+MR %>% 
+ add_epred_draws(mr.1) %>% 
+  ggplot(aes(x = happiness , y = .epred)) +
+  geom_abline(linetype = 2, color = "grey50", size = .5) +
+  stat_interval(.width = c(.50, .95, .99)) +
+  labs(y = "Predicted happiness")+
+  xlim(0, 10) + ylim(0,10)
+```
+
+
+
+
+
+
+## Two+ categorical variables
+
+```{r}
+#| code-fold: true
+MR <- MR %>% 
+  mutate(iv = factor(iv))
+
+iv2 <- c("drug.a", "drug.b")
+
+MR <- MR %>% 
+  mutate(happy_c = `happiness` - mean(`happiness`))
+
+MR <- MR %>% 
+  mutate(iv2 = sample(rep(iv2,  each = 59, size = n())))
+         
+ MR <- MR %>%         
+         mutate(iv2 = factor(iv2))
+```
+
+--------
+
+```{r}
+#| code-fold: true
+mr.5 <- 
+  brm(family = gaussian,
+      happiness ~ 0 + iv + iv2,
+      prior = c(prior(normal(5, 2), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      backend = "cmdstanr",
+      file = "mr.5")
+```
+
+--------
+
+```{r}
+summary(mr.5)
+```
+
+
+## brms non-linear syntax
+
+{brms} does not automatically create index variables for more than 1 categorical variable. The `0 + ` treats the first variable as an index but not the second, such that the second has a standard dummy interpretation.
+
+We need a new syntax to write the model we want. We will us non-linear syntax for this, and revisit the syntax later in the class for additional models. 
+
+For ANOVA ive found centering or standardizing your DV is helpful
+
+--------
+
+```{r}
+#| code-fold: true
+mr.6 <- 
+  brm(family = gaussian,
+      bf(happy_c ~  a + b, # define 2 predictors
+         a ~ 0 + iv, # specify the predictors
+         b ~ 0 + iv2,
+         nl = TRUE), # use non-linear syntax
+      prior = c(prior(normal(0, 2), nlpar = a),
+                prior(normal(0, 2), nlpar = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR,
+      backend = "cmdstanr",
+      file = "mr.6")
+
+
+```
+
+
+--------
+
+```{r}
+summary(mr.6)
+```
+
+
+
+
+--------
+
+```{r}
+get_variables(mr.6)
+```
+
+
+
+```{r}
+#| code-fold: true
+mr.6 %>%
+  gather_draws(b_a_iv1, b_a_iv2, b_a_iv3) %>%
+  ggplot(aes(y = .variable, x = .value)) +
+  stat_dotsinterval()
+
+```
+
+--------
+
+Add the mean of your DV back in
+
+```{r}
+#| code-fold: true
+mr.6 %>%
+  spread_draws(b_a_iv1, b_a_iv2, b_a_iv3) %>%
+  mutate(iv1 = b_a_iv1 + 5.213902) %>% 
+  mutate(iv2 = b_a_iv2 + 5.213902) %>% 
+  mutate(iv3 = b_a_iv3 + 5.213902) %>% 
+  gather_draws(iv1, iv2, iv3) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  stat_dotsinterval()
+
+```
+
+
+
+
+--------
+
+```{r}
+#| code-fold: true
+mr.6 %>%
+  spread_draws(b_a_iv1, b_a_iv2, b_a_iv3) %>%
+  mutate(iv1 = b_a_iv1 + 5.213902) %>% 
+  mutate(iv2 = b_a_iv2 + 5.213902) %>% 
+  mutate(iv3 = b_a_iv3 + 5.213902) %>% 
+  gather_draws(iv1, iv2, iv3) %>% 
+  mean_qi()
+```
+
+
+```{r}
+#| code-fold: true
+MR %>%
+  group_by(iv) %>%
+  summarise(mean = mean(happiness), n = n())
+```
+
+
+--------
+
+Each posterior row suggests a different population we are drawing from, much like each row represents a different regression line
+```{r}
+#| code-fold: true
+MR %>%
+  data_grid(iv, .model = MR) %>%
+  add_epred_draws(mr.6, dpar = c("mu", "sigma")) %>%
+  sample_draws(50) %>%
+  mutate(mu = mu + 5.213902) %>% 
+  ggplot(aes(y = iv)) +
+  stat_dist_slab(aes(dist = "norm", arg1 = mu, arg2 = sigma),
+    slab_color = "gray65", alpha = 1/10, fill = NA) +
+  geom_point(aes(x = happiness), data = MR, shape = 21, fill = "#9ECAE1", size = 2)
+```
+
+
+
+## redundent predictors?
+
+```{r}
+pairs(mr.1)
+```
+
+
+## comparing levels ie contrasts
+
+We could do this "by hand" or with compare_levels
+```{r}
+mr.6 %>%
+  gather_draws(b_a_iv1, b_a_iv2, b_a_iv3) %>%
+  compare_levels(.value, by = .variable) %>%
+  ggplot(aes(y = .variable, x = .value)) +
+  stat_halfeye()
+```
+
+
+--------
+
+```{r}
+mr.6 %>%
+  gather_draws(b_a_iv1, b_a_iv2, b_a_iv3) 
+```
+
+--------
+
+```{r}
+mr.6 %>%
+  gather_draws(b_a_iv1, b_a_iv2, b_a_iv3) %>%
+  compare_levels(.value, by = .variable) 
+```
+
+--------
+
+
+```{r}
+mr.6 %>%
+  gather_draws(b_a_iv1, b_a_iv2, b_a_iv3) %>%
+  compare_levels(.value, by = .variable) %>%
+  group_by(.variable) %>%  
+  mode_qi(.value)
+```
+
+
+--------
+
+What does non-linear look like? 
+```{r, eval=FALSE}
+#| code-fold: true
+mr.7 <- 
+  brm(family = gaussian,
+      bf(happy_c ~  a + b + a:b , # define 2 predictors
+         a ~ 0 + iv, # specify the predictors
+         b ~ 0 + iv,
+         a:b ~ 0,
+         nl = TRUE), # use non-linear syntax
+      prior = c(prior(normal(0, 2), nlpar = a),
+                prior(normal(0, 2), nlpar = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR,
+      backend = "cmdstanr")
+
+```
+
+What would the coefficients look like, ideally? 
+
+
+--------
+
+
+```{r}
+anova <-read_csv("https://raw.githubusercontent.com/josh-jackson/bayes/master/anova.csv")
+anova$SupportLevel<-cut(anova$Support, breaks = c(0,5,10,18), labels = c("low","med","high"))
+anova <- anova %>% 
+  mutate(group = as.factor(group))
+```
+
+If we want to fit a 3x2 ANOVA, what linear model are we running? 
+
+$$Y_{ijk} = b_{0} + b_{1}J1 + b_{2}K1 + b_{3}K2 + b_{4}J1:K1 + b_{5}J1:K2 +\varepsilon_{ijk}$$
+
+
+
+--------
+
+```{r}
+#| code-fold: true
+mr.8 <- 
+  brm(family = gaussian,
+      Anxiety ~ group * SupportLevel,
+      prior = c(prior(normal(5, 3), class = Intercept),
+                prior(normal(0, 2), class = b, coef = groupTx),
+                prior(normal(0, 2), class = b, coef =SupportLevelhigh),
+                prior(normal(0, 2), class = b, coef = SupportLevelmed),
+                prior(normal(0, 2), class = b, coef =groupTx:SupportLevelhigh),
+                prior(normal(0, 2), class = b, coef = groupTx:SupportLevelmed),
+                prior(student_t(3, 0, 2.5), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = anova,
+      sample_prior = T,
+      backend = "cmdstanr",
+      file = "mr.8")
+```
+
+--------
+
+```{r}
+summary(mr.8)
+```
+
+--------
+
+How could we get posterior means for each group?
+
+1. feed a matrix/compute longhand into equation to calculate group values for each of our 6 groups
+
+```{r}
+contrasts(anova$group)
+```
+
+```{r}
+contrasts(anova$SupportLevel)
+```
+
+--------
+
+```{r}
+#| code-fold: true
+mr.8 %>% 
+  spread_draws(b_Intercept, b_groupTx, b_SupportLevelmed,b_SupportLevelhigh, `b_groupTx:SupportLevelmed`, `b_groupTx:SupportLevelhigh`) %>% 
+  mutate(Con_Lo = b_Intercept + b_groupTx * 0 + b_SupportLevelmed * 0 + `b_SupportLevelhigh` * 0 * 0 + `b_groupTx:SupportLevelmed` *0 * 0 + `b_groupTx:SupportLevelhigh` *0 * 0,
+         Con_Med = b_Intercept + b_groupTx * 0 + b_SupportLevelmed * 1 + b_SupportLevelhigh * 0 +  `b_groupTx:SupportLevelmed`*0 * 1 + `b_groupTx:SupportLevelhigh` *0 * 0,
+         Con_Hi = b_Intercept + b_groupTx * 0 + b_SupportLevelmed * 0 + b_SupportLevelhigh *1 +  `b_groupTx:SupportLevelmed` *0 * 0+ `b_groupTx:SupportLevelhigh` *0 * 1) %>% 
+select(.draw, Con_Lo, Con_Med, Con_Hi)
+```
+
+
+
+--------
+
+```{r}
+#| code-fold: true
+mr.8 %>% 
+  spread_draws(b_Intercept, b_groupTx, b_SupportLevelmed,b_SupportLevelhigh, `b_groupTx:SupportLevelmed`, `b_groupTx:SupportLevelhigh`) %>% 
+  mutate(Con_Med = b_Intercept + b_groupTx * 0 + b_SupportLevelmed * 1 + b_SupportLevelhigh * 0 +  `b_groupTx:SupportLevelmed`*0 * 1 + `b_groupTx:SupportLevelhigh` *0 * 0,
+         Con_Hi = b_Intercept + b_groupTx * 0 + b_SupportLevelmed * 0 + b_SupportLevelhigh *1 +  `b_groupTx:SupportLevelmed` *0 * 0+ `b_groupTx:SupportLevelhigh` *0 * 1, 
+         hi_med_diff = Con_Hi - Con_Med) %>% 
+  mean_qi(hi_med_diff)
+```
+
+
+--------
+
+How could we get posterior means for each group?
+
+1. Feed a matrix/compute longhand into equation to calculate group values for each of our 6 groups
+
+2. Feed similar info into the hypothesis function. This will be especially handy when we have LOTS of parameters from MLM models
+
+3. Use a package that does this for you, like {emmeans}
+
+--------
+
+```{r}
+em.1<- emmeans(mr.8, c("group", "SupportLevel"))
+em.1
+```
+
+--------
+
+```{r}
+emmip(mr.8, group ~ SupportLevel)
+```
+
+--------
+
+```{r}
+emmeans(mr.8, pairwise ~ SupportLevel)
+```
+
+--------
+
+```{r}
+#| code-fold: true
+pairs(em.1)
+```
+
+
+--------
+
+```{r}
+#| code-fold: true
+mr.8 %>%
+  emmeans( ~ SupportLevel) %>%
+  contrast(method = "pairwise") %>%
+  gather_emmeans_draws() %>%
+   ggplot(aes(x = .value, y = contrast)) +
+  stat_halfeye()
+```
+
+--------
+
+```{r}
+#| code-fold: true
+mr.8 %>%
+  emmeans( ~ SupportLevel | group) %>%
+  gather_emmeans_draws() %>%
+   ggplot(aes(x = SupportLevel, y = .value, fill = group, color=group)) +
+  geom_line(aes(group = .draw), alpha = .005) +
+  stat_pointinterval(color = "black") +
+  facet_grid(~ group) +
+  geom_jitter(data = anova, aes(y = Anxiety), alpha = .6, width = 0.2)
+```
+
+
+
+
+##  metric plus categorical
+
+```{r}
+mr.9 <- 
+  brm(family = gaussian,
+      bf(happy_c ~  a + b, 
+         a ~ 0 + iv + SS_c, 
+         b ~ 0 + iv2 + SS_c,
+         nl = TRUE), # use non-linear syntax
+      prior = c(prior(normal(0, 2), nlpar = a),
+                prior(normal(0, 2), nlpar = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR,
+      backend = "cmdstanr",
+      file = "mr.9")
+```
+
+
+
+--------
+
+```{r}
+summary(mr.9)
+```
+
+--------
+
+```{r}
+mr.10 <- 
+  brm(family = gaussian,
+      bf(happy_c ~  a + b + c, 
+         a ~ 0 + iv , 
+         b ~ 0 + iv2,
+         c ~ 1 +  SS_c,
+         nl = TRUE), # use non-linear syntax
+      prior = c(prior(normal(0, 2), nlpar = a),
+                prior(normal(0, 2), nlpar = b),
+                prior(normal(0, 2), nlpar = c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR,
+      backend = "cmdstanr",
+      file = "mr.10")
+```
+
+--------
+
+```{r}
+summary(mr.10)
+```
+
+
+
+
+
+## Index coding and MLMs 
+
+We can think of ANOVA models as MLM models with category as a random factor. Group-based deviations are reflected in the random effect of group $U_{0j}$. Our other two parameters are $\varepsilon_{ij}$ and $\gamma_{00}$ reflecting sigma and the mean of the group means, respectfully. 
+
+Same for Bayes as for frequentest, nothing new
+
+Level 1
+$${Happy}_{ij} = \beta_{0j}  + \varepsilon_{ij}$$
+
+Level 2
+$${\beta}_{0j} = \gamma_{00} + U_{0j}$$
+
+--------
+
+- The unique part for Bayes is the introduction of a prior on the sd/random effect. The prior describes the distribution from which our groups arise and are centered around zero, meaning we need to think about the SD of the random effect. 
+
+- Random effects are not often thought of during normal experimental design considerations. Ie is the stimulus fixed vs random? See Judd, Westfall & Kenny 2012).
+
+- At this juncture we won't go into choosing values for the SD of the random effects. We have a few options such as creating "hyper" priors which learn from your data. 
+
+- If the SD is low, then deviations are thought to be zero, which will lead to large shrinkage. If high, deviations are not uncommon, and thus this more closely resembles ANOVA (with no shrinkage/learning from other groups)
+
+
+--------
+
+```{r}
+#| code-fold: true
+mr.11 <- 
+  brm(family = gaussian,
+      bf(happiness ~  1 + (1|iv)),
+          prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, 2), class = sd),
+               prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR,
+      backend = "cmdstanr",
+      file = "mr.11")
+
+```
+
+
+## MLM priors
+
+SD represents the range of deviations of group means from the average
+```{r}
+#| code-fold: true
+prior.mr11 <- c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, 2), class = sd),
+                prior(exponential(1), class = sigma))
+prior.mr11 %>% 
+  parse_dist(prior) %>% 
+  ggplot(aes(y=class, dist =.dist, args=.args)) +
+  stat_dist_halfeye()+
+  scale_x_continuous( limits = c(-50, 50)) +
+  labs(title="Priors")+ xlim(-10, 10)
+```
+
+--------
+
+
+```{r}
+summary(mr.11)
+```
+
+## Population intercept
+
+```{r}
+#| code-fold: true
+library(ggridges)
+MR %>% 
+  group_by(iv) %>% 
+  mutate(group_mean = mean(happiness)) %>% 
+  ungroup() %>% 
+  mutate(iv = fct_reorder(iv, group_mean)) %>% 
+  ggplot(aes(x = happiness, y = iv, fill = factor(group_mean))) +
+  geom_density_ridges(scale = 3/2, size = .2) +
+  theme(legend.position="none")
+```
+
+
+
+
+## SD
+
+```{r}
+get_variables(mr.11)
+```
+
+```{r}
+#| code-fold: true
+mr.11 %>%
+  spread_draws(sd_iv__Intercept) %>% 
+    mean_qi()
+```
+
+--------
+
+```{r}
+#| code-fold: true
+mr.11 %>%
+  spread_draws(r_iv[group,])
+```
+4000 samples * 3 groups
+
+
+--------
+
+```{r}
+#| code-fold: true
+mr.11 %>%
+  spread_draws(r_iv[group,], b_Intercept) %>% 
+  mutate(r_iv = r_iv + b_Intercept) %>% 
+    mean_qi()
+```
+
+```{r}
+#| code-fold: true
+  MR %>%
+  group_by(iv) %>%
+  summarise(mean = mean(happiness), n = n())
+```
+Why are they different?!? 
+
+--------
+
+```{r}
+#| code-fold: true
+mr.4 <- 
+  brm(family = gaussian,
+      happiness ~  iv ,
+      prior = c(prior(normal(5, 2), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      backend = "cmdstanr",
+      file = "mr.4")
+```
+
+
+
+--------
+
+```{r}
+mr.4 %>% 
+ gather_draws(b_iv1, b_iv2,b_iv3) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  stat_dotsinterval()
+```
+
+--------
+
+```{r}
+#| code-fold: true
+mr.11 %>%
+  spread_draws(r_iv[group,], b_Intercept) %>% 
+  mutate(r_iv = r_iv + b_Intercept) %>% 
+  mutate(group = as.factor(group)) %>% 
+    ggplot(aes(y = group, x = r_iv)) +
+  stat_dotsinterval() 
+```
+
+
+
+
+## shrinkage and partial pooling
+
+- We get a greater push towards similar values across the groups. 
+
+- We are partially pooling values across groups, shrinking the mean to the group mean. This is because we are learning from other data. Groups learn from other levels/groups if they do not have a lot of data to suggest otherwise. 
+
+- In an ANOVA context where the random effect is level/group the partial pooling is less. But if you are nesting within people, there will be more partial pooling/shrinkage/learning from other nested units. 
+
+
+## Incorporating uncertainty in the random effects
+
+- The SD parameter describes how large the differences between the groups is expected. Could groups differ by a 20, 30? Normally we expressed that through a prior around the regression coefficient. Here it is through a SD parameter. 
+
+- The model is taking the potential that they differ and placing that into the model as uncertainty. We said these differences "could happen".  
+
+
+## Interactions
+
+Continuing our translation of previous skills to a Bayesian framework. 
+
+Interactions reflect when the influence of one variables depends on another. No longer can speak of main effects, now one needs to describe the association between two (or more) variables and the DV. The result is that the interpretation is the hard part, not necessarily the modeling. 
+
+As models get more complex, interactions become more likely (anytime there is a boundary in the DV)
+
+
+
+## Nominal plus metric/continuous interaciton
+
+```{r}
+#| code-fold: true
+mr.12 <-
+  brm(family = gaussian,
+      happiness ~ 0 + iv.d + SS_c,
+      prior = c(prior(normal(5, 3), class = b, coef = iv.dcontrol),
+                prior(normal(5, 3), class = b, coef = iv.dtx),
+                prior(normal(0, .5), class = b, coef = SS_c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR, 
+      backend = "cmdstanr",
+      file = "mr.12")
+```
+
+--------
+
+```{r}
+summary(mr.12)
+```
+
+--------
+
+```{r}
+#| code-fold: true
+MR %>%
+  group_by(iv.d) %>%
+  data_grid(SS_c = seq_range(SS_c, n = 50), .model = MR) %>%
+  add_epred_draws(mr.12, ndraws = 100) %>%
+  ggplot(aes(x = SS_c, y = happiness, color = iv.d)) +
+  geom_line(aes(y = .epred, group = paste(iv.d, .draw)),alpha = .1) +
+  geom_point(data = MR) 
+```
+
+
+
+--------
+
+```{r}
+#| code-fold: true
+mr.13 <-
+  brm(family = gaussian,
+      happiness ~ 0 + iv.d * SS_c,
+      prior = c(prior(normal(5, 3), class = b, coef = iv.dcontrol),
+                prior(normal(5, 3), class = b, coef = iv.dtx),
+                prior(normal(0, .5), class = b, coef = SS_c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR, 
+      backend = "cmdstanr",
+      file = "mr.13")
+```
+
+--------
+
+```{r}
+summary(mr.13)
+```
+
+----
+
+```{r}
+#| code-fold: true
+MR %>%
+  group_by(iv.d) %>%
+  data_grid(SS_c = seq_range(SS_c, n = 50), .model = MR) %>%
+  add_epred_draws(mr.13, ndraws = 100) %>%
+  ggplot(aes(x = SS_c, y = happiness, color = iv.d)) +
+  geom_line(aes(y = .epred, group = paste(iv.d, .draw)),alpha = .1) +
+  geom_point(data = MR) 
+```
+
+
+
+--------
+
+What if we fit it without index coding?
+```{r}
+#| code-fold: true
+mr.14 <-
+  brm(family = gaussian,
+      happiness ~ 1 + iv.d * SS_c,
+      prior = c(prior(normal(0, 3), class = b, coef = iv.dtx),
+                prior(normal(5, 3), class = b, coef = SS_c),
+                prior(normal(0, 1), class = b, coef = iv.dtx:SS_c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = MR, 
+      backend = "cmdstanr",
+      file = "mr.14")
+```
+
+--------
+
+```{r}
+summary(mr.14)
+```
+
+
+--------
+
+```{r}
+#| code-fold: true
+MR %>%
+  group_by(iv.d) %>%
+  data_grid(SS_c = seq_range(SS_c, n = 50), .model = MR) %>%
+  add_epred_draws(mr.14, ndraws = 100) %>%
+  ggplot(aes(x = SS_c, y = happiness, color = iv.d)) +
+  geom_line(aes(y = .epred, group = paste(iv.d, .draw)),alpha = .1) +
+  geom_point(data = MR) 
+```
+
+
+
+
+--------
+
+```{r}
+mr.14 %>%
+  spread_draws(`b_SS_c`, `b_iv.dtx:SS_c`) %>% 
+  mutate(slope.c = `b_SS_c` ) %>%
+  mutate(slope.tx = `b_SS_c` + `b_iv.dtx:SS_c`) %>% 
+  gather_draws(slope.c, slope.tx) %>% 
+  mean_qi() 
+```
+
+--------
+
+
+```{r}
+mr.13 %>%
+  gather_draws(b_iv.dcontrol, b_iv.dtx) %>% 
+  mean_qi() 
+
+```
+
+
+## Continuous interaction example
+
+```{r}
+#| code-fold: true
+Multipleregression  <- read.csv("https://raw.githubusercontent.com/josh-jackson/bayes2022/main/static/Lectures/Multipleregression.csv")
+
+
+
+Multipleregression$Support.r <- (17.36 - Multipleregression$Support)/3
+
+mr.model <- lm(Stress ~ Support.r + Anxiety, data = Multipleregression)
+library(visreg)
+visreg2d(mr.model,"Support.r", "Anxiety", plot.type = "persp")
+
+```
+
+---
+
+```{r}
+#| code-fold: true
+Multipleregression  <- read_csv("Multipleregression.csv")
+
+Multipleregression$Support.r <- (17.36 - Multipleregression$Support)/3
+
+mr.model <- lm(Stress ~ Support.r* Anxiety, data = Multipleregression)
+library(visreg)
+visreg2d(mr.model,"Support.r", "Anxiety", plot.type = "persp")
+
+```
+
+
+
+
+---
+
+```{r}
+get_prior(family = gaussian,
+      happiness ~ 1 + SS_c * FQ_c,data = MR)
+```
+
+
+---
+
+```{r}
+mr.13 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c * FQ_c,
+      prior = c(prior(normal(0, 3), class = Intercept),
+                prior(normal(0, 2), class = b, coef = SS_c),
+                prior(normal(0, 2), class = b, coef = FQ_c),
+                prior(normal(0, 2), class = b, coef = SS_c:FQ_c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      file = "mr.13")
+```
+
+
+---
+
+```{r}
+summary(mr.13)
+```
+
+
+## graphing interactions
+
+
+```{r}
+library(psych)
+describe(MR$FQ_c)
+```
+
+
+
+```{r}
+MR %>% 
+data_grid(SS_c = seq_range(SS_c, n = 20), FQ_c = c(-2.5,0,2.5), .model = MR) 
+
+
+```
+
+---
+
+
+
+```{r}
+MR %>% 
+data_grid(SS_c = seq_range(SS_c, n = 20), FQ_c = c(-2.5,0,2.5), .model = MR) %>% add_epred_draws(mr.13)
+
+```
+
+---
+
+```{r}
+MR %>% 
+data_grid(SS_c = seq_range(SS_c, n = 20), FQ_c = c(-2.5,0,2.5), .model = MR) %>%
+  add_epred_draws(mr.13) %>% 
+  ggplot(aes(x = SS_c, y = happiness, group = FQ_c %>% as.character()))+
+  stat_lineribbon(aes(y = .epred, color = FQ_c %>% as.character(), alpha = .05, fill = FQ_c ), .width = c(0.95),  show.legend = FALSE) +
+  geom_point(data = MR) 
+
+```
+
+---
+
+
+```{r}
+MR %>% 
+data_grid(SS_c = seq_range(SS_c, n = 20), FQ_c = c(-2.5,0,2.5), .model = MR) %>%
+  add_epred_draws(mr.13, ndraws = 50)  %>%
+  ggplot(aes(x = SS_c, y = happiness, group = interaction(SS_c, FQ_c), color = FQ_c %>%  as.character())) +
+  geom_line(aes(y = .epred, group = paste(FQ_c, .draw), alpha = .5),show.legend = FALSE) +  
+facet_grid(cols = vars(FQ_c))
+```
+
+
+
+
+
+
