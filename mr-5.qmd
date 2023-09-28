@@ -807,7 +807,7 @@ mr.6 %>%
 
 --------
 
-What does non-linear look like? 
+What does non-linear interaction look like? 
 ```{r, eval=FALSE}
 #| code-fold: true
 mr.7 <- 
@@ -1035,7 +1035,7 @@ summary(mr.10)
 
 
 
-## Index coding and MLMs 
+## ANOVA and MLMs 
 
 We can think of ANOVA models as MLM models with category as a random factor. Group-based deviations are reflected in the random effect of group $U_{0j}$. Our other two parameters are $\varepsilon_{ij}$ and $\gamma_{00}$ reflecting sigma and the mean of the group means, respectfully. 
 
@@ -1051,9 +1051,7 @@ $${\beta}_{0j} = \gamma_{00} + U_{0j}$$
 
 - The unique part for Bayes is the introduction of a prior on the sd/random effect. The prior describes the distribution from which our groups arise and are centered around zero, meaning we need to think about the SD of the random effect. 
 
-- Random effects are not often thought of during normal experimental design considerations. Ie is the stimulus fixed vs random? See Judd, Westfall & Kenny 2012).
-
-- At this juncture we won't go into choosing values for the SD of the random effects. We have a few options such as creating "hyper" priors which learn from your data. 
+- Random effects are not often thought of during normal experimental design considerations. At this juncture we won't go into choosing values for the SD of the random effects. We have a few options such as creating "hyper" priors which learn from your data. 
 
 - If the SD is low, then deviations are thought to be zero, which will lead to large shrinkage. If high, deviations are not uncommon, and thus this more closely resembles ANOVA (with no shrinkage/learning from other groups)
 
@@ -1098,6 +1096,19 @@ prior.mr11 %>%
 ```{r}
 summary(mr.11)
 ```
+
+## ANOVA
+
+```{r}
+summary(lm(happiness ~ iv, data = MR))
+```
+
+----
+
+```{r}
+summary(aov(happiness ~ iv, data = MR))
+```
+
 
 ## Population intercept
 
@@ -1204,8 +1215,6 @@ mr.11 %>%
 - We get a greater push towards similar values across the groups. 
 
 - We are partially pooling values across groups, shrinking the mean to the group mean. This is because we are learning from other data. Groups learn from other levels/groups if they do not have a lot of data to suggest otherwise. 
-
-- In an ANOVA context where the random effect is level/group the partial pooling is less. But if you are nesting within people, there will be more partial pooling/shrinkage/learning from other nested units. 
 
 
 ## Incorporating uncertainty in the random effects
