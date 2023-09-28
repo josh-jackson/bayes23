@@ -1363,5 +1363,19 @@
     "title": "Multiple Regression",
     "section": "graphing interactions",
     "text": "graphing interactions\n\nlibrary(psych)\ndescribe(MR$FQ_c)\n\n   vars   n mean   sd median trimmed  mad   min  max range  skew kurtosis   se\nX1    1 118    0 2.49   0.14    0.05 2.26 -6.92 7.03 13.94 -0.18     0.28 0.23\n\n\n\nMR %&gt;% \ndata_grid(SS_c = seq_range(SS_c, n = 20), FQ_c = c(-2.5,0,2.5), .model = MR) \n\n# A tibble: 120 × 11\n    SS_c  FQ_c friendship.quality happiness schoool.success   SES\n   &lt;dbl&gt; &lt;dbl&gt;              &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt;\n 1 -8.71  -2.5               7.75      5.34            8.52  2.31\n 2 -8.71  -2.5               7.75      5.34            8.52  2.31\n 3 -8.71   0                 7.75      5.34            8.52  2.31\n 4 -8.71   0                 7.75      5.34            8.52  2.31\n 5 -8.71   2.5               7.75      5.34            8.52  2.31\n 6 -8.71   2.5               7.75      5.34            8.52  2.31\n 7 -7.80  -2.5               7.75      5.34            8.52  2.31\n 8 -7.80  -2.5               7.75      5.34            8.52  2.31\n 9 -7.80   0                 7.75      5.34            8.52  2.31\n10 -7.80   0                 7.75      5.34            8.52  2.31\n# ℹ 110 more rows\n# ℹ 5 more variables: intervention.group &lt;dbl&gt;, iv &lt;chr&gt;, iv.d &lt;chr&gt;,\n#   happy_c &lt;dbl&gt;, iv2 &lt;chr&gt;"
+  },
+  {
+    "objectID": "mr-5.html#anova-and-mlms",
+    "href": "mr-5.html#anova-and-mlms",
+    "title": "Multiple Regression",
+    "section": "ANOVA and MLMs",
+    "text": "ANOVA and MLMs\nWe can think of ANOVA models as MLM models with category as a random factor. Group-based deviations are reflected in the random effect of group \\(U_{0j}\\). Our other two parameters are \\(\\varepsilon_{ij}\\) and \\(\\gamma_{00}\\) reflecting sigma and the mean of the group means, respectfully.\nSame for Bayes as for frequentest, nothing new\nLevel 1 \\[{Happy}_{ij} = \\beta_{0j}  + \\varepsilon_{ij}\\]\nLevel 2 \\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\]"
+  },
+  {
+    "objectID": "mr-5.html#anova",
+    "href": "mr-5.html#anova",
+    "title": "Multiple Regression",
+    "section": "ANOVA",
+    "text": "ANOVA\n\nsummary(lm(happiness ~ iv, data = MR))\n\n\nCall:\nlm(formula = happiness ~ iv, data = MR)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-4.3831 -1.2866  0.1046  1.0940  5.3253 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)   4.9993     0.2868  17.433   &lt;2e-16 ***\niv2           0.2953     0.4308   0.685    0.494    \niv3           0.3842     0.4184   0.918    0.360    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 1.902 on 115 degrees of freedom\nMultiple R-squared:  0.00805,   Adjusted R-squared:  -0.009202 \nF-statistic: 0.4666 on 2 and 115 DF,  p-value: 0.6283"
   }
 ]
