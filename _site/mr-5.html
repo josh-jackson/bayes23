@@ -604,14 +604,12 @@
 <span id="cb2-2"><a href="#cb2-2"></a>MR <span class="ot">&lt;-</span> MR <span class="sc">%&gt;%</span> </span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">mutate</span>(<span class="at">SS_c =</span> <span class="st">`</span><span class="at">schoool.success</span><span class="st">`</span> <span class="sc">-</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">schoool.success</span><span class="st">`</span>),</span>
 <span id="cb2-4"><a href="#cb2-4"></a>         <span class="at">FQ_c =</span> <span class="st">`</span><span class="at">friendship.quality</span><span class="st">`</span> <span class="sc">-</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">friendship.quality</span><span class="st">`</span>),</span>
-<span id="cb2-5"><a href="#cb2-5"></a>         <span class="at">iv =</span> <span class="st">`</span><span class="at">intervention.group</span><span class="st">`</span>,</span>
-<span id="cb2-6"><a href="#cb2-6"></a>         <span class="at">iv.d =</span> <span class="fu">recode</span>(<span class="st">`</span><span class="at">iv</span><span class="st">`</span>, </span>
-<span id="cb2-7"><a href="#cb2-7"></a>                             <span class="st">`</span><span class="at">1</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"control"</span>, </span>
-<span id="cb2-8"><a href="#cb2-8"></a>                             <span class="st">`</span><span class="at">2</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"tx"</span>, </span>
-<span id="cb2-9"><a href="#cb2-9"></a>                             <span class="st">`</span><span class="at">3</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"tx"</span>),</span>
-<span id="cb2-10"><a href="#cb2-10"></a>         <span class="at">iv.d =</span> <span class="fu">factor</span>(iv.d))</span>
-<span id="cb2-11"><a href="#cb2-11"></a></span>
-<span id="cb2-12"><a href="#cb2-12"></a>MR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-5"><a href="#cb2-5"></a>         <span class="at">iv =</span> <span class="st">`</span><span class="at">intervention.group</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-6"><a href="#cb2-6"></a>        <span class="fu">mutate</span>(<span class="at">iv =</span> <span class="fu">as.factor</span>(iv))</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>MR <span class="ot">&lt;-</span> MR <span class="sc">%&gt;%</span><span class="fu">mutate</span>(<span class="at">iv.d =</span> <span class="fu">recode</span>(iv, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"control"</span>, <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"tx"</span>, <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"tx"</span>),  <span class="at">iv.d =</span> <span class="fu">factor</span>(iv.d))</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a>MR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>     ID friendship.quality happiness schoool.success       SES
@@ -873,7 +871,7 @@ SES                   5 118  2.39  0.82   2.31    2.39  0.85  0.13   4.60
 intervention.group    6 118  1.96  0.84   2.00    1.95  1.48  1.00   3.00
 SS_c                  7 118  0.00  3.28  -0.21   -0.07  3.16 -8.71   8.61
 FQ_c                  8 118  0.00  2.49   0.14    0.05  2.26 -6.92   7.03
-iv                    9 118  1.96  0.84   2.00    1.95  1.48  1.00   3.00
+iv*                   9 118  1.96  0.84   2.00    1.95  1.48  1.00   3.00
 iv.d*                10 118  1.63  0.49   2.00    1.66  0.00  1.00   2.00
                     range  skew kurtosis   se
 ID                 117.00  0.00    -1.23 3.15
@@ -884,7 +882,7 @@ SES                  4.47  0.04     0.10 0.08
 intervention.group   2.00  0.08    -1.59 0.08
 SS_c                17.32  0.18     0.19 0.30
 FQ_c                13.94 -0.18     0.28 0.23
-iv                   2.00  0.08    -1.59 0.08
+iv*                  2.00  0.08    -1.59 0.08
 iv.d*                1.00 -0.52    -1.75 0.04</code></pre>
 </div>
 </div>
@@ -3314,18 +3312,18 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre><code># A tibble: 118 × 13
 # Groups:   ID, friendship.quality, happiness, schoool.success, SS_c, FQ_c, iv,
 #   iv.d, .row [118]
-      ID friendship.quality happiness schoool.success   SS_c    FQ_c    iv iv.d 
-   &lt;int&gt;              &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt; &lt;fct&gt;
- 1     1              10.2       3.20            6.16 -2.57   2.57       1 cont…
- 2     2               5.59      7.01            8.91  0.177 -2.03       1 cont…
- 3     3               6.58      6.17           10.5   1.81  -1.03       1 cont…
- 4     4               8.95      8.70           11.5   2.73   1.34       1 cont…
- 5     5               7.60      5.27            5.55 -3.18  -0.0152     1 cont…
- 6     6               8.16      5.12            7.51 -1.22   0.542      1 cont…
- 7     7               9.08      6.85            8.56 -0.173  1.47       1 cont…
- 8     8               3.41      1.77            4.1  -4.63  -4.20       1 cont…
- 9     9               8.66      3.75            5.39 -3.34   1.04       1 cont…
-10    10               4.85      5.45           13.9   5.18  -2.77       1 cont…
+      ID friendship.quality happiness schoool.success   SS_c    FQ_c iv    iv.d 
+   &lt;int&gt;              &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;
+ 1     1              10.2       3.20            6.16 -2.57   2.57   1     cont…
+ 2     2               5.59      7.01            8.91  0.177 -2.03   1     cont…
+ 3     3               6.58      6.17           10.5   1.81  -1.03   1     cont…
+ 4     4               8.95      8.70           11.5   2.73   1.34   1     cont…
+ 5     5               7.60      5.27            5.55 -3.18  -0.0152 1     cont…
+ 6     6               8.16      5.12            7.51 -1.22   0.542  1     cont…
+ 7     7               9.08      6.85            8.56 -0.173  1.47   1     cont…
+ 8     8               3.41      1.77            4.1  -4.63  -4.20   1     cont…
+ 9     9               8.66      3.75            5.39 -3.34   1.04   1     cont…
+10    10               4.85      5.45           13.9   5.18  -2.77   1     cont…
 # ℹ 108 more rows
 # ℹ 5 more variables: .row &lt;int&gt;, .chain &lt;int&gt;, .iteration &lt;int&gt;, .draw &lt;int&gt;,
 #   .prediction &lt;dbl&gt;</code></pre>
@@ -3347,18 +3345,18 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre><code># A tibble: 5,900 × 13
 # Groups:   ID, friendship.quality, happiness, schoool.success, SS_c, FQ_c, iv,
 #   iv.d, .row [118]
-      ID friendship.quality happiness schoool.success  SS_c  FQ_c    iv iv.d   
-   &lt;int&gt;              &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;fct&gt;  
- 1     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 2     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 3     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 4     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 5     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 6     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 7     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 8     1               10.2      3.20            6.16 -2.57  2.57     1 control
- 9     1               10.2      3.20            6.16 -2.57  2.57     1 control
-10     1               10.2      3.20            6.16 -2.57  2.57     1 control
+      ID friendship.quality happiness schoool.success  SS_c  FQ_c iv    iv.d   
+   &lt;int&gt;              &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;  
+ 1     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 2     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 3     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 4     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 5     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 6     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 7     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 8     1               10.2      3.20            6.16 -2.57  2.57 1     control
+ 9     1               10.2      3.20            6.16 -2.57  2.57 1     control
+10     1               10.2      3.20            6.16 -2.57  2.57 1     control
 # ℹ 5,890 more rows
 # ℹ 5 more variables: .row &lt;int&gt;, .chain &lt;int&gt;, .iteration &lt;int&gt;, .draw &lt;int&gt;,
 #   .prediction &lt;dbl&gt;</code></pre>
@@ -4689,7 +4687,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1"></a>mr<span class="fl">.13</span> <span class="ot">&lt;-</span> </span>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1"></a>mr<span class="fl">.15</span> <span class="ot">&lt;-</span> </span>
 <span id="cb138-2"><a href="#cb138-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
 <span id="cb138-3"><a href="#cb138-3"></a>      happiness <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> SS_c <span class="sc">*</span> FQ_c,</span>
 <span id="cb138-4"><a href="#cb138-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">3</span>), <span class="at">class =</span> Intercept),</span>
@@ -4700,31 +4698,32 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb138-9"><a href="#cb138-9"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">2</span>, <span class="at">cores =</span> <span class="dv">2</span>,</span>
 <span id="cb138-10"><a href="#cb138-10"></a>      <span class="at">data =</span> MR,</span>
 <span id="cb138-11"><a href="#cb138-11"></a>      <span class="at">sample_prior =</span> T,</span>
-<span id="cb138-12"><a href="#cb138-12"></a>      <span class="at">file =</span> <span class="st">"mr.13"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb138-12"><a href="#cb138-12"></a>       <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb138-13"><a href="#cb138-13"></a>      <span class="at">file =</span> <span class="st">"mr.15"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1"></a><span class="fu">summary</span>(mr<span class="fl">.13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1"></a><span class="fu">summary</span>(mr<span class="fl">.15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
-Formula: happiness ~ 0 + iv.d * SS_c 
+Formula: happiness ~ 1 + SS_c * FQ_c 
    Data: MR (Number of observations: 118) 
-  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 4000
+  Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 2000
 
 Population-Level Effects: 
-            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-iv.dcontrol     4.97      0.23     4.52     5.43 1.00     4559     2873
-iv.dtx          5.35      0.19     4.98     5.71 1.00     4330     2732
-SS_c            0.40      0.06     0.29     0.51 1.00     3955     3045
-iv.dtx:SS_c    -0.27      0.09    -0.45    -0.09 1.00     3732     3294
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept     5.03      0.15     4.73     5.32 1.00     2405     1607
+SS_c          0.33      0.06     0.22     0.44 1.00     1905     1463
+FQ_c          0.21      0.07     0.08     0.35 1.00     1988     1607
+SS_c:FQ_c    -0.04      0.01    -0.06    -0.01 1.00     1971     1375
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     1.59      0.10     1.40     1.81 1.00     4557     2916
+sigma     1.54      0.10     1.36     1.75 1.00     1898     1369
 
 Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -4769,9 +4768,9 @@ X1    1 118    0 2.49   0.14    0.05 2.26 -6.92 7.03 13.94 -0.18     0.28 0.23</
 
 <div class="cell">
 <div class="sourceCode cell-code" id="cb145"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1"></a>MR <span class="sc">%&gt;%</span> </span>
-<span id="cb145-2"><a href="#cb145-2"></a><span class="fu">data_grid</span>(<span class="at">SS_c =</span> <span class="fu">seq_range</span>(SS_c, <span class="at">n =</span> <span class="dv">20</span>), <span class="at">FQ_c =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5</span>,<span class="dv">0</span>,<span class="fl">2.5</span>), <span class="at">.model =</span> MR) <span class="sc">%&gt;%</span> <span class="fu">add_epred_draws</span>(mr<span class="fl">.13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb145-2"><a href="#cb145-2"></a><span class="fu">data_grid</span>(<span class="at">SS_c =</span> <span class="fu">seq_range</span>(SS_c, <span class="at">n =</span> <span class="dv">20</span>), <span class="at">FQ_c =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5</span>,<span class="dv">0</span>,<span class="fl">2.5</span>), <span class="at">.model =</span> MR) <span class="sc">%&gt;%</span> <span class="fu">add_epred_draws</span>(mr<span class="fl">.15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 480,000 × 16
+<pre><code># A tibble: 240,000 × 16
 # Groups:   SS_c, FQ_c, friendship.quality, happiness, schoool.success, SES,
 #   intervention.group, iv, iv.d, happy_c, iv2, .row [120]
     SS_c  FQ_c friendship.quality happiness schoool.success   SES
@@ -4786,7 +4785,7 @@ X1    1 118    0 2.49   0.14    0.05 2.26 -6.92 7.03 13.94 -0.18     0.28 0.23</
  8 -8.71  -2.5               7.75      5.34            8.52  2.31
  9 -8.71  -2.5               7.75      5.34            8.52  2.31
 10 -8.71  -2.5               7.75      5.34            8.52  2.31
-# ℹ 479,990 more rows
+# ℹ 239,990 more rows
 # ℹ 10 more variables: intervention.group &lt;dbl&gt;, iv &lt;chr&gt;, iv.d &lt;chr&gt;,
 #   happy_c &lt;dbl&gt;, iv2 &lt;chr&gt;, .row &lt;int&gt;, .chain &lt;int&gt;, .iteration &lt;int&gt;,
 #   .draw &lt;int&gt;, .epred &lt;dbl&gt;</code></pre>
@@ -4798,7 +4797,7 @@ X1    1 118    0 2.49   0.14    0.05 2.26 -6.92 7.03 13.94 -0.18     0.28 0.23</
 <div class="cell">
 <div class="sourceCode cell-code" id="cb147"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1"></a>MR <span class="sc">%&gt;%</span> </span>
 <span id="cb147-2"><a href="#cb147-2"></a><span class="fu">data_grid</span>(<span class="at">SS_c =</span> <span class="fu">seq_range</span>(SS_c, <span class="at">n =</span> <span class="dv">20</span>), <span class="at">FQ_c =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5</span>,<span class="dv">0</span>,<span class="fl">2.5</span>), <span class="at">.model =</span> MR) <span class="sc">%&gt;%</span></span>
-<span id="cb147-3"><a href="#cb147-3"></a>  <span class="fu">add_epred_draws</span>(mr<span class="fl">.13</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb147-3"><a href="#cb147-3"></a>  <span class="fu">add_epred_draws</span>(mr<span class="fl">.15</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb147-4"><a href="#cb147-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> SS_c, <span class="at">y =</span> happiness, <span class="at">group =</span> FQ_c <span class="sc">%&gt;%</span> <span class="fu">as.character</span>()))<span class="sc">+</span></span>
 <span id="cb147-5"><a href="#cb147-5"></a>  <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> .epred, <span class="at">color =</span> FQ_c <span class="sc">%&gt;%</span> <span class="fu">as.character</span>(), <span class="at">alpha =</span> .<span class="dv">05</span>, <span class="at">fill =</span> FQ_c ), <span class="at">.width =</span> <span class="fu">c</span>(<span class="fl">0.95</span>),  <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb147-6"><a href="#cb147-6"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> MR) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4810,7 +4809,7 @@ X1    1 118    0 2.49   0.14    0.05 2.26 -6.92 7.03 13.94 -0.18     0.28 0.23</
 <div class="cell">
 <div class="sourceCode cell-code" id="cb148"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1"></a>MR <span class="sc">%&gt;%</span> </span>
 <span id="cb148-2"><a href="#cb148-2"></a><span class="fu">data_grid</span>(<span class="at">SS_c =</span> <span class="fu">seq_range</span>(SS_c, <span class="at">n =</span> <span class="dv">20</span>), <span class="at">FQ_c =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5</span>,<span class="dv">0</span>,<span class="fl">2.5</span>), <span class="at">.model =</span> MR) <span class="sc">%&gt;%</span></span>
-<span id="cb148-3"><a href="#cb148-3"></a>  <span class="fu">add_epred_draws</span>(mr<span class="fl">.13</span>, <span class="at">ndraws =</span> <span class="dv">50</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb148-3"><a href="#cb148-3"></a>  <span class="fu">add_epred_draws</span>(mr<span class="fl">.15</span>, <span class="at">ndraws =</span> <span class="dv">50</span>)  <span class="sc">%&gt;%</span></span>
 <span id="cb148-4"><a href="#cb148-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> SS_c, <span class="at">y =</span> happiness, <span class="at">group =</span> <span class="fu">interaction</span>(SS_c, FQ_c), <span class="at">color =</span> FQ_c <span class="sc">%&gt;%</span>  <span class="fu">as.character</span>())) <span class="sc">+</span></span>
 <span id="cb148-5"><a href="#cb148-5"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .epred, <span class="at">group =</span> <span class="fu">paste</span>(FQ_c, .draw), <span class="at">alpha =</span> .<span class="dv">5</span>),<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span>  </span>
 <span id="cb148-6"><a href="#cb148-6"></a><span class="fu">facet_grid</span>(<span class="at">cols =</span> <span class="fu">vars</span>(FQ_c))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
