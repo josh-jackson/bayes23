@@ -1,0 +1,1076 @@
+---
+title: information
+format: revealjs
+editor: visual
+execute:
+  echo: true
+html:
+  code-fold: true
+  code-summary: Show the code
+---
+
+
+
+## This time: 
+
+- Model and parameter evaluation.  
+- How do we test our coefficients?  
+- How do we choose the best model?   
+- What sort of indexes can we use to evaluate fit?   
+  
+
+```{r, echo = FALSE, message=FALSE}
+library(tidybayes)
+library(tidyverse)
+library(brms)
+```
+
+
+
+## NHST
+
+Bayesian typically do not use "standard" NHST. Why? 
+
+
+1. There is no null and thus no p-values
+
+2. NHST is associated with tons of problems eg dichotomous thinking
+
+3. Because we are interested in the posterior distribution, not a single point estimate
+
+4. Model comparison is more elegant
+
+
+
+
+## Standard fit indicies and tests
+
+
+$R^2$ 
+AIC
+BIC
+Likelihood ratio test (LRT)
+
+```{r, echo = FALSE}
+mr.10 <- readRDS("mr.10.rds")
+bayes_R2(mr.10, summary = F) %>% 
+  data.frame() %>% 
+  ggplot(aes(x = R2)) +
+  geom_density() +
+  scale_y_continuous(NULL, breaks = NULL) 
+```
+
+
+
+
+## What is likelihood?
+
+Model fit indexes like likelihood ratio test, AIC, BIC rely on likelihoods.
+
+The distribution of the likelihood of various hypothesis. p(data | $\theta$ ). For likelihood, the data are treated as a given, and value of theta varies. Probability of the data that you got, assuming a particular theta is true.
+
+binomial ~ $p(3|10,p)$
+```{r, echo = FALSE, message = FALSE}
+library(tidyverse)
+ggplot(tibble(x = c(0, 1)), 
+       aes(x = x)) + 
+  stat_function(fun = dbinom, args = list(x = 3, size = 10)) + 
+  labs(x = expression(theta), 
+       y = "likelihood")
+```
+
+
+## Log likelihood
+
+- The log of the likelihood is easier to work with (adding rather than multiplying small values). It will always be negative, with higher values (closer to zero) indicating a better fitting model.
+
+- In frequentist estimation, the log likelihood is a single number, one that indicates the maximum, thus maximum likelihood estimation.
+ 
+ 
+```{r}
+#| code-fold: true
+data <- read_csv("https://raw.githubusercontent.com/josh-jackson/bayes/master/week3.csv")
+
+logLik(lm(health ~ 1 + happy, data = data))
+
+```
+
+
+
+--------------
+
+Revisiting grid approximation, we hand calculated a regression likelihood.
+```{r}
+#| code-fold: true
+library(psychTools)
+galton.data <- galton
+grid <-
+  crossing(mu = seq(from = 66, to = 69, length.out = 200), sigma = seq(from = 2, to = 3, length.out = 200))
+grid
+```
+
+
+--------------
+
+
+1. After defining the grid space we need to calculate the likelihood (are these numbers likely or not, given some distribution)
+
+2. Likelihood of our data (each child's height) assuming each part of our grid is true. So if we take the first line of our grid (mu = 66, sigma = 2) we can see how likely each child (all 928) by dnorm(height, 66, 2) 
+
+
+
+--------------
+
+We averaged across all 928 participants for each spot in the grid to get the average log-likelihood for each grid spot 
+
+```{r}
+#| code-fold: true
+library(purrr)
+grid_function <- function(mu, sigma) {
+  dnorm(galton.data$child, mean = mu, sd = sigma, log = T) %>%
+    sum() 
+  }
+
+p_grid <-
+  grid %>% 
+  mutate(log_likelihood = map2(mu, sigma, grid_function)) %>%
+  unnest(log_likelihood)
+  p_grid
+```
+
+
+
+
+--------------
+
+```{r}
+#| code-fold: true
+library(viridis)
+p_grid %>% 
+  ggplot(aes(x = mu, y = sigma, fill = log_likelihood)) + 
+  geom_raster(interpolate = T) +
+  scale_fill_viridis_c(option = "C") +
+  labs(x = expression(mu),
+       y = expression(sigma)) +
+  theme(panel.grid = element_blank())
+```
+
+--------------
+
+```{r}
+#| code-fold: true
+# can compute CI bc we are varying sigma (not plotted)
+p_grid %>% 
+  ggplot(aes(x = mu, y = log_likelihood )) + 
+    stat_lineribbon(.width = c(.95), alpha = .4) 
+
+```
+
+
+
+## LRT
+
+The likelihood ratio test compares the likelihood ratios of two models (usually likelihood evaluated at the MLE/MAP and at the null). 
+
+```{r, eval = FALSE}
+anova(model1, model2)
+```
+
+
+If we multiply the difference in log-likelihood by -2, it follows a $\chi^2$ distribution with 1 degrees of freedom. 
+
+$LR = -2 ln\left(\frac{L(m_1)}{L(m_2)}\right) = 2(loglik(m_2)-loglik(m_1))$
+
+
+
+## Information theory
+
+- Ideally we want to learn something new, gain some additional *information* about the world. But how do you quantify learning or information? p-value?
+
+- First step is to define what it means to be accurate in our predictions--cannot learn if we don't have some criterion. We above defined accuracy as the log probability of the data.
+
+- Second step is to define what a perfect prediction would look like, and thus how much *uncertainty* we are dealing with. While the log probability of the data defines what parameter is most "accurate", it does not tell us how much we are learning. 
+
+## Information theory
+
+- The reduction in uncertainty by learning the outcome is how much *information* we have learned. If we know how much uncertainty we have we can know how much improvement is possible in our prediction. 
+
+- Claude Shannon (1916-2001) developed the field of information theory by making an analogy to bits of information, just like within computers. Prior to this, information, and thus learning was poorly defined. 
+
+
+## What is information? 
+
+The basic intuition behind information theory is that learning that an unlikely event has occurred is more informative than learning that a likely event has occurred. Unlikely = informative.
+
+information(x) = -log2( p(x) ), where log() is the base-2 logarithm and p(x) is the probability of the event x. Units are bits, where 1 bit halves the possibilities. 
+
+```{r}
+## coin flip
+ -log2(.5)
+```
+```{r}
+# dice roll
+ -log2(1/6)
+```
+
+
+## bits
+
+- Bits of information are the minimum number of questions required to determine an unknown. Bits effectively chop down the possible outcomes by a factor of 2^bit. 
+
+A dice roll is 2.585 bits. Best to think about this is each bit like a yes/no question that halves the possibilities. 1. even? 2. greater than 3?
+
+- ~Half the time you can logically deduce with 2 questions (2 bits), but sometimes you need 3 questions, hence ~2.5 bits of info. 
+
+
+## bits
+
+1/2^bit = probability of some event 
+2^bit = 1/p
+bit = log2(1/p)
+bit = -1log2(p)
+
+We use bits rather than direct probabilities because it is easier to add bits than very small probabilities multiplied by other very small probabilities. 
+
+
+## Entropy
+
+- Calculating the information for a random variable is the same as calculating the information for the probability distribution of the events for the random variable. This is called entropy.
+
+- Flatter distributions will have higher entropy. Because all values likely any one value is "surprising" and gives you more information compared. 
+
+- A peaked distribution is less surprising as it already contains a lot of information. 
+
+## Entropy
+
+- Distributions with more possibilities will be higher in entropy than those with fewer possibilities. 
+
+- Similarly, flat distributions have high entropy as they provide little information
+
+- This is similar to how we set up priors where if we had more background "information" we would create a more narrow distribution. 
+
+
+## Maximum information entropy
+
+- We can use information theory to help us pick our likelihood distributions! Given what you know, what is the distribution that can arise the most ways with our data?
+
+- Maximizing information entropy yields the flattest distribution given your data constraints. Gaussian is a maximum entropy distribution (as are uniform, binomial, exponential) when we know the meand and sd of a variable. 
+
+- If nothing is known about a distribution (except measurement), then the distribution with the largest entropy should be chosen as the least-informative default. 
+
+----------
+
+- Why the least informative? 
+
+- First, maximizing entropy minimizes the amount of prior information built into the distribution. 
+
+- Second, many physical systems tend to move towards maximal entropy configurations over time. Don't fight nature! 
+
+
+## Entropy
+
+- Entropy, H(p), tells us how hard it is to make an accurate prediction. For non uniform distributions we must sum up  all the log probabilities
+
+- H(p) = $-\sum p_ilog(p_i)$
+
+- Think of tossing rocks into 10 buckets. Each bucket can have a probability associated with getting a rock. H(p) is maximized when ps are equal. This gives us the least surprising distribution ie that can arise the most ways with our data
+
+---
+
+- But how far away is our model from an accurate prediction? Divergence (KL) is the uncertainty created by using probabilities from one distribution to describe another distribution. 
+
+$D(m1, m2) = -\sum p_i(log(p_i) - log(q_i))$
+
+The difference between two entropies... or average difference in log probability between model 1 (target) and model 2 (actual)  
+
+-----
+
+- We never know the target but that is okay. We can still compute divergences and compare with other divergences because the target is a constant. This means we cannot look at a divergence and know if it is good or bad, but we can use them to compare. The result is called a deviance. 
+
+D(q) = -2 $\sum_i$ $\log$ (q_i)
+
+
+## How is this different from LRT? 
+
+- Deviance is a model of relative fit, but with a constant specific to the model. Log likelihoods thus only differ by a constant. 
+
+- Comparing two models with LRT should yield similar scores as comparing two deviances.  
+
+But Bayesians don't like NHST, so they sometimes leave off the -2, which simplifies the deviance equation but then does not allow a chi-square difference test to be completed. 
+
+## Log Pointwise Predictive Density
+
+D(q) = $\sum_i$ $\log$ (q_i) = lppd
+
+- Further, with Bayes we need to use the entire posterior to define deviance! If not, we are throwing away information.
+
+- Often referred to Log Pointwise Predictive Density (lpd or lppd)
+
+
+## Two options for model comparison
+
+1. Cross validation
+2. Information model fit indexes
+
+- These are theoretically the same, but in practice seen as very different. That is, cross validation is equivalent to model fit like aic/bic
+
+
+## Cross validation
+
+- Compare different models in their prediction in and out of sample (train and a test sample)  
+
+- Predictions to NEW DATA are key, as this separates the sample specific influence (irregular features) from population influence (regular features)  
+
+- Identify the model with the lowest test set error (deviance). In frequentist we typically use MSE.  
+
+- But leaving out data is not necessary ideal, so we split them into folds. 
+
+
+## LOO & PSIS-LOO
+
+- Leaving out 1 observation per fold is calledLeave One Out (LOO) cross validation. Great in theory, but computationally difficult. 
+
+- Pareto Smoothed Importance Sampling (PSIS). Importance is similar to "deleted residuals" where on a case by case basis we asked whether this data point impacts the posterior. Instead of rerunning your model N  data points times, importance scores are used to weight each datapoint, resulting in an equivalent to LOO without actually doing LOO. Cross validation for free! 
+
+
+## PSIS-LOO example
+
+
+```{r}
+#| code-fold: true
+mr.12 <- readRDS("mr.12.rds")
+summary(mr.12)
+```
+
+----
+
+```{r}
+#| code-fold: true
+mr.12 <- add_criterion(mr.12, "loo")
+mr.12$criteria$loo
+```
+
+
+--- 
+
+- elpd theoretical expected log pointwise predictive density for a new dataset (an lppd equivalent). Larger the better. 
+
+- p_loo is effective number of parameters
+
+- looic is -2(elpd). Low scores better. 
+
+
+---
+
+```{r}
+#| code-fold: true
+mr.11 <- readRDS("mr.11.rds")
+summary(mr.11)
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+mr.11 <- add_criterion(mr.11, "loo")
+loo(mr.11)
+```
+
+
+
+----
+
+- loo_compare output rank orders models such that the best fitting model appears on top
+```{r}
+#| code-fold: true
+loo_compare(mr.11, mr.12, criterion = "loo")
+```
+- The Stan team recommends that: 
+1. elpd_diff > 4  
+2. you can use se_diff as a measure of signal over noise. 
+
+- Here the test statistic (diff/se) is well over 2, indicating sig difference between models 
+
+
+## Information Criteria
+
+- AIC, BIC, WAIC, DIC, etc. 
+
+- Information criteria are a theoretical fit for the out of sample cross validation, not unlike psis-loo
+
+- AIC = deviance(training) + 2p (p = number of parameters). Low scores better. 
+
+- DIC (Deviance information criteria) is more flexible for Bayesian models, but assumes a multivariate Gaussian posterior
+
+
+## WAIC
+
+$$\text{WAIC}(y, \theta) = -2 \big (\text{lppd} - \underbrace{\sum_i \operatorname{var}_\theta \log p(y_i | \theta)}_\text{penalty term} \big)$$
+
+lppd = log pointwise predictive density = deviance over the entire posterior = 
+
+$$\text{lppd}(y, \theta) = \sum_i \log \frac{1}{S} \sum_sp(y_i|\theta_S)$$
+
+$$\text{AIC}(y, \theta) = -2(\text{llpd}) + 2p$$
+
+
+
+## example
+
+```{r}
+waic(mr.12)
+```
+
+pwaic = penality term (similar to the penality term in AIC)
+elpd_waic = lppd - pwaic
+
+
+---
+
+```{r}
+waic(mr.11)
+```
+
+---
+
+
+```{r}
+#| code-fold: true
+mr.11 <- add_criterion(mr.11, "waic")
+mr.12 <- add_criterion(mr.12, "waic")
+loo_compare(mr.11, mr.12, criterion = "waic")
+```
+Note: looks similar to loo results, even though this is with waic. Both are computed from the lppd, so it makes sense they can be similar. It will not always be this way, however. 
+
+
+## Using information critera
+
+- Each of these criteria do not have scales that are bounded by numbers (eg 0-1), nor can they be evaluated by some other number (eg SDs)
+
+- Provide relative fit, so you need to compare different models, choosing the model with the lowest IC or the highest expected IC
+
+- The criteria are also dependent on sample size, so you cannot compare across models that differ in sample size
+
+- You can compare non-nested models eg ones with different sets of predictors
+
+
+## Overfitting
+
+- Fit is relative to our sample, not the population 
+
+- Need to balance between parsimony and completeness
+
+- Ironically, the best fitting model may not be the *best* model. The model will be tuned to our particular random sample
+
+- We are "fitting the noise" or overfitting the specifics of our sample
+
+
+## Regularization
+
+- "penalizing" our model estimates to prevent overfitting
+
+- Find coefficients that compromise between (a) minimizing the residuals and (b) minimizing sum of abs value of coefficients
+
+- Tends to "shrink"" coefficients to zero, much like we discussed with centering prior distributions around zero
+
+
+---
+
+```{r}
+mr.2 <- readRDS("mr.2.rds")
+```
+
+```{r, eval = FALSE}
+#| code-fold: true
+mr.2 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c + FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, .2), class = b, coef = SS_c),
+                prior(normal(0, .2), class = b, coef = FQ_c),
+                prior(exponential(.5), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      file = "mr.2")
+```
+
+---
+
+```{r}
+#| code-fold: true
+summary(mr.2)
+```
+
+
+## update prior
+
+```{r}
+#| code-fold: true
+mr.2p <- update(mr.2, prior =  
+                c(prior(normal(5, 2), class = Intercept),
+                 prior(normal(0, .2), class = b, coef = SS_c),
+                prior(normal(0, .05), class = b, coef = FQ_c),
+                prior(exponential(.5), class = sigma)),
+                  file = "mr.2p")
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+summary(mr.2p)
+```
+
+---
+
+
+```{r}
+#| code-fold: true
+priors <-
+  c(prior(normal(0, .2), class = b, coef = FQ_c),
+    prior(normal(0, .05), class = b, coef = FQ_c))
+
+priors %>% 
+  parse_dist(prior) %>% 
+  ggplot(aes(y=class, dist =.dist, args=.args,  fill = prior)) +
+  stat_dist_halfeye(alpha = .6)
+```
+
+## Mimicking NHST
+
+If you wanted to appease an editor/reviewer/adviser what do you do (other than teach them Bayes)?
+
+CIs! HDPIs! Predictions! ROPE! Probability of direction!
+
+```{r}
+#| code-fold: true
+mr.14 <- readRDS("mr.14.rds")
+summary(mr.14)
+```
+
+## Probability of direction
+
+The Probability of Direction (pd) is an index of effect existence representing the certainty with which an effect goes in a particular direction.
+
+Simple: only depends on the posterior distributions (unlike say Bayes Factors) 
+Scale independent: interpretation doesn't change with scale change
+Similar to p - value: interpretation has parallels, so it helps convince pesky reviewers
+
+
+---
+
+
+```{r}
+#| code-fold: true
+mr.14 %>%
+  gather_draws(b_SS_c, b_iv.dtx, `b_iv.dtx:SS_c`) %>%
+  ggplot(aes(y = fct_rev(.variable), x = .value)) +
+  stat_halfeye(.width = c(.90, .5))
+```
+
+## How to calculate?
+
+Compute the area under the curve (AUC) of the density curve on the other side of 0.
+
+```{r}
+#| code-fold: true
+library(bayestestR)
+p_direction(mr.14)
+```
+
+---
+
+```{r}
+describe_posterior(mr.14)
+```
+
+
+## Downsides of PD
+
+- You can find a high PD for an effect that is quite small. Similar to a p < .05 with a large sample size. Is it still meaningful? 
+
+- Lead to other NHST foibles like dichotomous thinking
+
+- More similar to a 1-tailed p-value
+
+
+## nil hypothesis    
+
+- With NHST you typically attempt to reject a H0 of zero. This is a point estimate. However, we know the probability of any point is zero, so conceptually a typical NHST is illogical. 
+
+- What we really mean when we set up a standard NHST nil hypothesis is to reject zero -- OR VALUES THAT ARE EQUIVALENT TO ZERO. 
+
+- What are those values? In frequentist it depends on your se which is a function of your sample SD and N. We just don't talk about it. 
+
+
+## ROPE
+
+Bayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”. 
+
+Region of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]
+
+Let the user define an area around the null value enclosing values that are equivalent to the null 
+
+---
+
+Compare our 95% (or whatever value you want) CI/HDI to see if it overlaps with the ROPE. Some suggest using full posterior rather than a CI. 
+
+If this percentage is sufficiently low, the null hypothesis is rejected. If this percentage is sufficiently high, the null hypothesis is accepted.
+
+Note: not all values within the ROPE are rejected, just the null. 
+
+---
+
+```{r}
+rope.1 <- rope(mr.14, range = c(-0.05, 0.05))
+rope.1
+```
+* Note how the rope is the same for all parameters
+
+---
+
+```{r}
+plot(rope.1)
+```
+
+
+---
+
+```{r}
+rope(mr.14, range = c(-0.15, 0.15), ci = c(0.99))
+```
+
+----
+
+
+```{r}
+rope.2 <- rope(mr.14, range = c(-0.15, 0.15), ci = c(0.99))
+plot(rope.2)
+```
+
+
+
+
+
+---
+
+```{r}
+result <- equivalence_test(mr.14, range = c(-0.2, 0.2), ci = c(0.95))
+result
+```
+
+
+
+## ROPE
+
+Why not just use the CI like you normally would? Because what if CI and ROPE overlap? 
+
+This allows you to 1. have a middle ground between accept vs reject. A range of equivalence. 
+
+2. Allows one to affirm a predicted value, which is logically impossible in a standard NHST framework. Ie rather than fail to reject null, we can state given the observed data, the effect has XX% probability of being practically zero. 
+
+
+
+## ROPE
+
+How to come up with ROPE values? 
+
+Difficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1*se, +1*se] 
+
+```{r}
+rope_range(mr.14)
+```
+
+Usually implemented when a decision needs to be made. More common in medicine than psych. 
+
+---
+
+```{r}
+rope.4 <- rope(mr.14)
+rope.4
+```
+
+
+---
+
+```{r}
+describe_posterior(mr.14, test = "ROPE")
+```
+
+
+## Bayes Factors
+
+Quantifies the support in the data for two competing statistical models. Ratio of the two marginal likelihoods of an observed outcome for these two models. E.g., how likely is a b = .2 vs b = 0, given our data. Gives relative evidence for different positions by comparing two marginal likelihoods
+
+$$BF_{12} = \frac{p(D | m = 1)}{p(D | m = 2)}$$
+
+---
+
+Can also think of it as the factor by which some prior odds have been updated after observing the data to posterior odds. Since they can be computed by dividing posterior odds by prior odds.
+
+$$\underbrace{\frac{P(M_1|D)}{P(M_2|D)}}_{\text{Posterior Odds}} = \underbrace{\frac{P(D|M_1)}{P(D|M_2)}}_{\text{Likelihood Ratio}} \times \underbrace{\frac{P(M_1)}{P(M_2)}}_{\text{Prior Odds}}$$
+
+
+$$BF_{12}=\frac{Posterior~Odds_{12}}{Prior~Odds_{12}}$$
+
+---
+
+```{r}
+#| code-fold: true
+library(bayestestR)
+library(see)
+prior <- distribution_normal(10000, mean = 0, sd = 1)
+posterior <- distribution_normal(10000, mean = 1, sd = 0.7)
+bf_plot<- bayesfactor_parameters(posterior, prior, direction = "two-sided", null = 0)
+bf_plot
+```
+
+
+-------
+
+```{r}
+#| code-fold: true
+plot(bf_plot)
+```
+
+
+---
+
+```{r}
+bayesfactor_parameters(posterior, prior, direction = "two-sided", null = 0)
+```
+This BF indicates that the data provide .4/0.2 = 2 times more evidence for the effect compared to a model without the effect. 
+
+
+
+## Proposed cutoffs
+
+.small[
+| BF10         | Interpretation               |
+|--------------|------------------------------|
+| > 100        | Extreme evidence for H1      |
+| 30 - 100     | Very strong evidence for H1  |
+| 10 - 30      | Strong evidence for H1       |
+| 3 - 10       | Moderate evidence for H1     |
+| 1 - 3        | Anecdotal evidence for H1    |
+| 1            | Equal evidence for H1 and H0 |
+| 1/3 - 1      | Anecdotal evidence for H0    |
+| 1/10 - 1/3   | Moderate evidence for H0     |
+| 1/30 - 1/10  | Strong evidence for H0       |
+| 1/100 - 1/30 | Very strong evidence for H0  |
+| < 1/100      | Extreme evidence for H0      |
+
+
+
+## BF interpretation 
+
+Extent to which the data sway our relative belief from one hypothesis to the other  
+
+Strength of evidence from data about the hypotheses
+
+Relative predictive accuracy of one hypothesis over another
+
+Has the null hypothesis of an absence of an effect become more or less credible?
+
+
+---
+
+```{r}
+#| code-fold: true
+library(effectsize)
+interpret_bf(1.95)
+```
+
+
+## Association with p values
+
+- Similar in that they both provide a continuous metric to compare two hypotheses
+
+- For a fixed sample size, p-values can be directly transformed into Bayes-Factors and vice versa, and of course into any effect size metric. 
+
+- Remember that p values are a composite of an effect size and sample size. Same is true with BF.  
+
+
+
+## Alternative to p-values
+
+- Easier interpretation. (ratio of two likelihoods). P values are misunderstood.  
+
+- Doesn't involve imaginary sampling distributions  
+
+- Can provide evidence in favor of a null  
+
+- Works better as an effect size substitute than a p-value   
+
+- Less dichotomous thinking as there isn't a BF one *needs* to surpass   
+
+
+
+## 1 major downside
+
+For every parameter or model test there is an infinite number of bayes factors. That is, there is no single Bayes factor for your analysis!
+
+When someone says the Bayes factor for this test was XX you have to ask yourself what exactly they are testing. 
+
+
+---
+
+What happens if we increase our prior SD? Going from 1 to 5? 
+Is our BF going to increase or decrease? 
+```{r}
+#| code-fold: true
+prior2 <- distribution_normal(10000, mean = 0, sd = 5) # this differs
+posterior2 <- distribution_normal(10000, mean = 1, sd = 0.7) # exactly same
+bf_2<- bayesfactor_parameters(posterior2, prior2, direction = "two-sided", null = 0)
+bf_2
+```
+
+---
+
+```{r}
+plot(bf_2)
+```
+
+
+---
+
+Here was the original BF
+```{r}
+plot(bf_plot)
+```
+
+
+---
+
+```{r}
+bayesfactor_parameters(posterior2, prior2, direction = "two-sided", null = 0)
+```
+
+This now suggests Anecdotal evidence for H0 whereas previously it was Anecdotal evidence for H1 with BF = 1.94
+
+---
+
+What happens if our prior is a best guess rather than a regularizing prior? 
+
+```{r}
+#| code-fold: true
+prior3 <- distribution_normal(10000, mean = 1.2, sd = 1) # this differs
+posterior3 <- distribution_normal(10000, mean = 1, sd = 0.7) # exactly same
+bf_3<- bayesfactor_parameters(posterior3, prior3, direction = "two-sided", null = 0)
+bf_3
+```
+"Equal evidence for H1 and H0"
+
+-----
+
+```{r}
+#| code-fold: true
+plot(bf_3)
+```
+
+
+
+---
+
+- Note that the method this is computed by is called the Savage–Dickey density ratio. Literally just taking the fraction of these point estimates. Crucially, however, it ignores the shape of the distribution, focusing on a single point estimate. 
+
+- This is good in that it parallels NHST conventions. This is bad in that it doesn't tell you much much outside of a specific point estimate. In other words you are ignoring the shape of the posterior. 
+
+---
+
+Easy to implement with brms models
+```{r}
+mr.2 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c + FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, .2), class = b, coef = SS_c),
+                prior(normal(0, .2), class = b, coef = FQ_c),
+                prior(exponential(.5), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      file = "mr.2")
+```
+
+
+---
+
+```{r}
+summary(mr.2)
+```
+
+
+---
+
+```{r}
+bf.result <- bayestestR::bayesfactor_parameters(mr.2)
+bf.result
+```
+
+
+---
+
+```{r}
+plot(bf.result)
+```
+
+
+
+## we can also do this with ROPE! 
+
+```{r}
+bf.result2 <- bayesfactor_parameters(mr.2, null = rope_range(mr.2))
+bf.result2 
+```
+
+---
+
+The Bayes factor represents the degree by which the distribution mass of the posterior has shifted outside or inside the null interval relative to the prior distribution
+
+
+
+```{r}
+plot(bf.result2)
+```
+
+
+## Shortcomings of Bayes Factors
+
+
+1. Heavy reliance on priors. The marginal likelihood is an average taken with respect to the prior, so bayes factors can be seen as relatively subjective
+
+2. BF provide differences between models without quantifying whether the chosen model is any good (similar issues with waic, loo, p-values)
+
+3. Favors more parsimonious models and thus is more conservative (could also be a pro) 
+
+4. Potentially reinforces dichotomous thinking (better than p values but not by much)
+
+5. May be used as a measure of effect size (similar shortfalls to using p as such)
+
+6. Can be completely disconnected from our typical estimation stats
+
+
+
+
+---
+
+```{r}
+#| code-fold: true
+info.1 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c + FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, 2), class = b, coef = SS_c),
+                prior(normal(0, 2), class = b, coef = FQ_c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      save_pars = save_pars(all = TRUE),
+      backend = "cmdstanr",
+      file = "info.1")
+```
+
+```{r}
+#| code-fold: true
+info.2 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c + FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, .2), class = b, coef = SS_c),
+                prior(normal(0, .2), class = b, coef = FQ_c),
+                prior(exponential(.5), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      save_pars = save_pars(all = TRUE),
+      backend = "cmdstanr",
+      file = "info.2")
+```
+
+---
+
+```{r}
+#| code-fold: true
+bf.info.1 <- bayestestR::bayesfactor_parameters(info.1)
+bf.info.1 
+```
+
+
+
+
+```{r}
+#| code-fold: true
+bf.info.2 <- bayestestR::bayesfactor_parameters(info.2)
+bf.info.2
+```
+
+ 
+ 
+
+ 
+---
+
+```{r}
+plot(bf.info.1)
+```
+
+
+------
+
+
+```{r}
+plot(bf.info.2)
+```
+
+ 
+ 
+---
+
+Effects are basically indistinguishable, but BFs are. 
+
+
+```{r}
+#| code-fold: true
+plot(info.1)
+```
+
+
+-----
+
+```{r}
+#| code-fold: true
+plot(info.2)
+```
+
+ 
+
+## Model comparisons
+
+Compare interaction with a main effects model
+```{r}
+
+info.3 <- 
+  brm(family = gaussian,
+      happiness ~ 1 + SS_c * FQ_c,
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(0, .2), class = b, coef = SS_c),
+                prior(normal(0, .2), class = b, coef = FQ_c),
+                prior(exponential(.5), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 2, cores = 2,
+      data = MR,
+      sample_prior = T,
+      save_pars = save_pars(all = TRUE),
+       backend = "cmdstanr",
+      file = "info.3")
+```
+
+
+
+
+
+

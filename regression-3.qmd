@@ -313,13 +313,13 @@ bayes_R2(h.1, summary = T) # use = true to get a summary
 
 ## Categorical Variable coding
 
-Of course anytime we use group variables we need to assign them numeric values. How does that work in Bayesian land? Mostly the same but 
+Of course anytime we use group variables we need to assign them numeric values. How does that work in Bayesian land? Mostly the same but
 
-1. we need to be careful about our priors\ 
+1.  we need to be careful about our priors 
 
-2. We will manipulate the posterior to get what we want\ 
+2.  We will manipulate the posterior to get what we want 
 
-3. there is an addition coding option that is often helpful
+3.  there is an addition coding option that is often helpful
 
 ## Categorical data
 
@@ -436,7 +436,6 @@ h.2 %>%
 ```
 
 ## standardized difference in means
-
 
 ```{r}
 #| code-fold: true
@@ -583,11 +582,11 @@ h.3 %>%
 
 -   One the one hand, multiple comparisons are about error rates, which reference NHST and dichotomous decisions, and we don't have a null distribution in Bayes land
 
--   On the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences. Often decisions are needed. 
+-   On the other hand, the idea that chance results come up with more shakes of the dice is about probability. We still want to make good decisions and strengthen inferences. Often decisions are needed.
 
 -   With better priors "error rates" decrease. With less dichotomous thinking, error rates also vanish.
 
-- Bayes solution is better modeling + changing decision criteria
+-   Bayes solution is better modeling + changing decision criteria
 
 ## posterior predictive checks
 
@@ -610,11 +609,11 @@ pp_check(h.3,"violin_grouped", group = "mood.group.d")
 
 Now we have the basics down we can extend the model, tweaking different components of it. We have already seen what happens if we tweak the priors a little. Thus far they have been mostly inconsequential.
 
-What if we tweak the likelihood and model?  
+What if we tweak the likelihood and model?
 
-1. Robust regression 
+1.  Robust regression
 
-2. Heterogeneous variances
+2.  Heterogeneous variances
 
 ## Robust regression
 
@@ -868,15 +867,13 @@ post.h7 %>%
   stat_halfeye()
 ```
 
-
 ## Extending the basic model
 
-- We will now be able to "tweak" this basic model into any model we want. All are still modeled the same, with a linear model. 
+-   We will now be able to "tweak" this basic model into any model we want. All are still modeled the same, with a linear model.
 
-- Logistic regression? Binomial plus a link. Shifted log normal? Now we have three parameters, similar to t dist. Drift Diffusion model? 4 parameter Weiner. Graded response IRT? Cumlative + logit. ZIP? Logistic plus Poisson!     
+-   Logistic regression? Binomial plus a link. Shifted log normal? Now we have three parameters, similar to t dist. Drift Diffusion model? 4 parameter Weiner. Graded response IRT? Cumlative + logit. ZIP? Logistic plus Poisson!
 
-- The process is the same: we try to understand different parameters by looking at how they change with different levels of IVs. The only thing that differs across these models is what parameters, and if you need to covert the scale of a parameter.  
-
+-   The process is the same: we try to understand different parameters by looking at how they change with different levels of IVs. The only thing that differs across these models is what parameters, and if you need to covert the scale of a parameter.
 
 ## ANOVA models
 
@@ -931,7 +928,7 @@ prior.a.1<- prior_draws(a.1)
 prior.a.1
 ```
 
--------
+------------------------------------------------------------------------
 
 ```{r}
 #| code-fold: true
@@ -943,8 +940,7 @@ prior.a.1 %>%
         legend.position = c(.84, .84))
 ```
 
-
-------------
+------------------------------------------------------------------------
 
 ```{r}
 get_variables(a.1)

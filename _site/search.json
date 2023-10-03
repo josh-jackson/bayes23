@@ -1377,5 +1377,320 @@
     "title": "Multiple Regression",
     "section": "ANOVA",
     "text": "ANOVA\n\nsummary(lm(happiness ~ iv, data = MR))\n\n\nCall:\nlm(formula = happiness ~ iv, data = MR)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-4.3831 -1.2866  0.1046  1.0940  5.3253 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)   4.9993     0.2868  17.433   &lt;2e-16 ***\niv2           0.2953     0.4308   0.685    0.494    \niv3           0.3842     0.4184   0.918    0.360    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 1.902 on 115 degrees of freedom\nMultiple R-squared:  0.00805,   Adjusted R-squared:  -0.009202 \nF-statistic: 0.4666 on 2 and 115 DF,  p-value: 0.6283"
+  },
+  {
+    "objectID": "info-6.html#this-time",
+    "href": "info-6.html#this-time",
+    "title": "information",
+    "section": "This time:",
+    "text": "This time:\n\nModel and parameter evaluation.\n\nHow do we test our coefficients?\n\nHow do we choose the best model?\n\nWhat sort of indexes can we use to evaluate fit?"
+  },
+  {
+    "objectID": "info-6.html#nhst",
+    "href": "info-6.html#nhst",
+    "title": "information",
+    "section": "NHST",
+    "text": "NHST\nBayesian typically do not use “standard” NHST. Why?\n\nThere is no null and thus no p-values\nNHST is associated with tons of problems eg dichotomous thinking\nBecause we are interested in the posterior distribution, not a single point estimate\nModel comparison is more elegant"
+  },
+  {
+    "objectID": "info-6.html#standard-fit-indicies-and-tests",
+    "href": "info-6.html#standard-fit-indicies-and-tests",
+    "title": "information",
+    "section": "Standard fit indicies and tests",
+    "text": "Standard fit indicies and tests\n\\(R^2\\) AIC BIC Likelihood ratio test (LRT)"
+  },
+  {
+    "objectID": "info-6.html#what-is-likelihood",
+    "href": "info-6.html#what-is-likelihood",
+    "title": "information",
+    "section": "What is likelihood?",
+    "text": "What is likelihood?\nModel fit indexes like likelihood ratio test, AIC, BIC rely on likelihoods.\nThe distribution of the likelihood of various hypothesis. p(data | \\(\\theta\\) ). For likelihood, the data are treated as a given, and value of theta varies. Probability of the data that you got, assuming a particular theta is true.\nbinomial ~ \\(p(3|10,p)\\)"
+  },
+  {
+    "objectID": "info-6.html#log-likelihood",
+    "href": "info-6.html#log-likelihood",
+    "title": "information",
+    "section": "Log likelihood",
+    "text": "Log likelihood\n\nThe log of the likelihood is easier to work with (adding rather than multiplying small values). It will always be negative, with higher values (closer to zero) indicating a better fitting model.\nIn frequentist estimation, the log likelihood is a single number, one that indicates the maximum, thus maximum likelihood estimation.\n\n\n\nCode\ndata &lt;- read_csv(\"https://raw.githubusercontent.com/josh-jackson/bayes/master/week3.csv\")\n\nlogLik(lm(health ~ 1 + happy, data = data))\n\n\n'log Lik.' -488.2327 (df=3)"
+  },
+  {
+    "objectID": "info-6.html#lrt",
+    "href": "info-6.html#lrt",
+    "title": "information",
+    "section": "LRT",
+    "text": "LRT\nThe likelihood ratio test compares the likelihood ratios of two models (usually likelihood evaluated at the MLE/MAP and at the null).\n\nanova(model1, model2)\n\nIf we multiply the difference in log-likelihood by -2, it follows a \\(\\chi^2\\) distribution with 1 degrees of freedom.\n\\(LR = -2 ln\\left(\\frac{L(m_1)}{L(m_2)}\\right) = 2(loglik(m_2)-loglik(m_1))\\)"
+  },
+  {
+    "objectID": "info-6.html#information-theory",
+    "href": "info-6.html#information-theory",
+    "title": "information",
+    "section": "Information theory",
+    "text": "Information theory\n\nIdeally we want to learn something new, gain some additional information about the world. But how do you quantify learning or information? p-value?\nFirst step is to define what it means to be accurate in our predictions–cannot learn if we don’t have some criterion. We above defined accuracy as the log probability of the data.\nSecond step is to define what a perfect prediction would look like, and thus how much uncertainty we are dealing with. While the log probability of the data defines what parameter is most “accurate”, it does not tell us how much we are learning."
+  },
+  {
+    "objectID": "info-6.html#information-theory-1",
+    "href": "info-6.html#information-theory-1",
+    "title": "information",
+    "section": "Information theory",
+    "text": "Information theory\n\nThe reduction in uncertainty by learning the outcome is how much information we have learned. If we know how much uncertainty we have we can know how much improvement is possible in our prediction.\nClaude Shannon (1916-2001) developed the field of information theory by making an analogy to bits of information, just like within computers. Prior to this, information, and thus learning was poorly defined."
+  },
+  {
+    "objectID": "info-6.html#what-is-information",
+    "href": "info-6.html#what-is-information",
+    "title": "information",
+    "section": "What is information?",
+    "text": "What is information?\nThe basic intuition behind information theory is that learning that an unlikely event has occurred is more informative than learning that a likely event has occurred. Unlikely = informative.\ninformation(x) = -log2( p(x) ), where log() is the base-2 logarithm and p(x) is the probability of the event x. Units are bits, where 1 bit halves the possibilities.\n\n## coin flip\n -log2(.5)\n\n[1] 1\n\n\n\n# dice roll\n -log2(1/6)\n\n[1] 2.584963"
+  },
+  {
+    "objectID": "info-6.html#bits",
+    "href": "info-6.html#bits",
+    "title": "information",
+    "section": "bits",
+    "text": "bits\n\nBits of information are the minimum number of questions required to determine an unknown. Bits effectively chop down the possible outcomes by a factor of 2^bit.\n\nA dice roll is 2.585 bits. Best to think about this is each bit like a yes/no question that halves the possibilities. 1. even? 2. greater than 3?\n\n~Half the time you can logically deduce with 2 questions (2 bits), but sometimes you need 3 questions, hence ~2.5 bits of info."
+  },
+  {
+    "objectID": "info-6.html#bits-1",
+    "href": "info-6.html#bits-1",
+    "title": "information",
+    "section": "bits",
+    "text": "bits\n1/2^bit = probability of some event 2^bit = 1/p bit = log2(1/p) bit = -1log2(p)\nWe use bits rather than direct probabilities because it is easier to add bits than very small probabilities multiplied by other very small probabilities."
+  },
+  {
+    "objectID": "info-6.html#entropy",
+    "href": "info-6.html#entropy",
+    "title": "information",
+    "section": "Entropy",
+    "text": "Entropy\n\nCalculating the information for a random variable is the same as calculating the information for the probability distribution of the events for the random variable. This is called entropy.\nFlatter distributions will have higher entropy. Because all values likely any one value is “surprising” and gives you more information compared.\nA peaked distribution is less surprising as it already contains a lot of information."
+  },
+  {
+    "objectID": "info-6.html#entropy-1",
+    "href": "info-6.html#entropy-1",
+    "title": "information",
+    "section": "Entropy",
+    "text": "Entropy\n\nDistributions with more possibilities will be higher in entropy than those with fewer possibilities.\nSimilarly, flat distributions have high entropy as they provide little information\nThis is similar to how we set up priors where if we had more background “information” we would create a more narrow distribution."
+  },
+  {
+    "objectID": "info-6.html#maximum-information-entropy",
+    "href": "info-6.html#maximum-information-entropy",
+    "title": "information",
+    "section": "Maximum information entropy",
+    "text": "Maximum information entropy\n\nWe can use information theory to help us pick our likelihood distributions! Given what you know, what is the distribution that can arise the most ways with our data?\nMaximizing information entropy yields the flattest distribution given your data constraints. Gaussian is a maximum entropy distribution (as are uniform, binomial, exponential) when we know the meand and sd of a variable.\nIf nothing is known about a distribution (except measurement), then the distribution with the largest entropy should be chosen as the least-informative default."
+  },
+  {
+    "objectID": "info-6.html#entropy-2",
+    "href": "info-6.html#entropy-2",
+    "title": "information",
+    "section": "Entropy",
+    "text": "Entropy\n\nEntropy, H(p), tells us how hard it is to make an accurate prediction. For non uniform distributions we must sum up all the log probabilities\nH(p) = \\(-\\sum p_ilog(p_i)\\)\nThink of tossing rocks into 10 buckets. Each bucket can have a probability associated with getting a rock. H(p) is maximized when ps are equal. This gives us the least surprising distribution ie that can arise the most ways with our data"
+  },
+  {
+    "objectID": "info-6.html#how-is-this-different-from-lrt",
+    "href": "info-6.html#how-is-this-different-from-lrt",
+    "title": "information",
+    "section": "How is this different from LRT?",
+    "text": "How is this different from LRT?\n\nDeviance is a model of relative fit, but with a constant specific to the model. Log likelihoods thus only differ by a constant.\nComparing two models with LRT should yield similar scores as comparing two deviances.\n\nBut Bayesians don’t like NHST, so they sometimes leave off the -2, which simplifies the deviance equation but then does not allow a chi-square difference test to be completed."
+  },
+  {
+    "objectID": "info-6.html#two-options-for-model-comparison",
+    "href": "info-6.html#two-options-for-model-comparison",
+    "title": "information",
+    "section": "Two options for model comparison",
+    "text": "Two options for model comparison\n\nCross validation\nInformation model fit indexes\n\n\nThese are theoretically the same, but in practice seen as very different. That is, cross validation is equivalent to model fit like aic/bic"
+  },
+  {
+    "objectID": "info-6.html#cross-validation",
+    "href": "info-6.html#cross-validation",
+    "title": "information",
+    "section": "Cross validation",
+    "text": "Cross validation\n\nCompare different models in their prediction in and out of sample (train and a test sample)\nPredictions to NEW DATA are key, as this separates the sample specific influence (irregular features) from population influence (regular features)\nIdentify the model with the lowest test set error (deviance). In frequentist we typically use MSE.\nBut leaving out data is not necessary ideal, so we split them into folds."
+  },
+  {
+    "objectID": "info-6.html#loo-psis-loo",
+    "href": "info-6.html#loo-psis-loo",
+    "title": "information",
+    "section": "LOO & PSIS-LOO",
+    "text": "LOO & PSIS-LOO\n\nLeaving out 1 observation per fold is calledLeave One Out (LOO) cross validation. Great in theory, but computationally difficult.\nPareto Smoothed Importance Sampling (PSIS). Importance is similar to “deleted residuals” where on a case by case basis we asked whether this data point impacts the posterior. Instead of rerunning your model N data points times, importance scores are used to weight each datapoint, resulting in an equivalent to LOO without actually doing LOO. Cross validation for free!"
+  },
+  {
+    "objectID": "info-6.html#psis-loo-example",
+    "href": "info-6.html#psis-loo-example",
+    "title": "information",
+    "section": "PSIS-LOO example",
+    "text": "PSIS-LOO example\n\n\nCode\nmr.12 &lt;- readRDS(\"mr.12.rds\")\nsummary(mr.12)\n\n\n Family: gaussian \n  Links: mu = identity; sigma = identity \nFormula: happiness ~ 0 + iv.d + SS_c \n   Data: MR (Number of observations: 118) \n  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;\n         total post-warmup draws = 4000\n\nPopulation-Level Effects: \n            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS\niv.dcontrol     4.97      0.25     4.46     5.47 1.00     4368     3085\niv.dtx          5.35      0.19     4.98     5.72 1.00     3925     2785\nSS_c            0.29      0.05     0.20     0.38 1.00     4349     3235\n\nFamily Specific Parameters: \n      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS\nsigma     1.64      0.11     1.45     1.88 1.00     4234     2885\n\nDraws were sampled using sample(hmc). For each parameter, Bulk_ESS\nand Tail_ESS are effective sample size measures, and Rhat is the potential\nscale reduction factor on split chains (at convergence, Rhat = 1)."
+  },
+  {
+    "objectID": "info-6.html#information-criteria",
+    "href": "info-6.html#information-criteria",
+    "title": "information",
+    "section": "Information Criteria",
+    "text": "Information Criteria\n\nAIC, BIC, WAIC, DIC, etc.\nInformation criteria are a theoretical fit for the out of sample cross validation, not unlike psis-loo\nAIC = deviance(training) + 2p (p = number of parameters). Low scores better.\nDIC (Deviance information criteria) is more flexible for Bayesian models, but assumes a multivariate Gaussian posterior"
+  },
+  {
+    "objectID": "info-6.html#waic",
+    "href": "info-6.html#waic",
+    "title": "information",
+    "section": "WAIC",
+    "text": "WAIC\n\\[\\text{WAIC}(y, \\theta) = -2 \\big (\\text{lppd} - \\underbrace{\\sum_i \\operatorname{var}_\\theta \\log p(y_i | \\theta)}_\\text{penalty term} \\big)\\]\nlppd = log pointwise predictive density = deviance over the entire posterior =\n\\[\\text{lppd}(y, \\theta) = \\sum_i \\log \\frac{1}{S} \\sum_sp(y_i|\\theta_S)\\]\n\\[\\text{AIC}(y, \\theta) = -2(\\text{llpd}) + 2p\\]"
+  },
+  {
+    "objectID": "info-6.html#example",
+    "href": "info-6.html#example",
+    "title": "information",
+    "section": "example",
+    "text": "example\n\nwaic(mr.12)\n\n\nComputed from 4000 by 118 log-likelihood matrix\n\n          Estimate   SE\nelpd_waic   -228.1  6.8\np_waic         4.1  0.6\nwaic         456.3 13.7\n\n\npwaic = penality term (similar to the penality term in AIC) elpd_waic = lppd - pwaic"
+  },
+  {
+    "objectID": "info-6.html#using-information-critera",
+    "href": "info-6.html#using-information-critera",
+    "title": "information",
+    "section": "Using information critera",
+    "text": "Using information critera\n\nEach of these criteria do not have scales that are bounded by numbers (eg 0-1), nor can they be evaluated by some other number (eg SDs)\nProvide relative fit, so you need to compare different models, choosing the model with the lowest IC or the highest expected IC\nThe criteria are also dependent on sample size, so you cannot compare across models that differ in sample size\nYou can compare non-nested models eg ones with different sets of predictors"
+  },
+  {
+    "objectID": "info-6.html#overfitting",
+    "href": "info-6.html#overfitting",
+    "title": "information",
+    "section": "Overfitting",
+    "text": "Overfitting\n\nFit is relative to our sample, not the population\nNeed to balance between parsimony and completeness\nIronically, the best fitting model may not be the best model. The model will be tuned to our particular random sample\nWe are “fitting the noise” or overfitting the specifics of our sample"
+  },
+  {
+    "objectID": "info-6.html#regularization",
+    "href": "info-6.html#regularization",
+    "title": "information",
+    "section": "Regularization",
+    "text": "Regularization\n\n“penalizing” our model estimates to prevent overfitting\nFind coefficients that compromise between (a) minimizing the residuals and (b) minimizing sum of abs value of coefficients\nTends to “shrink”” coefficients to zero, much like we discussed with centering prior distributions around zero"
+  },
+  {
+    "objectID": "info-6.html#update-prior",
+    "href": "info-6.html#update-prior",
+    "title": "information",
+    "section": "update prior",
+    "text": "update prior\n\n\nCode\nmr.2p &lt;- update(mr.2, prior =  \n                c(prior(normal(5, 2), class = Intercept),\n                 prior(normal(0, .2), class = b, coef = SS_c),\n                prior(normal(0, .05), class = b, coef = FQ_c),\n                prior(exponential(.5), class = sigma)),\n                  file = \"mr.2p\")"
+  },
+  {
+    "objectID": "info-6.html#mimicking-nhst",
+    "href": "info-6.html#mimicking-nhst",
+    "title": "information",
+    "section": "Mimicking NHST",
+    "text": "Mimicking NHST\nIf you wanted to appease an editor/reviewer/adviser what do you do (other than teach them Bayes)?\nCIs! HDPIs! Predictions! ROPE! Probability of direction!\n\n\nCode\nmr.14 &lt;- readRDS(\"mr.14.rds\")\nsummary(mr.14)\n\n\n Family: gaussian \n  Links: mu = identity; sigma = identity \nFormula: happiness ~ 1 + iv.d * SS_c \n   Data: MR (Number of observations: 118) \n  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;\n         total post-warmup draws = 4000\n\nPopulation-Level Effects: \n            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS\nIntercept       4.96      0.23     4.50     5.43 1.00     5064     3064\niv.dtx          0.38      0.30    -0.21     0.97 1.00     5430     2861\nSS_c            0.41      0.06     0.30     0.52 1.00     3810     3081\niv.dtx:SS_c    -0.28      0.09    -0.45    -0.10 1.00     3996     3299\n\nFamily Specific Parameters: \n      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS\nsigma     1.58      0.10     1.40     1.81 1.00     4635     2618\n\nDraws were sampled using sample(hmc). For each parameter, Bulk_ESS\nand Tail_ESS are effective sample size measures, and Rhat is the potential\nscale reduction factor on split chains (at convergence, Rhat = 1)."
+  },
+  {
+    "objectID": "info-6.html#probability-of-direction",
+    "href": "info-6.html#probability-of-direction",
+    "title": "information",
+    "section": "Probability of direction",
+    "text": "Probability of direction\nThe Probability of Direction (pd) is an index of effect existence representing the certainty with which an effect goes in a particular direction.\nSimple: only depends on the posterior distributions (unlike say Bayes Factors) Scale independent: interpretation doesn’t change with scale change Similar to p - value: interpretation has parallels, so it helps convince pesky reviewers"
+  },
+  {
+    "objectID": "info-6.html#how-to-calculate",
+    "href": "info-6.html#how-to-calculate",
+    "title": "information",
+    "section": "How to calculate?",
+    "text": "How to calculate?\nCompute the area under the curve (AUC) of the density curve on the other side of 0.\n\n\nCode\nlibrary(bayestestR)\np_direction(mr.14)\n\n\nProbability of Direction\n\nParameter   |     pd\n--------------------\n(Intercept) |   100%\niv.dtx      | 90.05%\nSS_c        |   100%\niv.dtx:SS_c | 99.88%"
+  },
+  {
+    "objectID": "info-6.html#downsides-of-pd",
+    "href": "info-6.html#downsides-of-pd",
+    "title": "information",
+    "section": "Downsides of PD",
+    "text": "Downsides of PD\n\nYou can find a high PD for an effect that is quite small. Similar to a p &lt; .05 with a large sample size. Is it still meaningful?\nLead to other NHST foibles like dichotomous thinking\nMore similar to a 1-tailed p-value"
+  },
+  {
+    "objectID": "info-6.html#nil-hypothesis",
+    "href": "info-6.html#nil-hypothesis",
+    "title": "information",
+    "section": "nil hypothesis",
+    "text": "nil hypothesis\n\nWith NHST you typically attempt to reject a H0 of zero. This is a point estimate. However, we know the probability of any point is zero, so conceptually a typical NHST is illogical.\nWhat we really mean when we set up a standard NHST nil hypothesis is to reject zero – OR VALUES THAT ARE EQUIVALENT TO ZERO.\nWhat are those values? In frequentist it depends on your se which is a function of your sample SD and N. We just don’t talk about it."
+  },
+  {
+    "objectID": "info-6.html#rope",
+    "href": "info-6.html#rope",
+    "title": "information",
+    "section": "ROPE",
+    "text": "ROPE\nBayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”.\nRegion of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]\nLet the user define an area around the null value enclosing values that are equivalent to the null"
+  },
+  {
+    "objectID": "info-6.html#rope-1",
+    "href": "info-6.html#rope-1",
+    "title": "information",
+    "section": "ROPE",
+    "text": "ROPE\nWhy not just use the CI like you normally would? Because what if CI and ROPE overlap?\nThis allows you to 1. have a middle ground between accept vs reject. A range of equivalence.\n\nAllows one to affirm a predicted value, which is logically impossible in a standard NHST framework. Ie rather than fail to reject null, we can state given the observed data, the effect has XX% probability of being practically zero."
+  },
+  {
+    "objectID": "info-6.html#rope-2",
+    "href": "info-6.html#rope-2",
+    "title": "information",
+    "section": "ROPE",
+    "text": "ROPE\nHow to come up with ROPE values?\nDifficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1se, +1se]\n\nrope_range(mr.14)\n\n[1] -0.1893523  0.1893523\n\n\nUsually implemented when a decision needs to be made. More common in medicine than psych."
+  },
+  {
+    "objectID": "info-6.html#bayes-factors",
+    "href": "info-6.html#bayes-factors",
+    "title": "information",
+    "section": "Bayes Factors",
+    "text": "Bayes Factors\nQuantifies the support in the data for two competing statistical models. Ratio of the two marginal likelihoods of an observed outcome for these two models. E.g., how likely is a b = .2 vs b = 0, given our data. Gives relative evidence for different positions by comparing two marginal likelihoods\n\\[BF_{12} = \\frac{p(D | m = 1)}{p(D | m = 2)}\\]"
+  },
+  {
+    "objectID": "info-6.html#proposed-cutoffs",
+    "href": "info-6.html#proposed-cutoffs",
+    "title": "information",
+    "section": "Proposed cutoffs",
+    "text": "Proposed cutoffs\n.small[ | BF10 | Interpretation | |————–|——————————| | &gt; 100 | Extreme evidence for H1 | | 30 - 100 | Very strong evidence for H1 | | 10 - 30 | Strong evidence for H1 | | 3 - 10 | Moderate evidence for H1 | | 1 - 3 | Anecdotal evidence for H1 | | 1 | Equal evidence for H1 and H0 | | 1/3 - 1 | Anecdotal evidence for H0 | | 1/10 - 1/3 | Moderate evidence for H0 | | 1/30 - 1/10 | Strong evidence for H0 | | 1/100 - 1/30 | Very strong evidence for H0 | | &lt; 1/100 | Extreme evidence for H0 |"
+  },
+  {
+    "objectID": "info-6.html#bf-interpretation",
+    "href": "info-6.html#bf-interpretation",
+    "title": "information",
+    "section": "BF interpretation",
+    "text": "BF interpretation\nExtent to which the data sway our relative belief from one hypothesis to the other\nStrength of evidence from data about the hypotheses\nRelative predictive accuracy of one hypothesis over another\nHas the null hypothesis of an absence of an effect become more or less credible?"
+  },
+  {
+    "objectID": "info-6.html#association-with-p-values",
+    "href": "info-6.html#association-with-p-values",
+    "title": "information",
+    "section": "Association with p values",
+    "text": "Association with p values\n\nSimilar in that they both provide a continuous metric to compare two hypotheses\nFor a fixed sample size, p-values can be directly transformed into Bayes-Factors and vice versa, and of course into any effect size metric.\nRemember that p values are a composite of an effect size and sample size. Same is true with BF."
+  },
+  {
+    "objectID": "info-6.html#alternative-to-p-values",
+    "href": "info-6.html#alternative-to-p-values",
+    "title": "information",
+    "section": "Alternative to p-values",
+    "text": "Alternative to p-values\n\nEasier interpretation. (ratio of two likelihoods). P values are misunderstood.\nDoesn’t involve imaginary sampling distributions\nCan provide evidence in favor of a null\nWorks better as an effect size substitute than a p-value\nLess dichotomous thinking as there isn’t a BF one needs to surpass"
+  },
+  {
+    "objectID": "info-6.html#major-downside",
+    "href": "info-6.html#major-downside",
+    "title": "information",
+    "section": "1 major downside",
+    "text": "1 major downside\nFor every parameter or model test there is an infinite number of bayes factors. That is, there is no single Bayes factor for your analysis!\nWhen someone says the Bayes factor for this test was XX you have to ask yourself what exactly they are testing."
+  },
+  {
+    "objectID": "info-6.html#we-can-also-do-this-with-rope",
+    "href": "info-6.html#we-can-also-do-this-with-rope",
+    "title": "information",
+    "section": "we can also do this with ROPE!",
+    "text": "we can also do this with ROPE!\n\nbf.result2 &lt;- bayesfactor_parameters(mr.2, null = rope_range(mr.2))\nbf.result2 \n\nBayes Factor (Null-Interval)\n\nParameter   |       BF\n----------------------\n(Intercept) | 3.30e+29\nSS_c        | 1.27e+03\nFQ_c        |     1.37\n\n* Evidence Against The Null: [-0.189, 0.189]"
+  },
+  {
+    "objectID": "info-6.html#shortcomings-of-bayes-factors",
+    "href": "info-6.html#shortcomings-of-bayes-factors",
+    "title": "information",
+    "section": "Shortcomings of Bayes Factors",
+    "text": "Shortcomings of Bayes Factors\n\nHeavy reliance on priors. The marginal likelihood is an average taken with respect to the prior, so bayes factors can be seen as relatively subjective\nBF provide differences between models without quantifying whether the chosen model is any good (similar issues with waic, loo, p-values)\nFavors more parsimonious models and thus is more conservative (could also be a pro)\nPotentially reinforces dichotomous thinking (better than p values but not by much)\nMay be used as a measure of effect size (similar shortfalls to using p as such)\nCan be completely disconnected from our typical estimation stats"
+  },
+  {
+    "objectID": "info-6.html#model-comparisons",
+    "href": "info-6.html#model-comparisons",
+    "title": "information",
+    "section": "Model comparisons",
+    "text": "Model comparisons\nCompare interaction with a main effects model\n\ninfo.3 &lt;- \n  brm(family = gaussian,\n      happiness ~ 1 + SS_c * FQ_c,\n      prior = c(prior(normal(5, 2), class = Intercept),\n                prior(normal(0, .2), class = b, coef = SS_c),\n                prior(normal(0, .2), class = b, coef = FQ_c),\n                prior(exponential(.5), class = sigma)),\n      iter = 2000, warmup = 1000, chains = 2, cores = 2,\n      data = MR,\n      sample_prior = T,\n      save_pars = save_pars(all = TRUE),\n       backend = \"cmdstanr\",\n      file = \"info.3\")"
+  },
+  {
+    "objectID": "info-6.html#log-pointwise-predictive-density",
+    "href": "info-6.html#log-pointwise-predictive-density",
+    "title": "information",
+    "section": "Log Pointwise Predictive Density",
+    "text": "Log Pointwise Predictive Density\nD(q) = \\(\\sum_i\\) \\(\\log\\) (q_i) = lppd\n\nFurther, with Bayes we need to use the entire posterior to define deviance! If not, we are throwing away information.\nOften referred to Log Pointwise Predictive Density (lpd or lppd)"
   }
 ]
