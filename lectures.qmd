@@ -7,3 +7,4 @@ title: "Lectures"
 3.  [Regression continued](regression-3.qmd)
 4.  [MCMC](mcmc-4.qmd)
 5.  [Multiple regression](mr-5.qmd)
+6.  [Information](info-6.qmd)
