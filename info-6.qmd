@@ -608,19 +608,19 @@ describe_posterior(mr.14)
 
 ## ROPE
 
-Bayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”. 
+- Bayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”. 
 
-Region of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]
+- Region of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]
 
-Let the user define an area around the null value enclosing values that are equivalent to the null 
+- Let the user define an area around the null value enclosing values that are equivalent to the null 
 
 ---
 
-Compare our 95% (or whatever value you want) CI/HDI to see if it overlaps with the ROPE. Some suggest using full posterior rather than a CI. 
+- Compare our 95% (or whatever value you want) CI/HDI to see if it overlaps with the ROPE. Some suggest using full posterior rather than a CI. 
 
-If this percentage is sufficiently low, the null hypothesis is rejected. If this percentage is sufficiently high, the null hypothesis is accepted.
+- If this percentage is sufficiently low, the null hypothesis is rejected. If this percentage is sufficiently high, the null hypothesis is accepted.
 
-Note: not all values within the ROPE are rejected, just the null. 
+- Note: not all values within the ROPE are rejected, just the null. 
 
 ---
 
@@ -666,9 +666,10 @@ result
 
 ## ROPE
 
-Why not just use the CI like you normally would? Because what if CI and ROPE overlap? 
+- Why not just use the CI like you normally would? Because what if CI and ROPE overlap? 
 
-This allows you to 1. have a middle ground between accept vs reject. A range of equivalence. 
+- This allows you to 
+1. have a middle ground between accept vs reject. A range of equivalence. 
 
 2. Allows one to affirm a predicted value, which is logically impossible in a standard NHST framework. Ie rather than fail to reject null, we can state given the observed data, the effect has XX% probability of being practically zero. 
 
@@ -676,15 +677,15 @@ This allows you to 1. have a middle ground between accept vs reject. A range of 
 
 ## ROPE
 
-How to come up with ROPE values? 
+- How to come up with ROPE values? 
 
-Difficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1*se, +1*se] 
+- Difficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1*se, +1*se] 
 
 ```{r}
 rope_range(mr.14)
 ```
 
-Usually implemented when a decision needs to be made. More common in medicine than psych. 
+- Usually implemented when a decision needs to be made. More common in medicine than psych. 
 
 ---
 
@@ -748,7 +749,7 @@ This BF indicates that the data provide .4/0.2 = 2 times more evidence for the e
 
 ## Proposed cutoffs
 
-.small[
+
 | BF10         | Interpretation               |
 |--------------|------------------------------|
 | > 100        | Extreme evidence for H1      |
@@ -767,13 +768,13 @@ This BF indicates that the data provide .4/0.2 = 2 times more evidence for the e
 
 ## BF interpretation 
 
-Extent to which the data sway our relative belief from one hypothesis to the other  
+- Extent to which the data sway our relative belief from one hypothesis to the other  
 
-Strength of evidence from data about the hypotheses
+- Strength of evidence from data about the hypotheses
 
-Relative predictive accuracy of one hypothesis over another
+- Relative predictive accuracy of one hypothesis over another
 
-Has the null hypothesis of an absence of an effect become more or less credible?
+- Has the null hypothesis of an absence of an effect become more or less credible?
 
 
 ---
@@ -947,6 +948,8 @@ plot(bf.result2)
 
 3. Favors more parsimonious models and thus is more conservative (could also be a pro) 
 
+## Shortcomings of Bayes Factors
+
 4. Potentially reinforces dichotomous thinking (better than p values but not by much)
 
 5. May be used as a measure of effect size (similar shortfalls to using p as such)
@@ -1049,26 +1052,14 @@ plot(info.2)
 
  
 
-## Model comparisons
 
-Compare interaction with a main effects model
-```{r}
 
-info.3 <- 
-  brm(family = gaussian,
-      happiness ~ 1 + SS_c * FQ_c,
-      prior = c(prior(normal(5, 2), class = Intercept),
-                prior(normal(0, .2), class = b, coef = SS_c),
-                prior(normal(0, .2), class = b, coef = FQ_c),
-                prior(exponential(.5), class = sigma)),
-      iter = 2000, warmup = 1000, chains = 2, cores = 2,
-      data = MR,
-      sample_prior = T,
-      save_pars = save_pars(all = TRUE),
-       backend = "cmdstanr",
-      file = "info.3")
-```
 
+## multiple comparisons
+
+Krushke: 
+
+When comparing multiple conditions, a key goal in NHST is to keep the overall false alarm rate down to a desired maximum such as 5%. Abiding by this constraint depends on the number of comparisons that are to be made, which in turn depends on the intentions of the experimenter. In a Bayesian analysis, however, there is just one posterior distribution over the parameters that describe the conditions. That posterior distribution is unaffected by the intentions of the experimenter, and the posterior distribution can be examined from multiple perspectives however is suggested by insight and curiosity
 
 
 

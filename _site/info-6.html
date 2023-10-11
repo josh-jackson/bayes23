@@ -1169,15 +1169,19 @@ iv.dtx:SS_c |  -0.28 | [-0.45, -0.10] | 99.88% | [-0.19, 0.19] |    15.16% | 1.0
 </section>
 <section id="rope" class="slide level2">
 <h2>ROPE</h2>
-<p>Bayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”.</p>
-<p>Region of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]</p>
-<p>Let the user define an area around the null value enclosing values that are equivalent to the null</p>
+<ul>
+<li><p>Bayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”.</p></li>
+<li><p>Region of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]</p></li>
+<li><p>Let the user define an area around the null value enclosing values that are equivalent to the null</p></li>
+</ul>
 </section>
 <section class="slide level2">
 
-<p>Compare our 95% (or whatever value you want) CI/HDI to see if it overlaps with the ROPE. Some suggest using full posterior rather than a CI.</p>
-<p>If this percentage is sufficiently low, the null hypothesis is rejected. If this percentage is sufficiently high, the null hypothesis is accepted.</p>
-<p>Note: not all values within the ROPE are rejected, just the null.</p>
+<ul>
+<li><p>Compare our 95% (or whatever value you want) CI/HDI to see if it overlaps with the ROPE. Some suggest using full posterior rather than a CI.</p></li>
+<li><p>If this percentage is sufficiently low, the null hypothesis is rejected. If this percentage is sufficiently high, the null hypothesis is accepted.</p></li>
+<li><p>Note: not all values within the ROPE are rejected, just the null.</p></li>
+</ul>
 </section>
 <section class="slide level2">
 
@@ -1251,23 +1255,30 @@ iv.dtx:SS_c | Undecided |     18.50 % | [-0.45 -0.10]</code></pre>
 </section>
 <section id="rope-1" class="slide level2">
 <h2>ROPE</h2>
-<p>Why not just use the CI like you normally would? Because what if CI and ROPE overlap?</p>
-<p>This allows you to 1. have a middle ground between accept vs reject. A range of equivalence.</p>
-<ol start="2" type="1">
-<li>Allows one to affirm a predicted value, which is logically impossible in a standard NHST framework. Ie rather than fail to reject null, we can state given the observed data, the effect has XX% probability of being practically zero.</li>
+<ul>
+<li><p>Why not just use the CI like you normally would? Because what if CI and ROPE overlap?</p></li>
+<li><p>This allows you to</p></li>
+</ul>
+<ol type="1">
+<li><p>have a middle ground between accept vs reject. A range of equivalence.</p></li>
+<li><p>Allows one to affirm a predicted value, which is logically impossible in a standard NHST framework. Ie rather than fail to reject null, we can state given the observed data, the effect has XX% probability of being practically zero.</p></li>
 </ol>
 </section>
 <section id="rope-2" class="slide level2">
 <h2>ROPE</h2>
-<p>How to come up with ROPE values?</p>
-<p>Difficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1<em>se, +1</em>se]</p>
+<ul>
+<li><p>How to come up with ROPE values?</p></li>
+<li><p>Difficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1<em>se, +1</em>se]</p></li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="fu">rope_range</span>(mr<span class="fl">.14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.1893523  0.1893523</code></pre>
 </div>
 </div>
-<p>Usually implemented when a decision needs to be made. More common in medicine than psych.</p>
+<ul>
+<li>Usually implemented when a decision needs to be made. More common in medicine than psych.</li>
+</ul>
 </section>
 <section class="slide level2">
 
@@ -1364,14 +1375,69 @@ BF
 </section>
 <section id="proposed-cutoffs" class="slide level2">
 <h2>Proposed cutoffs</h2>
-<p>.small[ | BF10 | Interpretation | |————–|——————————| | &gt; 100 | Extreme evidence for H1 | | 30 - 100 | Very strong evidence for H1 | | 10 - 30 | Strong evidence for H1 | | 3 - 10 | Moderate evidence for H1 | | 1 - 3 | Anecdotal evidence for H1 | | 1 | Equal evidence for H1 and H0 | | 1/3 - 1 | Anecdotal evidence for H0 | | 1/10 - 1/3 | Moderate evidence for H0 | | 1/30 - 1/10 | Strong evidence for H0 | | 1/100 - 1/30 | Very strong evidence for H0 | | &lt; 1/100 | Extreme evidence for H0 |</p>
+<table>
+<thead>
+<tr class="header">
+<th>BF10</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&gt; 100</td>
+<td>Extreme evidence for H1</td>
+</tr>
+<tr class="even">
+<td>30 - 100</td>
+<td>Very strong evidence for H1</td>
+</tr>
+<tr class="odd">
+<td>10 - 30</td>
+<td>Strong evidence for H1</td>
+</tr>
+<tr class="even">
+<td>3 - 10</td>
+<td>Moderate evidence for H1</td>
+</tr>
+<tr class="odd">
+<td>1 - 3</td>
+<td>Anecdotal evidence for H1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>Equal evidence for H1 and H0</td>
+</tr>
+<tr class="odd">
+<td>1/3 - 1</td>
+<td>Anecdotal evidence for H0</td>
+</tr>
+<tr class="even">
+<td>1/10 - 1/3</td>
+<td>Moderate evidence for H0</td>
+</tr>
+<tr class="odd">
+<td>1/30 - 1/10</td>
+<td>Strong evidence for H0</td>
+</tr>
+<tr class="even">
+<td>1/100 - 1/30</td>
+<td>Very strong evidence for H0</td>
+</tr>
+<tr class="odd">
+<td>&lt; 1/100</td>
+<td>Extreme evidence for H0</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="bf-interpretation" class="slide level2">
 <h2>BF interpretation</h2>
-<p>Extent to which the data sway our relative belief from one hypothesis to the other</p>
-<p>Strength of evidence from data about the hypotheses</p>
-<p>Relative predictive accuracy of one hypothesis over another</p>
-<p>Has the null hypothesis of an absence of an effect become more or less credible?</p>
+<ul>
+<li><p>Extent to which the data sway our relative belief from one hypothesis to the other</p></li>
+<li><p>Strength of evidence from data about the hypotheses</p></li>
+<li><p>Relative predictive accuracy of one hypothesis over another</p></li>
+<li><p>Has the null hypothesis of an absence of an effect become more or less credible?</p></li>
+</ul>
 </section>
 <section class="slide level2">
 
@@ -1558,9 +1624,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 
 Parameter   |       BF
 ----------------------
-(Intercept) | 6.33e+29
-SS_c        | 2.52e+05
-FQ_c        |    10.46
+(Intercept) | 7.05e+29
+SS_c        | 2.73e+05
+FQ_c        |    11.17
 
 * Evidence Against The Null: 0</code></pre>
 </div>
@@ -1583,9 +1649,9 @@ FQ_c        |    10.46
 
 Parameter   |       BF
 ----------------------
-(Intercept) | 3.30e+29
-SS_c        | 1.27e+03
-FQ_c        |     1.37
+(Intercept) | 1.96e+29
+SS_c        | 1.34e+03
+FQ_c        |     1.41
 
 * Evidence Against The Null: [-0.189, 0.189]</code></pre>
 </div>
@@ -1605,6 +1671,11 @@ FQ_c        |     1.37
 <li><p>Heavy reliance on priors. The marginal likelihood is an average taken with respect to the prior, so bayes factors can be seen as relatively subjective</p></li>
 <li><p>BF provide differences between models without quantifying whether the chosen model is any good (similar issues with waic, loo, p-values)</p></li>
 <li><p>Favors more parsimonious models and thus is more conservative (could also be a pro)</p></li>
+</ol>
+</section>
+<section id="shortcomings-of-bayes-factors-1" class="slide level2">
+<h2>Shortcomings of Bayes Factors</h2>
+<ol start="4" type="1">
 <li><p>Potentially reinforces dichotomous thinking (better than p values but not by much)</p></li>
 <li><p>May be used as a measure of effect size (similar shortfalls to using p as such)</p></li>
 <li><p>Can be completely disconnected from our typical estimation stats</p></li>
@@ -1662,9 +1733,9 @@ FQ_c        |     1.37
 
 Parameter   |       BF
 ----------------------
-(Intercept) | 6.53e+41
-SS_c        | 9.81e+03
-FQ_c        |     4.47
+(Intercept) | 9.51e+41
+SS_c        | 9.27e+03
+FQ_c        |     4.73
 
 * Evidence Against The Null: 0</code></pre>
 </div>
@@ -1680,9 +1751,9 @@ FQ_c        |     4.47
 
 Parameter   |       BF
 ----------------------
-(Intercept) | 1.49e+31
-SS_c        | 1.02e+07
-FQ_c        |     9.68
+(Intercept) | 9.13e+30
+SS_c        | 1.04e+07
+FQ_c        |     8.90
 
 * Evidence Against The Null: 0</code></pre>
 </div>
@@ -1723,24 +1794,10 @@ FQ_c        |     9.68
 
 </div>
 <img data-src="info-6_files/figure-revealjs/unnamed-chunk-61-1.png" width="960" class="r-stretch"></section>
-<section id="model-comparisons" class="slide level2">
-<h2>Model comparisons</h2>
-<p>Compare interaction with a main effects model</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>info<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
-<span id="cb94-2"><a href="#cb94-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
-<span id="cb94-3"><a href="#cb94-3"></a>      happiness <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> SS_c <span class="sc">*</span> FQ_c,</span>
-<span id="cb94-4"><a href="#cb94-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb94-5"><a href="#cb94-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, .<span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">coef =</span> SS_c),</span>
-<span id="cb94-6"><a href="#cb94-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, .<span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">coef =</span> FQ_c),</span>
-<span id="cb94-7"><a href="#cb94-7"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(.<span class="dv">5</span>), <span class="at">class =</span> sigma)),</span>
-<span id="cb94-8"><a href="#cb94-8"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">2</span>, <span class="at">cores =</span> <span class="dv">2</span>,</span>
-<span id="cb94-9"><a href="#cb94-9"></a>      <span class="at">data =</span> MR,</span>
-<span id="cb94-10"><a href="#cb94-10"></a>      <span class="at">sample_prior =</span> T,</span>
-<span id="cb94-11"><a href="#cb94-11"></a>      <span class="at">save_pars =</span> <span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb94-12"><a href="#cb94-12"></a>       <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb94-13"><a href="#cb94-13"></a>      <span class="at">file =</span> <span class="st">"info.3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<section id="multiple-comparisons" class="slide level2">
+<h2>multiple comparisons</h2>
+<p>Krushke:</p>
+<p>When comparing multiple conditions, a key goal in NHST is to keep the overall false alarm rate down to a desired maximum such as 5%. Abiding by this constraint depends on the number of comparisons that are to be made, which in turn depends on the intentions of the experimenter. In a Bayesian analysis, however, there is just one posterior distribution over the parameters that describe the conditions. That posterior distribution is unaffected by the intentions of the experimenter, and the posterior distribution can be examined from multiple perspectives however is suggested by insight and curiosity</p>
 
 <div class="footer footer-default">
 

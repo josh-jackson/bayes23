@@ -1607,21 +1607,21 @@
     "href": "info-6.html#rope",
     "title": "information",
     "section": "ROPE",
-    "text": "ROPE\nBayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”.\nRegion of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]\nLet the user define an area around the null value enclosing values that are equivalent to the null"
+    "text": "ROPE\n\nBayesian inference is not based on NHST. Rather than concluding that an effect is present when it simply differs from zero, we would conclude that the probability of being outside a specific range that can be considered as “practically no effect”.\nRegion of Practical Equivalence - a small range of parameter values that are considered to be practically equivalent to the null. E.g,. std b = [-.07, .07]\nLet the user define an area around the null value enclosing values that are equivalent to the null"
   },
   {
     "objectID": "info-6.html#rope-1",
     "href": "info-6.html#rope-1",
     "title": "information",
     "section": "ROPE",
-    "text": "ROPE\nWhy not just use the CI like you normally would? Because what if CI and ROPE overlap?\nThis allows you to 1. have a middle ground between accept vs reject. A range of equivalence.\n\nAllows one to affirm a predicted value, which is logically impossible in a standard NHST framework. Ie rather than fail to reject null, we can state given the observed data, the effect has XX% probability of being practically zero."
+    "text": "ROPE\n\nWhy not just use the CI like you normally would? Because what if CI and ROPE overlap?\nThis allows you to\n\n\nhave a middle ground between accept vs reject. A range of equivalence.\nAllows one to affirm a predicted value, which is logically impossible in a standard NHST framework. Ie rather than fail to reject null, we can state given the observed data, the effect has XX% probability of being practically zero."
   },
   {
     "objectID": "info-6.html#rope-2",
     "href": "info-6.html#rope-2",
     "title": "information",
     "section": "ROPE",
-    "text": "ROPE\nHow to come up with ROPE values?\nDifficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1se, +1se]\n\nrope_range(mr.14)\n\n[1] -0.1893523  0.1893523\n\n\nUsually implemented when a decision needs to be made. More common in medicine than psych."
+    "text": "ROPE\n\nHow to come up with ROPE values?\nDifficult. Balance practicality with expertise judgment. DBDA: -0.1 to 0.1 of a standardized parameter (ie negligible effect size, Cohen, 1988). Or [-1se, +1se]\n\n\nrope_range(mr.14)\n\n[1] -0.1893523  0.1893523\n\n\n\nUsually implemented when a decision needs to be made. More common in medicine than psych."
   },
   {
     "objectID": "info-6.html#bayes-factors",
@@ -1635,14 +1635,14 @@
     "href": "info-6.html#proposed-cutoffs",
     "title": "information",
     "section": "Proposed cutoffs",
-    "text": "Proposed cutoffs\n.small[ | BF10 | Interpretation | |————–|——————————| | &gt; 100 | Extreme evidence for H1 | | 30 - 100 | Very strong evidence for H1 | | 10 - 30 | Strong evidence for H1 | | 3 - 10 | Moderate evidence for H1 | | 1 - 3 | Anecdotal evidence for H1 | | 1 | Equal evidence for H1 and H0 | | 1/3 - 1 | Anecdotal evidence for H0 | | 1/10 - 1/3 | Moderate evidence for H0 | | 1/30 - 1/10 | Strong evidence for H0 | | 1/100 - 1/30 | Very strong evidence for H0 | | &lt; 1/100 | Extreme evidence for H0 |"
+    "text": "Proposed cutoffs\n\n\n\nBF10\nInterpretation\n\n\n\n\n&gt; 100\nExtreme evidence for H1\n\n\n30 - 100\nVery strong evidence for H1\n\n\n10 - 30\nStrong evidence for H1\n\n\n3 - 10\nModerate evidence for H1\n\n\n1 - 3\nAnecdotal evidence for H1\n\n\n1\nEqual evidence for H1 and H0\n\n\n1/3 - 1\nAnecdotal evidence for H0\n\n\n1/10 - 1/3\nModerate evidence for H0\n\n\n1/30 - 1/10\nStrong evidence for H0\n\n\n1/100 - 1/30\nVery strong evidence for H0\n\n\n&lt; 1/100\nExtreme evidence for H0"
   },
   {
     "objectID": "info-6.html#bf-interpretation",
     "href": "info-6.html#bf-interpretation",
     "title": "information",
     "section": "BF interpretation",
-    "text": "BF interpretation\nExtent to which the data sway our relative belief from one hypothesis to the other\nStrength of evidence from data about the hypotheses\nRelative predictive accuracy of one hypothesis over another\nHas the null hypothesis of an absence of an effect become more or less credible?"
+    "text": "BF interpretation\n\nExtent to which the data sway our relative belief from one hypothesis to the other\nStrength of evidence from data about the hypotheses\nRelative predictive accuracy of one hypothesis over another\nHas the null hypothesis of an absence of an effect become more or less credible?"
   },
   {
     "objectID": "info-6.html#association-with-p-values",
@@ -1670,14 +1670,14 @@
     "href": "info-6.html#we-can-also-do-this-with-rope",
     "title": "information",
     "section": "we can also do this with ROPE!",
-    "text": "we can also do this with ROPE!\n\nbf.result2 &lt;- bayesfactor_parameters(mr.2, null = rope_range(mr.2))\nbf.result2 \n\nBayes Factor (Null-Interval)\n\nParameter   |       BF\n----------------------\n(Intercept) | 3.30e+29\nSS_c        | 1.27e+03\nFQ_c        |     1.37\n\n* Evidence Against The Null: [-0.189, 0.189]"
+    "text": "we can also do this with ROPE!\n\nbf.result2 &lt;- bayesfactor_parameters(mr.2, null = rope_range(mr.2))\nbf.result2 \n\nBayes Factor (Null-Interval)\n\nParameter   |       BF\n----------------------\n(Intercept) | 1.96e+29\nSS_c        | 1.34e+03\nFQ_c        |     1.41\n\n* Evidence Against The Null: [-0.189, 0.189]"
   },
   {
     "objectID": "info-6.html#shortcomings-of-bayes-factors",
     "href": "info-6.html#shortcomings-of-bayes-factors",
     "title": "information",
     "section": "Shortcomings of Bayes Factors",
-    "text": "Shortcomings of Bayes Factors\n\nHeavy reliance on priors. The marginal likelihood is an average taken with respect to the prior, so bayes factors can be seen as relatively subjective\nBF provide differences between models without quantifying whether the chosen model is any good (similar issues with waic, loo, p-values)\nFavors more parsimonious models and thus is more conservative (could also be a pro)\nPotentially reinforces dichotomous thinking (better than p values but not by much)\nMay be used as a measure of effect size (similar shortfalls to using p as such)\nCan be completely disconnected from our typical estimation stats"
+    "text": "Shortcomings of Bayes Factors\n\nHeavy reliance on priors. The marginal likelihood is an average taken with respect to the prior, so bayes factors can be seen as relatively subjective\nBF provide differences between models without quantifying whether the chosen model is any good (similar issues with waic, loo, p-values)\nFavors more parsimonious models and thus is more conservative (could also be a pro)"
   },
   {
     "objectID": "info-6.html#model-comparisons",
@@ -1692,5 +1692,19 @@
     "title": "information",
     "section": "Log Pointwise Predictive Density",
     "text": "Log Pointwise Predictive Density\nD(q) = \\(\\sum_i\\) \\(\\log\\) (q_i) = lppd\n\nFurther, with Bayes we need to use the entire posterior to define deviance! If not, we are throwing away information.\nOften referred to Log Pointwise Predictive Density (lpd or lppd)"
+  },
+  {
+    "objectID": "info-6.html#shortcomings-of-bayes-factors-1",
+    "href": "info-6.html#shortcomings-of-bayes-factors-1",
+    "title": "information",
+    "section": "Shortcomings of Bayes Factors",
+    "text": "Shortcomings of Bayes Factors\n\nPotentially reinforces dichotomous thinking (better than p values but not by much)\nMay be used as a measure of effect size (similar shortfalls to using p as such)\nCan be completely disconnected from our typical estimation stats"
+  },
+  {
+    "objectID": "info-6.html#multiple-comparisons",
+    "href": "info-6.html#multiple-comparisons",
+    "title": "information",
+    "section": "multiple comparisons",
+    "text": "multiple comparisons\nKrushke:\nWhen comparing multiple conditions, a key goal in NHST is to keep the overall false alarm rate down to a desired maximum such as 5%. Abiding by this constraint depends on the number of comparisons that are to be made, which in turn depends on the intentions of the experimenter. In a Bayesian analysis, however, there is just one posterior distribution over the parameters that describe the conditions. That posterior distribution is unaffected by the intentions of the experimenter, and the posterior distribution can be examined from multiple perspectives however is suggested by insight and curiosity"
   }
 ]
