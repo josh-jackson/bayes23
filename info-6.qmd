@@ -237,7 +237,7 @@ We use bits rather than direct probabilities because it is easier to add bits th
 
 - Calculating the information for a random variable is the same as calculating the information for the probability distribution of the events for the random variable. This is called entropy.
 
-- Flatter distributions will have higher entropy. Because all values likely any one value is "surprising" and gives you more information compared. 
+- Flatter distributions will have higher entropy. Because all values are equally likely any one value is "surprising" and gives you more information compared to a peaked distribution. 
 
 - A peaked distribution is less surprising as it already contains a lot of information. 
 
@@ -274,6 +274,49 @@ We use bits rather than direct probabilities because it is easier to add bits th
 - H(p) = $-\sum p_ilog(p_i)$
 
 - Think of tossing rocks into 10 buckets. Each bucket can have a probability associated with getting a rock. H(p) is maximized when ps are equal. This gives us the least surprising distribution ie that can arise the most ways with our data
+
+
+---
+
+```{r}
+#| code-fold: true
+library(tidyverse)
+library(brms)
+
+d <-
+  tibble(a = c(0, 0, 10, 0, 0),
+         b = c(0, 1, 8, 1, 0),
+         c = c(0, 2, 6, 2, 0),
+         d = c(1, 2, 4, 2, 1),
+         e = 2) 
+
+d %>% 
+  mutate(bucket = 1:5) %>% 
+  gather(letter, pebbles, - bucket) %>% 
+  
+  ggplot(aes(x = bucket, y = pebbles)) +
+  geom_col(width = 1/5) +
+  geom_text(aes(y = pebbles + 1, label = pebbles)) +
+  geom_text(data = tibble(
+    letter  = letters[1:5],
+    bucket  = 5.5,
+    pebbles = 10,
+    label   = str_c(c(1, 90, 1260, 37800, 113400), 
+                    rep(c(" way", " ways"), times = c(1, 4)))),
+    aes(label = label), hjust = 1) +
+  scale_y_continuous(breaks = c(0, 5, 10))  +
+  facet_wrap(~letter, ncol = 2)
+
+```
+
+-------
+
+- If all we are willing to assume about a collection of measurements is that they have a finite variance, then the Gaussian distribution represents the most conservative probability distribution to assign to those measurements. 
+
+- With different assumptions, provided our assumptions are good ones, the principle of maximum entropy leads to distributions other than the Gaussian
+
+- Assumptions about your DGP should specify your likelihood function. NOT YOUR OBSERVED DISTRIBUTION OF DATA. 
+
 
 ---
 

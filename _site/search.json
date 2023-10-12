@@ -1460,7 +1460,7 @@
     "href": "info-6.html#entropy",
     "title": "information",
     "section": "Entropy",
-    "text": "Entropy\n\nCalculating the information for a random variable is the same as calculating the information for the probability distribution of the events for the random variable. This is called entropy.\nFlatter distributions will have higher entropy. Because all values likely any one value is “surprising” and gives you more information compared.\nA peaked distribution is less surprising as it already contains a lot of information."
+    "text": "Entropy\n\nCalculating the information for a random variable is the same as calculating the information for the probability distribution of the events for the random variable. This is called entropy.\nFlatter distributions will have higher entropy. Because all values are equally likely any one value is “surprising” and gives you more information compared to a peaked distribution.\nA peaked distribution is less surprising as it already contains a lot of information."
   },
   {
     "objectID": "info-6.html#entropy-1",
@@ -1670,7 +1670,7 @@
     "href": "info-6.html#we-can-also-do-this-with-rope",
     "title": "information",
     "section": "we can also do this with ROPE!",
-    "text": "we can also do this with ROPE!\n\nbf.result2 &lt;- bayesfactor_parameters(mr.2, null = rope_range(mr.2))\nbf.result2 \n\nBayes Factor (Null-Interval)\n\nParameter   |       BF\n----------------------\n(Intercept) | 1.96e+29\nSS_c        | 1.34e+03\nFQ_c        |     1.41\n\n* Evidence Against The Null: [-0.189, 0.189]"
+    "text": "we can also do this with ROPE!\n\nbf.result2 &lt;- bayesfactor_parameters(mr.2, null = rope_range(mr.2))\nbf.result2 \n\nBayes Factor (Null-Interval)\n\nParameter   |       BF\n----------------------\n(Intercept) | 2.42e+29\nSS_c        | 1.36e+03\nFQ_c        |     1.60\n\n* Evidence Against The Null: [-0.189, 0.189]"
   },
   {
     "objectID": "info-6.html#shortcomings-of-bayes-factors",
