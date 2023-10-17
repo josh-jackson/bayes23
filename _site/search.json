@@ -1706,5 +1706,187 @@
     "title": "information",
     "section": "multiple comparisons",
     "text": "multiple comparisons\nKrushke:\nWhen comparing multiple conditions, a key goal in NHST is to keep the overall false alarm rate down to a desired maximum such as 5%. Abiding by this constraint depends on the number of comparisons that are to be made, which in turn depends on the intentions of the experimenter. In a Bayesian analysis, however, there is just one posterior distribution over the parameters that describe the conditions. That posterior distribution is unaffected by the intentions of the experimenter, and the posterior distribution can be examined from multiple perspectives however is suggested by insight and curiosity"
+  },
+  {
+    "objectID": "glm-7.html#this-time",
+    "href": "glm-7.html#this-time",
+    "title": "glm",
+    "section": "This time",
+    "text": "This time\n\nwork with distributions other than gaussian/t\nintroduce glm familes with link functions"
+  },
+  {
+    "objectID": "glm-7.html#generalized-linear-model",
+    "href": "glm-7.html#generalized-linear-model",
+    "title": "glm",
+    "section": "Generalized linear model",
+    "text": "Generalized linear model\n\nUsed to describe different Data Generating Processes (DGPs) “likelihoods” other than Gausian normal\nNeed to use if we cannot use the Gaussian normal e.g. the range of Y is restricted (e.g. binary, count) and/or the variance of Y depends on the mean\nOften there is a maximum entropy distribution that serves as the default likelihood, helping us guide our choice"
+  },
+  {
+    "objectID": "glm-7.html#binomial",
+    "href": "glm-7.html#binomial",
+    "title": "glm",
+    "section": "Binomial",
+    "text": "Binomial\n\\[y_i \\sim \\operatorname{Binomial} (n, p_i)\\]\n\\[f(p_i) = \\alpha + \\beta (x_i - \\bar x)\\] - The f of the \\(f(p_i)\\) is a link function. Typically we use a logistic link.\n\nLink function is needed because the shape of the Binomial distribution is determined by two parameters, neither equivalent to the Gaussian mean (which the right side of the equation is based on).\nThe link function also ensures the model doesn’t make improper probability predictions (ie outside of 0-1)"
+  },
+  {
+    "objectID": "glm-7.html#link-function-for-binomial",
+    "href": "glm-7.html#link-function-for-binomial",
+    "title": "glm",
+    "section": "Link function for binomial",
+    "text": "Link function for binomial\n\nOur number of trials is a fixed N, (here it is 1, a Bernoulli) so we are predicting the probability of y. Probabilities are bounded between 0 and 1\nBecause our variables are not in probability units we need to “link” them via a function. The linear right side of the equation is not in the same units as the non-linear left side.\nInstead of predicting probabilities directly, we are instead predicting the log of the odds. Other link functions: probit, negative inverse, cloglog."
+  },
+  {
+    "objectID": "glm-7.html#inverse-link",
+    "href": "glm-7.html#inverse-link",
+    "title": "glm",
+    "section": "inverse link",
+    "text": "inverse link\n\nIt is easier to think of transforming the probabilities but computationally the right side of the equation usually gets transformed. Note these two are equivalent.\n\n\\[f(p_i) = \\alpha + \\beta (x_i - \\bar x)\\]\n\\[p_i = f^{-1}(\\alpha + \\beta (x_i - \\bar x))\\]\n\nYou already know this, maybe not in this term, but we can go back and forth between the link and inverse link via the exponential function."
+  },
+  {
+    "objectID": "glm-7.html#maximum-entropy",
+    "href": "glm-7.html#maximum-entropy",
+    "title": "glm",
+    "section": "Maximum Entropy",
+    "text": "Maximum Entropy\n\nFor an outcome variable that is continuous and far from any theoretical maximum or minimum, Gaussian model has maximum entropy. But when the outcome variable is either discrete or bounded, a Gaussian likelihood is not the most powerful choice.\nThe distribution that can happen the greatest number of ways is the most plausible distribution. Call this distribution the maximum entropy distribution"
+  },
+  {
+    "objectID": "glm-7.html#exponential-family",
+    "href": "glm-7.html#exponential-family",
+    "title": "glm",
+    "section": "Exponential Family",
+    "text": "Exponential Family\n\n\nCode\nlibrary(patchwork)\n\nE1 &lt;- ggplot(data.frame(x = c(0, 15)), aes(x = x))  +\n    stat_function(fun = dexp, args = (mean=0.2), geom = \"area\", fill = \"blue\", alpha = 0.25) + ggtitle(\"Exponential with lambda = 0.2\") \n\nG1 &lt;- ggplot(data.frame(x = c(0, 5)), aes(x = x))  +\n    stat_function(fun = dgamma, args=list(shape=2, rate=2), geom = \"area\", fill = \"blue\", alpha = 0.25) + ggtitle(\"Gamma with lambda = 2, kappa = 2\") \n\np1 &lt;- tibble(x = 0:12) %&gt;% \n  mutate(density = dpois(x, lambda = 3),\n         strip   = \"y %~% Poisson(lambda)\") %&gt;% \n  ggplot(aes(x = x, y = density)) +\n  geom_col(fill = \"blue\", alpha = 0.25,width = 1/2) +\n  ggtitle(\"Poisson with lambda = 3\") \n\nb1 &lt;-tibble(x = 0:10) %&gt;% \n  mutate(density = dbinom(x, size = 10, prob = .3),\n         strip   = \"y %~% Binomial(n, p)\") %&gt;% \n  ggplot(aes(x = x, y = density)) +\n  geom_col(fill = \"blue\", alpha = 0.25, width = 1/2) +\n  ggtitle(\"binomial with N = 10, p = .3\") \n\n(E1 + G1) /\n  (p1 + b1)"
+  },
+  {
+    "objectID": "glm-7.html#brms-families",
+    "href": "glm-7.html#brms-families",
+    "title": "glm",
+    "section": "brms families",
+    "text": "brms families\ngaussian, student, binomial, bernoulli, poisson, negbinomial, geometric, gamma, skew_normal, lognormal, shifted_lognormal, exgaussian, wiener, inverse.gaussian, exponential, weibull, frechet, Beta, dirichlet, von_mises, asym_laplace, gen_extreme_value, categorical, multinomial, cumulative, cratio, sratio, acat, hurdle_poisson, hurdle_negbinomial, hurdle_gamma, hurdle_lognormal, zero_inflated_binomial, zero_inflated_beta, zero_inflated_negbinomial, zero_inflated_poisson, and zero_one_inflated_beta"
+  },
+  {
+    "objectID": "glm-7.html#common-rt-distributions",
+    "href": "glm-7.html#common-rt-distributions",
+    "title": "glm",
+    "section": "common RT distributions",
+    "text": "common RT distributions"
+  },
+  {
+    "objectID": "glm-7.html#example",
+    "href": "glm-7.html#example",
+    "title": "glm",
+    "section": "Example",
+    "text": "Example\n\n\nCode\nlibrary(readr)\nmortality &lt;- read_csv(\"https://raw.githubusercontent.com/josh-jackson/bayes/master/static/Lectures/mortality.csv\")\n\n\nmortality &lt;- mortality %&gt;% \n  mutate(IQ_c = IQ - mean(IQ))\nmortality\n\n\n# A tibble: 300 × 6\n    ...1 Risky.behavior premature.d NOT.premature    IQ   IQ_c\n   &lt;dbl&gt;          &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n 1     1             19 normal                  1    22  5.43 \n 2     2             18 normal                  1    22  5.43 \n 3     3             21 normal                  1    21  4.43 \n 4     4             17 normal                  1    22  5.43 \n 5     5             18 normal                  1    19  2.43 \n 6     6             22 premature               0    19  2.43 \n 7     7             18 normal                  1    16 -0.573\n 8     8             11 premature               0    15 -1.57 \n 9     9             21 normal                  1    16 -0.573\n10    10             20 normal                  1    19  2.43 \n# ℹ 290 more rows"
+  },
+  {
+    "objectID": "glm-7.html#epred-vs-prediction-vs-linear-prediction",
+    "href": "glm-7.html#epred-vs-prediction-vs-linear-prediction",
+    "title": "glm",
+    "section": "epred vs prediction vs linear prediction",
+    "text": "epred vs prediction vs linear prediction\n\nWhen we want to create fitted values we run into an extra complciation. Do we want to plot probabilities (original metric) or logits (our transformed metric)? We haven’t had to deal with this prior because we didnt do any transformations with a gaussian normal.\nepred: give me the expectation on the response scale\n\nlinpred: give me the expectation on the model’s scale\n\npredict: give me a new observation (on the response scale)"
+  },
+  {
+    "objectID": "glm-7.html#multinomial-logistic-regression",
+    "href": "glm-7.html#multinomial-logistic-regression",
+    "title": "glm",
+    "section": "Multinomial logistic regression",
+    "text": "Multinomial logistic regression\n\nWhen you are predicting more than two groups (aka softmax regression aka categorical regression aka maximum entropy classifier)\nUses a multi-nomial distribution, which is a parent of the binomial distribution. Like the binomial but with more events.\nNeed to construct K - 1 linear models for K events, similar to constructing number of dummy variables"
+  },
+  {
+    "objectID": "glm-7.html#when-would-you-use-this",
+    "href": "glm-7.html#when-would-you-use-this",
+    "title": "glm",
+    "section": "When would you use this?",
+    "text": "When would you use this?\n\nAnytime people have more than two choices in some task. Trying to understand different demographic categories (race/ethnicity/gender identities/etc).\nEg, does 401k amount predict whether someone at 62 is retired/part time/ still working? You could use 401k amount as the DV, with two dummy variables as predictors, but what if you wanted to control for years worked? Very different interpretations depending on what is your DV."
+  },
+  {
+    "objectID": "glm-7.html#multinomial-example-from-sr",
+    "href": "glm-7.html#multinomial-example-from-sr",
+    "title": "glm",
+    "section": "Multinomial example from SR",
+    "text": "Multinomial example from SR\nCareer choice predicted by salary\n\n\nCode\nlibrary(rethinking)\n\n# simulate career choices among 500 individuals\nn      &lt;- 500           # number of individuals\nincome &lt;- c(1, 2, 5)    # expected income of each career\nscore  &lt;- 0.5 * income  # scores for each career, based on income\n\n# next line converts scores to probabilities\np &lt;- softmax(score[1], score[2], score[3])\n\n# now simulate choice\n# outcome career holds event type values, not counts\ncareer &lt;- rep(NA, n)  # empty vector of choices for each individual\n\n# sample chosen career for each individual\nset.seed(123)\n# sample chosen career for each individual\nfor(i in 1:n) career[i] &lt;- sample(1:3, size = 1, prob = p)\n\nd &lt;-\n  tibble(career = career) %&gt;% \n  mutate(career_income = ifelse(career == 3, 5, career))\n\nd %&gt;%\n  ggplot(aes(x = career)) +\n  geom_bar(size = 0)"
+  },
+  {
+    "objectID": "glm-7.html#adding-a-predictor",
+    "href": "glm-7.html#adding-a-predictor",
+    "title": "glm",
+    "section": "Adding a predictor",
+    "text": "Adding a predictor\n\n\nCode\nb      &lt;- c(-2, 0, 2)\nfamily_income &lt;- runif(n)\n\n\ncareer &lt;- rep(NA, n)  # empty vector of choices for each individual\nfor (i in 1:n) {\n    score     &lt;- 0.5 * (1:3) + b * family_income[i]\n    p         &lt;- softmax(score[1], score[2], score[3])\n    career[i] &lt;- sample(1:3, size = 1, prob = p)\n}\n\nd &lt;-\n  tibble(career = career) %&gt;% \n  mutate(family_income = family_income)\nd\n\n\n# A tibble: 500 × 2\n   career family_income\n    &lt;int&gt;         &lt;dbl&gt;\n 1      3        0.354 \n 2      3        0.366 \n 3      3        0.287 \n 4      1        0.0800\n 5      2        0.365 \n 6      3        0.178 \n 7      3        0.536 \n 8      3        0.504 \n 9      3        0.945 \n10      3        0.341 \n# ℹ 490 more rows"
+  },
+  {
+    "objectID": "glm-7.html#mixtures",
+    "href": "glm-7.html#mixtures",
+    "title": "glm",
+    "section": "Mixtures",
+    "text": "Mixtures\nOften the DGP of our data are complex in that there could be multiple reasons someone responds the way they do. Mixture models allows us to fit more than one DGP at a time.\nWe will focus on Zero inflated and Hurdle models. These models are helpful whenever there are more zeros in the response variable than one would naturally expect."
+  },
+  {
+    "objectID": "glm-7.html#zero-inflated-models",
+    "href": "glm-7.html#zero-inflated-models",
+    "title": "glm",
+    "section": "Zero-inflated models",
+    "text": "Zero-inflated models\nUse when there are different causes for the same observation – a mixture of DGPs.\nLots of ways to get zero counts: Missed observation or the rate is low – hard to distinguish.\n\n\nCode\nprob_drink &lt;- 0.2  # 20% of days\nrate_work  &lt;- 1    # average 1 manuscript per day\n# sample one year of production\nn &lt;- 365\n# simulate days monks drink\nset.seed(365)\ndrink &lt;- rbinom(n, 1, prob_drink)\n# simulate manuscripts completed\ny &lt;- (1 - drink) * rpois(n, rate_work)\n\n#var2 &lt;- rnorm(n = 1000, mean = mean, sd = sd)\n\nzips &lt;-\n  tibble(drink = factor(drink, levels = 1:0), \n         y     = y)\n\nggplot(data = zips, aes(x = y)) +\n  geom_histogram(aes(fill = drink),\n                 binwidth = 1, size = 1/10, color = \"grey92\") +\n  scale_fill_manual(values = 1:2) +\n  xlab(\"Manuscripts completed\") +\n  theme(legend.position = \"none\")"
+  },
+  {
+    "objectID": "glm-7.html#zip-zero-inflated-poisson",
+    "href": "glm-7.html#zip-zero-inflated-poisson",
+    "title": "glm",
+    "section": "ZIP Zero inflated poisson",
+    "text": "ZIP Zero inflated poisson\np = the probability of drinking (vs working). If drinking we know no manuscripts are created. If working, manuscripts still may not be created. That rate is modeled through lambda as a poisson, and a bernulli with a p\n\\[\\operatorname{Pr} (0 | p, \\lambda)  = \\operatorname{Pr} (\\text{drink} | p) + \\operatorname{Pr} (\\text{work} | p) \\times \\operatorname{Pr} (0 | \\lambda)\\] \\[= p + (1 - p) \\exp (- \\lambda)\\]"
+  },
+  {
+    "objectID": "glm-7.html#hurdle-modelszero-augmented",
+    "href": "glm-7.html#hurdle-modelszero-augmented",
+    "title": "glm",
+    "section": "Hurdle models/zero augmented",
+    "text": "Hurdle models/zero augmented\nAre also mixure (two-part) models that specifies one process for zero counts and another process for positive counts. The idea is that positive counts occur once a threshold is crossed."
+  },
+  {
+    "objectID": "glm-7.html#ordinal-regression-models",
+    "href": "glm-7.html#ordinal-regression-models",
+    "title": "glm",
+    "section": "Ordinal regression models",
+    "text": "Ordinal regression models\nlikert scales never, sometimes, often no degree, hs degree, some college, college degree\ndiscrete, defined order, distance between categories is unknown\ncommon assumption is to treat differences as the same and model as continuous with guassian"
+  },
+  {
+    "objectID": "glm-7.html#log-cumulative-odds-link",
+    "href": "glm-7.html#log-cumulative-odds-link",
+    "title": "glm",
+    "section": "log cumulative odds link",
+    "text": "log cumulative odds link\n\n\nCode\nlibrary(rethinking)\ndata(Trolley)\ntrolley &lt;- Trolley\np2a &lt;-\n  trolley %&gt;%\n  ggplot(aes(x = response)) +\n  geom_histogram() \np2a"
+  },
+  {
+    "objectID": "glm-7.html#adding-predictors",
+    "href": "glm-7.html#adding-predictors",
+    "title": "glm",
+    "section": "adding predictors",
+    "text": "adding predictors"
+  },
+  {
+    "objectID": "glm-7.html#unequal-variances",
+    "href": "glm-7.html#unequal-variances",
+    "title": "glm",
+    "section": "Unequal variances",
+    "text": "Unequal variances\nThe parameter related to latent variances is called disc (short for discrimination).\n\nglm.14 &lt;- \n  brm(family = cumulative,\n      bf(response ~ 1 + action + contact + intention + intention:action + intention:contact) +\n      lf(disc ~ 0 + action + contact + intention + intention:action + intention:contact, cmc = FALSE),\n      prior = c(prior(normal(0, 1.5), class = Intercept),\n                prior(normal(0, 0.5), class = b)),\n      iter = 2000, warmup = 1000, cores = 4, chains = 4,\n      data = trolley,\n      backend = \"cmdstanr\",\n      file = \"glm.14\")"
+  },
+  {
+    "objectID": "glm-7.html#adjacent-category-category-specific-models",
+    "href": "glm-7.html#adjacent-category-category-specific-models",
+    "title": "glm",
+    "section": "Adjacent category /category specific models",
+    "text": "Adjacent category /category specific models\nDo you want to assume similar effects of your predictors across the range of your DV? Or does the effect occur only as certain differences between the categories?\nFor example, predicting educational attainment. Negative peer influences may have a large effect at graduating HS but little effect compared to whether or not someone goes to graduate school."
+  },
+  {
+    "objectID": "glm-7.html#ordinal-predictors",
+    "href": "glm-7.html#ordinal-predictors",
+    "title": "glm",
+    "section": "Ordinal predictors",
+    "text": "Ordinal predictors\nSay you have an exercise variable: (none, 1 time a month, 1 time a week, multiple times a week, everyday). How do you model? Continuous?\nCant you just model ordinal predictors as a series of dummy variables? But what is we want to force the inherent order?\nMonotonic. Think about as a compromise between continuous and dummy. We can not assume categories are equidistant with respect to their effect on the response variable (because then we would be using continuous). Instead, the distance between adjacent predictor categories (or integers) is estimated from the data and may vary across categories."
+  },
+  {
+    "objectID": "glm-7.html#extra-readings",
+    "href": "glm-7.html#extra-readings",
+    "title": "glm",
+    "section": "extra readings",
+    "text": "extra readings\nhttps://cran.r-project.org/web/packages/brms/vignettes/brms_monotonic.html\nhttps://psyarxiv.com/9qkhj/"
   }
 ]
