@@ -42,7 +42,8 @@ Need to:
 $$y_i \sim \operatorname{Binomial} (n, p_i)$$
 
 $$f(p_i) = \alpha + \beta (x_i - \bar x)$$
-- The f of the $f(p_i)$ is a link function. Typically we use a logistic link. 
+
+- The f of the $f(p_i)$ is a link function, typically logistic
 
 - Link function is needed because the shape of the Binomial distribution is determined by two parameters, neither equivalent to the Gaussian mean (which the right side of the equation is based on). 
 
@@ -59,6 +60,8 @@ $$f(p_i) = \alpha + \beta (x_i - \bar x)$$
 --------
 
 - We need to map the s shaped ogive that goes between (0,1) to linear looking line that falls between $(-\infty, \infty)$ 
+
+- Prob is 0,1, odds are 0 -> inf, log is -inf -> 0, and log odds are -inf to inf. 
 
 - Think of it as a transformation of Y-hats
 $$f(p) = logit(p) = log (\frac {p_{i}}{1-p_{i}})$$
@@ -88,6 +91,8 @@ $$p_i = f^{-1}(\alpha + \beta (x_i - \bar x))$$
 
 
 ```{r}
+#| code-fold: true
+#|
 library(tidyverse)
 library(brms)
 
@@ -203,6 +208,8 @@ mortality
 ---------
 
 $$P.Death_i  \sim \operatorname{Binomial} (1, p_i)$$   
+or 
+$$P.Death_i  \sim \operatorname{Bernoulli} (p_i)$$  
 
 $$\operatorname{logit} (p_i)= \beta_0 + \beta_1*IQ_c $$ 
 $$\beta_0\sim \operatorname{Normal} (0, ?)$$
@@ -221,6 +228,18 @@ glm.1 <-
       file = "glm.1")
 ```
 
+
+
+```{r, eval = FALSE}
+glm.1 <-
+  brm(family = bernoulli(),
+      NOT.premature ~ 1,
+      prior(normal(0, 10), class = Intercept),
+      sample_prior = T,
+      data = mortality,
+      backend = "cmdstanr",
+      file = "glm.1")
+```
 
 
 ---------
@@ -359,6 +378,7 @@ Instead of normal(0, 3), lets try normal(0, .5) for our prior
 
 ```{r}
 #| code-fold: true
+
 glm.4 <-
   brm(family = bernoulli(link = "logit"),
       NOT.premature ~ 1 + IQ_c,
@@ -374,6 +394,7 @@ glm.4 <-
 ----------
 
 ```{r}
+#| code-fold: true
 
 a <- seq(-9,9, .2)
 

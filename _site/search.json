@@ -1726,7 +1726,7 @@
     "href": "glm-7.html#binomial",
     "title": "glm",
     "section": "Binomial",
-    "text": "Binomial\n\\[y_i \\sim \\operatorname{Binomial} (n, p_i)\\]\n\\[f(p_i) = \\alpha + \\beta (x_i - \\bar x)\\] - The f of the \\(f(p_i)\\) is a link function. Typically we use a logistic link.\n\nLink function is needed because the shape of the Binomial distribution is determined by two parameters, neither equivalent to the Gaussian mean (which the right side of the equation is based on).\nThe link function also ensures the model doesn’t make improper probability predictions (ie outside of 0-1)"
+    "text": "Binomial\n\\[y_i \\sim \\operatorname{Binomial} (n, p_i)\\]\n\\[f(p_i) = \\alpha + \\beta (x_i - \\bar x)\\]\n\nThe f of the \\(f(p_i)\\) is a link function, typically logistic\nLink function is needed because the shape of the Binomial distribution is determined by two parameters, neither equivalent to the Gaussian mean (which the right side of the equation is based on).\nThe link function also ensures the model doesn’t make improper probability predictions (ie outside of 0-1)"
   },
   {
     "objectID": "glm-7.html#link-function-for-binomial",
