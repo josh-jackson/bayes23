@@ -59269,7 +59269,7 @@ Columns: rowid, group, estimate, conf.low, conf.high, career, family_income </co
 <section id="zip-zero-inflated-poisson" class="slide level2">
 <h2>ZIP Zero inflated poisson</h2>
 <p>p = the probability of drinking (vs working). If drinking we know no manuscripts are created. If working, manuscripts still may not be created. That rate is modeled through lambda as a poisson, and a bernulli with a p</p>
-<p><span class="math display">\[\operatorname{Pr} (0 | p, \lambda)  = \operatorname{Pr} (\text{drink} | p) + \operatorname{Pr} (\text{work} | p) \times \operatorname{Pr} (0 | \lambda)\]</span> <span class="math display">\[= p + (1 - p) \exp (- \lambda)\]</span></p>
+<p><span class="math display">\[\operatorname{Pr} (y = 0 | p, \lambda)  = \operatorname{Pr} (\text{drink} | p) + \operatorname{Pr} (\text{work} | p) \times \operatorname{Pr} (0 | \lambda)\]</span> <span class="math display">\[= p + (1 - p) \exp (- \lambda)\]</span></p>
 </section>
 <section class="slide level2">
 

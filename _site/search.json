@@ -1831,7 +1831,7 @@
     "href": "glm-7.html#zip-zero-inflated-poisson",
     "title": "glm",
     "section": "ZIP Zero inflated poisson",
-    "text": "ZIP Zero inflated poisson\np = the probability of drinking (vs working). If drinking we know no manuscripts are created. If working, manuscripts still may not be created. That rate is modeled through lambda as a poisson, and a bernulli with a p\n\\[\\operatorname{Pr} (0 | p, \\lambda)  = \\operatorname{Pr} (\\text{drink} | p) + \\operatorname{Pr} (\\text{work} | p) \\times \\operatorname{Pr} (0 | \\lambda)\\] \\[= p + (1 - p) \\exp (- \\lambda)\\]"
+    "text": "ZIP Zero inflated poisson\np = the probability of drinking (vs working). If drinking we know no manuscripts are created. If working, manuscripts still may not be created. That rate is modeled through lambda as a poisson, and a bernulli with a p\n\\[\\operatorname{Pr} (y = 0 | p, \\lambda)  = \\operatorname{Pr} (\\text{drink} | p) + \\operatorname{Pr} (\\text{work} | p) \\times \\operatorname{Pr} (0 | \\lambda)\\] \\[= p + (1 - p) \\exp (- \\lambda)\\]"
   },
   {
     "objectID": "glm-7.html#hurdle-modelszero-augmented",

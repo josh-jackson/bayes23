@@ -768,11 +768,12 @@ drink <- rbinom(n, 1, prob_drink)
 # simulate manuscripts completed
 y <- (1 - drink) * rpois(n, rate_work)
 
-#var2 <- rnorm(n = 1000, mean = mean, sd = sd)
+x <- rnorm(n = 365, mean = 3, sd = 1)
 
-zips <-
-  tibble(drink = factor(drink, levels = 1:0), 
-         y     = y)
+x2 <- zips$y + zips$x
+
+zips <-tibble(drink = factor(drink, levels = 1:0), y = y, x = x2)
+
 
 ggplot(data = zips, aes(x = y)) +
   geom_histogram(aes(fill = drink),
@@ -788,7 +789,7 @@ ggplot(data = zips, aes(x = y)) +
 
 p = the probability of drinking (vs working). If drinking we know no manuscripts are created. If working, manuscripts still may not be created. That rate is modeled through lambda as a poisson, and a bernulli with a p  
 
-$$\operatorname{Pr} (0 | p, \lambda)  = \operatorname{Pr} (\text{drink} | p) + \operatorname{Pr} (\text{work} | p) \times \operatorname{Pr} (0 | \lambda)$$
+$$\operatorname{Pr} (y = 0 | p, \lambda)  = \operatorname{Pr} (\text{drink} | p) + \operatorname{Pr} (\text{work} | p) \times \operatorname{Pr} (0 | \lambda)$$
 $$= p + (1 - p) \exp (- \lambda)$$
 
 --------
@@ -804,7 +805,10 @@ Since drinking monks never produce, the expression above is the chance the monks
 $$y_i  \sim \operatorname{ZIPoisson} (p_i, \lambda_i)$$
 $$\operatorname{logit} (p_i)      = \alpha_p + \beta_p x_i$$
 $$\log (\lambda_i)  = \alpha_\lambda + \beta_\lambda x_i$$
---------
+
+
+----------
+
 
 ```{r}
 glm.9 <- 
@@ -837,11 +841,12 @@ zip.priors %>%
 
 --------
 
-Noe: When there are no predictors for zi, the brms default is to use the identity link. With predictors it will use logit, so you will have to use what you know about logits to correctly interpret. 
+Noe: When there are no predictors for zi, the brms default is to use the identity link. With predictors it will use logit, so you will have to use what you know about logits to correctly interpret. exp(-.2) = .82
 
 ```{r}
 summary(glm.9)
 ```
+
 
 ---------
 
@@ -850,12 +855,12 @@ Adding predictors. Do not necessarily need to have the same predictors for each 
 ```{r}
 glm.10 <- 
   brm(bf(y ~ 1 + drink, 
-      zi ~ 1 + drink),
+      zi ~ 1),
       family = zero_inflated_poisson,
       iter = 2000, warmup = 1000, chains = 4, cores = 4,
       data = zips,
       backend = "cmdstanr",
-      file = "glm.10")
+      file = "glm.9x")
 ```
 
 -------
@@ -868,6 +873,52 @@ summary(glm.10)
 Often the associations can go in different directions (because they are modeling different processes!)
 
 
+-----
+
+
+```{r}
+conditional_effects(glm.10)
+
+```
+
+
+-------
+
+
+```{r}
+glm.10x <- 
+  brm(bf(y ~ 1 + drink + x, 
+      zi ~ 1),
+      family = zero_inflated_poisson,
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = zips,
+      backend = "cmdstanr",
+      file = "glm.9x3")
+```
+
+
+-----
+
+```{r}
+summary(glm.10x)
+```
+
+
+
+
+----
+
+```{r}
+#| code-fold: true
+zips %>% 
+  data_grid(x = seq_range(x, n = 30), drink = c(0,1)) %>% 
+  add_epred_draws(glm.10x) %>% 
+  ggplot(aes(x = x, y = .epred, fill = factor(drink))) +
+  stat_lineribbon(.width = 0.95) 
+```
+
+
+
 ## Hurdle models/zero augmented
 
 Are also mixure (two-part) models that specifies one process for zero counts and another process for positive counts. The idea is that positive counts occur once a threshold is crossed. 
@@ -878,7 +929,8 @@ Are also mixure (two-part) models that specifies one process for zero counts and
 ```{r}
 glm.11 <- 
   brm(family = hurdle_poisson,
-      y ~ 1, 
+      y ~ 1,
+      hu ~ 1,
       prior = c(prior(normal(-1.5, 1), class = Intercept),
                prior(beta(1, 1), class = hu)),  
       iter = 2000, warmup = 1000, chains = 4, cores = 4,
@@ -893,6 +945,46 @@ glm.11 <-
 ```{r}
 summary(glm.11)
 ```
+
+
+------
+
+```{r}
+
+glm.11x <- 
+  brm(family = hurdle_poisson,
+      y ~ 1 + drink + x,
+      hu ~ 1 , 
+      prior = c(prior(normal(-1.5, 1), class = Intercept),
+               prior(normal(-1.5, 3), class = b),
+                prior(beta(1, 1), class = hu)),  
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      data = zips,
+      backend = "cmdstanr",
+      file = "glm.11x2")
+
+```
+
+
+-----
+
+```{r}
+summary(glm.11x)
+```
+
+
+------
+
+
+```{r}
+#| code-fold: true
+zips %>% 
+  data_grid(x = seq_range(x, n = 30), drink = 0) %>% 
+  add_epred_draws(glm.11x) %>% 
+  ggplot(aes(x = x, y = .epred)) +
+  stat_lineribbon(.width = 0.95, alpha = .4) 
+```
+
 
 
 ## Ordinal regression models
