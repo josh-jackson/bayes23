@@ -990,6 +990,25 @@ zips %>%
 
 
 
+------
+
+With {marginaleffects}
+```{r}
+#| code-fold: true
+
+plot_predictions(
+    glm.11x,
+    condition = "x") +
+    labs(y = "mu") +
+plot_predictions(
+    glm.11x,
+    dpar = "hu",
+    condition = "x") +
+    labs(y = "hu")
+```
+
+
+
 ## Ordinal regression models
 
 likert scales
@@ -1244,7 +1263,9 @@ gather_draws(b_Intercept[cut]) %>%
 
 ## adding predictors
 
+
 ![](cumlog.gif)
+
 
 --------
 
@@ -1292,74 +1313,98 @@ gather_draws(`b_action`,`b_contact`,`b_intention`,`b_action:intention`,`b_contac
 
 
 
+
 ---------
 
 ```{r}
 #| code-fold: true
-conditional_effects(glm.13, categorical =TRUE)
+conditional_effects(glm.13, effects = "action", categorical =TRUE)
 ```
 
----------
+
+--------
+
+```{r}
+#| code-fold: true
+conditional_effects(glm.13, effects = "contact", categorical =TRUE)
+```
+
+--------
+
+
 
 
 ```{r}
+#| code-fold: true
+conditional_effects(glm.13, effects = "intention", categorical =TRUE)
+```
+
+
+
+
+-----
+
+```{r}
+#| code-fold: true
 library(marginaleffects)
 avg_comparisons(glm.13)
 ```
 
 
 
-
-
---------
-
-
-```{r}
-plot_predictions(glm.13, condition = "action") +
-    facet_wrap(~ group)
-```
-
-
 ---------
 
 ```{r}
-plot_predictions(glm.13, condition = c("action", "contact"))
+#| code-fold: true
+library(emmeans)
+emmeans(glm.13, specs = pairwise ~ action:intention)
 ```
 
 
 -----
 
+Each condition should add up to 1 
 ```{r}
-predictions(model = glm.13,
-             datagrid(action = 0:1)) %>% 
-  posterior_draws()
+#| code-fold: true
+trolley %>%
+  data_grid(action = c(0,1), intention = c(0,1), contact = .5) %>%
+  mutate(x = interaction(action, intention)) %>% 
+  mutate(x = fct_recode(as.factor(x),
+                      No_A_No_I = "0.0",
+                      No_A_Y_I = "0.1",
+                      Y_A_No_I = "1.0",
+                      Y_A_Y_I = "1.1")) %>% 
+  add_epred_draws(glm.13) %>%
+  ggplot(aes(x = .epred, y = .category, fill = x)) +
+  stat_slab()
 ```
 
 
 
-------
+-------
 
-140 * 2 * 7 *
 
 ```{r}
-library(modelr)
-trolley %>% 
-  data_grid(action = seq_range(action, n = 200), response = c(1:7), contact = 1, intention = 1) %>% 
-   add_epred_draws(glm.13) %>% 
-  ggplot(aes(x = action, y = .epred, fill = factor(response))) +
-  stat_lineribbon(.width = 0.95) + facet_wrap(~response)
- 
+#| code-fold: true
+trolley %>%
+  data_grid(action = .5, intention = c(0,1), contact = c(0,1)) %>%
+  mutate(x = interaction(contact, intention)) %>% 
+  mutate(x = fct_recode(as.factor(x),
+                      No_C_No_I = "0.0",
+                      Y_C_No_I = "1.0",
+                      No_C_Y_I = "0.1",
+                      Y_C_Y_I = "1.1")) %>% 
+  add_epred_draws(glm.13) %>%
+  ggplot(aes(x = .epred, y = .category, fill = x)) +
+  stat_slab()
 ```
-
-
-
-
-
-
 
 
 --------
 
+
+
+Thank as cumulative probability cut points
 ```{r}
 #| code-fold: true
 nd <- 
