@@ -770,6 +770,9 @@ y <- (1 - drink) * rpois(n, rate_work)
 
 x <- rnorm(n = 365, mean = 3, sd = 1)
 
+
+zips <-tibble(drink = factor(drink, levels = 1:0), y = y, x = x)
+
 x2 <- zips$y + zips$x
 
 zips <-tibble(drink = factor(drink, levels = 1:0), y = y, x = x2)
