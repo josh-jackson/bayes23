@@ -536,7 +536,7 @@
     "href": "lectures.html",
     "title": "Lectures",
     "section": "",
-    "text": "Background and introduction\nRegression introduction\nRegression continued\nMCMC\nMultiple regression\nInformation\nGLM"
+    "text": "Background and introduction\nRegression introduction\nRegression continued\nMCMC\nMultiple regression\nInformation\nGLM\nMLM"
   },
   {
     "objectID": "regression-2.html#prior-for-intercept",
