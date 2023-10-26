@@ -1888,5 +1888,278 @@
     "title": "glm",
     "section": "extra readings",
     "text": "extra readings\nhttps://cran.r-project.org/web/packages/brms/vignettes/brms_monotonic.html\nhttps://psyarxiv.com/9qkhj/"
+  },
+  {
+    "objectID": "mlm-8.html#mlm-review",
+    "href": "mlm-8.html#mlm-review",
+    "title": "mlm",
+    "section": "MLM review",
+    "text": "MLM review\n\\[{\\hat{Y}}_{i} = b_{0} + b_{1}X_{i} +  ... +\\epsilon_{i}\\]\n\\[{\\hat{Y}}_{ij} = b_{0} + b_{1}X_{ij} + ... +\\epsilon_{i}\\] Where j refers to some clustering or grouping variable and i refers to the observations within j\n\ndata &lt;- \"https://raw.githubusercontent.com/josh-jackson/bayes/master/mlm.csv\"\n\nmlm &lt;- read.csv(data)"
+  },
+  {
+    "objectID": "mlm-8.html#empty-model",
+    "href": "mlm-8.html#empty-model",
+    "title": "mlm",
+    "section": "Empty model",
+    "text": "Empty model\nLevel 1 \\[{Y}_{ij} = \\beta_{0j}  + \\varepsilon_{ij}\\]\nLevel 2 \\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\]\n\\[{U}_{0j} \\sim \\mathcal{N}(0, \\tau_{00}^{2})\\] \\[{e}_{ij} \\sim \\mathcal{N}(0, \\sigma^{2})\\]"
+  },
+  {
+    "objectID": "mlm-8.html#random-and-fixed-effects",
+    "href": "mlm-8.html#random-and-fixed-effects",
+    "title": "mlm",
+    "section": "Random and fixed effects",
+    "text": "Random and fixed effects\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\varepsilon_{ij}\\]\nLevel 2: \\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\] Combined: \\[{Y}_{ij} = \\gamma_{00} + U_{0j}  + \\varepsilon_{ij}\\]\n\\(U_{0j}\\) is considered a random effect, as it is varies across our grouping\n\\(\\gamma_{00}\\) is considered a fixed effect, as it is what is fixed (average) across our grouping"
+  },
+  {
+    "objectID": "mlm-8.html#level-1-predictors",
+    "href": "mlm-8.html#level-1-predictors",
+    "title": "mlm",
+    "section": "Level 1 predictors",
+    "text": "Level 1 predictors\nLevel 1 is where you have data that repeats within your grouping or clustering data. Is your cluster classrooms? Then students are level 1. Is your cluster people? Then observations are level 1.\n\\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Notice on the subscript of X that these predictors vary across group (j) and within the group (i) So if your grouping (j) is people, then i refers to different observations."
+  },
+  {
+    "objectID": "mlm-8.html#predictions-for-a-person",
+    "href": "mlm-8.html#predictions-for-a-person",
+    "title": "mlm",
+    "section": "Predictions for a person",
+    "text": "Predictions for a person\nLevel 1:\n\\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2:\n\\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + U_{1j}\\]\nCombined \\[{Y}_{ij} = \\gamma_{00} + \\gamma_{10}(X_{ij})+ U_{0j} + U_{1j}(X_{ij}) + \\varepsilon_{ij}\\]\nCan think of a persons score divided up into a fixed component as well as the random component.\n\\[{\\beta}_{16} = \\gamma_{10} \\pm U_{16}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#error-structure",
+    "href": "mlm-8.html#error-structure",
+    "title": "mlm",
+    "section": "Error structure",
+    "text": "Error structure\nThe residual structure, where the random effects are again normally distributed with a mean of zero, but this time one must also consider covariance in addition to variance.\n\\[\\begin{pmatrix} {U}_{0j} \\\\ {U}_{1j} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]\nNote that it is possible to have a different error structure for the random effects\n\\[{e}_{ij} \\sim \\mathcal{N}(0, \\sigma^{2})\\]"
+  },
+  {
+    "objectID": "mlm-8.html#multiple-level-1-predictors",
+    "href": "mlm-8.html#multiple-level-1-predictors",
+    "title": "mlm",
+    "section": "Multiple level 1 predictors",
+    "text": "Multiple level 1 predictors\nLevel 1:\n\\[{Y}_{ijk} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\beta_{2j}Z_{ik} + \\varepsilon_{ijk}\\] Level 2:\n\\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + U_{1j}\\] \\[{\\beta}_{2k} = \\gamma_{20} + U_{2k}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#level-2-predictors",
+    "href": "mlm-8.html#level-2-predictors",
+    "title": "mlm",
+    "section": "Level 2 predictors",
+    "text": "Level 2 predictors\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2: \\[{\\beta}_{0j} = \\gamma_{00} + \\gamma_{01}G_{j} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + U_{1j}\\]\nCombined \\[{Y}_{ij} = \\gamma_{00} + \\gamma_{01}G_{j}+  \\gamma_{10} (X_{ij}) + U_{0j} + U_{1j}(X_{ij}) + \\varepsilon_{ij}\\] \\[{Y}_{ij} = [\\gamma_{00} + \\gamma_{01}G_{j}+ U_{0j}]  + [(\\gamma_{10}  + U_{1j})(X_{ij})] + \\varepsilon_{ij}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#cross-level-interactions",
+    "href": "mlm-8.html#cross-level-interactions",
+    "title": "mlm",
+    "section": "Cross level interactions",
+    "text": "Cross level interactions\nlevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2: \\[{\\beta}_{0j} = \\gamma_{00} + \\gamma_{01}G_{j} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + \\gamma_{11}G_{j} + U_{1j}\\]\n\\[{Y}_{ij} = \\gamma_{00} + \\gamma_{01}G_{j}+  \\gamma_{10} (X_{ij}) + \\gamma_{11}(G_{j}*X{ij}) +  U_{0j} + U_{1j}(X{ij}) + \\varepsilon_{ij}\\]\n\\[{Y}_{ij} = [\\gamma_{00} + U_{0j} +\\gamma_{01}G_{j}] + [(\\gamma_{10}  + \\gamma_{11}G_{j}+  U_{1j})(X{ij})] + \\varepsilon_{ij}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#centering",
+    "href": "mlm-8.html#centering",
+    "title": "mlm",
+    "section": "Centering",
+    "text": "Centering\nAs a rule, each level-1 predictor is usually really 2 predictor variables. It is important to separate within-group from between group variance. Failing to do so will “smush” between and within variance to level 1.\nExample: student SES at level 1, with schools at level 2. Some kids have more money than other kids in their school Some schools have more money than other schools\nFortunately it is easy to separate this"
+  },
+  {
+    "objectID": "mlm-8.html#mlm-as-default-and-make-it-maximum",
+    "href": "mlm-8.html#mlm-as-default-and-make-it-maximum",
+    "title": "mlm",
+    "section": "MLM as default and make it maximum",
+    "text": "MLM as default and make it maximum\nIf you have data like this you should analyze like this! If you don’t, then you are losing information (GEE being a potential exception).\nThe question often is about which random effects to fit. There are multiple opinions, but mine is to start maximum, and then work downward (ie simplify) if necessary/consistent with theory. It doesn’t really hurt to include them, especially within Bayesian estimation!"
+  },
+  {
+    "objectID": "mlm-8.html#mlm-intuitions",
+    "href": "mlm-8.html#mlm-intuitions",
+    "title": "mlm",
+    "section": "MLM intuitions",
+    "text": "MLM intuitions\nAnytime you have repeated DVs you should use MLM as opposed to doing aggregation outside the model. While that should be your default, it is helpful to conceptualize why it is helpful.\n\nAggregation is bad\nRegressions within regressions (ie coefficients as outcomes)\nVariance decomposition\n\nLearning from other data through pooling/shrinkage\nParameters that depend on parameters\n\n\nlibrary(tidyverse)\n\nsimp&lt;- tribble(\n  ~ID, ~group,  ~test.score, ~study,\n1,1,5,1,\n2,1,7,3,\n3,2,4,2,\n4,2,6,4,\n5,3,3,3,\n6,3,5,5,\n7,4,2,4,\n8,4,4,6,\n9,5,1,5,\n10,5,3,7)"
+  },
+  {
+    "objectID": "mlm-8.html#ways-to-think-about-mlms",
+    "href": "mlm-8.html#ways-to-think-about-mlms",
+    "title": "mlm",
+    "section": "4 ways to think about MLMs",
+    "text": "4 ways to think about MLMs\n\nDifferent levels of analysis (average/person specific or between/within)\n\nRegressions within regressions (ie coefficients as outcomes)\n\nVariance decomposition\n\nLearning from other data through pooling/shrinkage"
+  },
+  {
+    "objectID": "mlm-8.html#standard-regression",
+    "href": "mlm-8.html#standard-regression",
+    "title": "mlm",
+    "section": "Standard regression",
+    "text": "Standard regression\n\\[{Y}_{i} = b_{0} + b_{1}X_{1} + b_{2}X_{2} + b_{3}X_{3}+... +\\epsilon_{i}\\]\n\\[\\hat{Y}_{i} = b_{0} + b_{1}X_{1} + b_{2}X_{2} + b_{3}X_{3}+...\\]\nParameters are considered fixed where one regression value corresponds to everyone. I.e., that association between X1 and Y is the same for everyone.\nEach person has a Y, denoted by the subscript i, and each has a residual associated with them, also designated by i."
+  },
+  {
+    "objectID": "mlm-8.html#handling-multiple-dvs",
+    "href": "mlm-8.html#handling-multiple-dvs",
+    "title": "mlm",
+    "section": "Handling multiple DVs?",
+    "text": "Handling multiple DVs?\nBut what if people had more than 1 DV, like we do with time? What do you do with multiple items, multiple trials, multiple ____ ?\nTwo options: 1. Collapse and average across."
+  },
+  {
+    "objectID": "mlm-8.html#example",
+    "href": "mlm-8.html#example",
+    "title": "mlm",
+    "section": "Example",
+    "text": "Example\n\nlibrary(tidyverse)\nlibrary(broom)\n\nsimp&lt;- tribble(\n  ~ID, ~group,  ~test.score, ~study,\n1,1,5,1,\n2,1,7,3,\n3,2,4,2,\n4,2,6,4,\n5,3,3,3,\n6,3,5,5,\n7,4,2,4,\n8,4,4,6,\n9,5,1,5,\n10,5,3,7)"
+  },
+  {
+    "objectID": "mlm-8.html#aggregation-obscures-hypotheses",
+    "href": "mlm-8.html#aggregation-obscures-hypotheses",
+    "title": "mlm",
+    "section": "Aggregation obscures hypotheses",
+    "text": "Aggregation obscures hypotheses\n\nBetween person H1: Do students who study more get better grades?\nWithin person H2: When a student studies, do they get better grades?\nH1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs (longitudinal but also almost any experimental situation) it is important to not aggregate."
+  },
+  {
+    "objectID": "mlm-8.html#stroop-example",
+    "href": "mlm-8.html#stroop-example",
+    "title": "mlm",
+    "section": "Stroop example",
+    "text": "Stroop example\nWe calculate stroop scores by looking at repeated trials of congruent vs not congruent. This is dummy coded such that the \\(\\beta_{1}\\) reflects the average stroop effect. How much slower are people in incongruent trials?\n\\[Y_{i} = \\beta_{0} + \\beta_{1}X_{1} + \\varepsilon_i\\]"
+  },
+  {
+    "objectID": "mlm-8.html#regressions-within-regressions",
+    "href": "mlm-8.html#regressions-within-regressions",
+    "title": "mlm",
+    "section": "regressions within regressions",
+    "text": "regressions within regressions\nHelps to take multilevel and split it into the different levels.\nLevel 1 is the smallest unit of analysis (students, waves, trials, family members)\nLevel 2 variables are what level 1 variables are “nested” in (people, schools, counties, families, dyads)\nWe are going to use level one components to run a regression, all the while level 1 is also estimating a regression"
+  },
+  {
+    "objectID": "mlm-8.html#diferent-levels-and-regressions-within-regressions",
+    "href": "mlm-8.html#diferent-levels-and-regressions-within-regressions",
+    "title": "mlm",
+    "section": "diferent levels and regressions within regressions",
+    "text": "diferent levels and regressions within regressions\nTo sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, but instead we ask regression questions at different levels of analysis.\nAt level 1 we can ask lower-unit questions e.g., if trials are nested within person, what predicts lengthier trials?\nLongitudinally, if level 1 is observations, then we can ask level 1/observation level questions like if you’re with people do you then feel happier"
+  },
+  {
+    "objectID": "mlm-8.html#variance-decomposition",
+    "href": "mlm-8.html#variance-decomposition",
+    "title": "mlm",
+    "section": "variance decomposition",
+    "text": "variance decomposition\nFor standard regression, we think of error as existing in one big bucket called \\(\\varepsilon\\) . Everything that we do not know goes into that bucket, from measurement error to unmeasured important factors.\nFor MLMs we will be breaking up ( \\(\\varepsilon\\) ) into multiple buckets. These useful “buckets” (Us) are what we refer to as random/varying effects.\n\\[Y_{trials, i} = \\beta_{0i} + \\beta_{1i}X_{trial,i} + \\varepsilon_{trial}\\] \\[\\beta_{0} = \\gamma_{00} + U_{0i}\\] \\[\\beta_{1} = \\gamma_{10} +\\gamma_{11}Z_i+ U_{1i}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#shrinkagepartial-pooling",
+    "href": "mlm-8.html#shrinkagepartial-pooling",
+    "title": "mlm",
+    "section": "shrinkage/partial pooling",
+    "text": "shrinkage/partial pooling\n\nWe treat our group variable as coming from a population. All groups are alike (because they are from the same population), but different in their own way. Because of this it is helpful to use information from other groups to help make predictions.\nWe do this in standard regression where we make predictions based on values from the whole dataset (not just binned Xs). A similar analogy for MLM is running a regression for each group. We want to pool as this leads to better predictions as we are not overfitting our data!"
+  },
+  {
+    "objectID": "mlm-8.html#complete-partial-and-no-pooling",
+    "href": "mlm-8.html#complete-partial-and-no-pooling",
+    "title": "mlm",
+    "section": "Complete, partial and no pooling",
+    "text": "Complete, partial and no pooling\n\nComplete assumes everyone is the same, with \\(U_{0i}\\) being zero for everyone.\nNo pooling is if we calculate every person’s effect with a regression, subtracting out he grand mean average.\nPartial pooling is in the middle, a weighted average between the two. For those with fewer trials there is less information for a particular individual, thus the complete pooling estimate will be given more weight. If someone has a lot of data, there weighted average is closer to no pooling.\nPartial pooling prevents both over and under fitting of your data, leading to increased out of sample predictions."
+  },
+  {
+    "objectID": "mlm-8.html#complete-pooling",
+    "href": "mlm-8.html#complete-pooling",
+    "title": "mlm",
+    "section": "Complete pooling",
+    "text": "Complete pooling\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7)) + geom_point() + stat_smooth(method=\"lm\") +ylab(\"test score\") + xlab(\"study\") +  theme(axis.ticks.y = element_blank(),\n        axis.text.y = element_blank())"
+  },
+  {
+    "objectID": "mlm-8.html#no-pooling",
+    "href": "mlm-8.html#no-pooling",
+    "title": "mlm",
+    "section": "No Pooling",
+    "text": "No Pooling\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7, group = ID)) + geom_line() +  geom_point() + facet_wrap( ~ ID) +ylab(\"test score\") + xlab(\"study\")"
+  },
+  {
+    "objectID": "mlm-8.html#partial-pooling-aka-shrinkage",
+    "href": "mlm-8.html#partial-pooling-aka-shrinkage",
+    "title": "mlm",
+    "section": "Partial pooling aka shrinkage",
+    "text": "Partial pooling aka shrinkage\n\n\nCode\nlibrary(viridis)\nggplot(mlm, aes(x = week, y = SMN7, group = ID, colour = ID)) + stat_smooth(method = \"lm\", se = FALSE, alpha = .5) +scale_color_viridis()+  ylab(\"test score\") + xlab(\"study amount\") + geom_point()"
+  },
+  {
+    "objectID": "mlm-8.html#parameters-that-depend-on-other-parameters",
+    "href": "mlm-8.html#parameters-that-depend-on-other-parameters",
+    "title": "mlm",
+    "section": "Parameters that depend on other parameters",
+    "text": "Parameters that depend on other parameters\nThe extent of shrinkage depends on a few things (eg number of observations per group) but also depends on our priors. This is known as a hyperprior\n\\[\\text{y}_{ij}  \\sim \\operatorname{Normal}(\\mu_i, \\sigma_i)\\] \\[\\mu_i  = \\beta_{0[j]}\\]\n\\[\\beta_{0[j]} \\sim \\operatorname{Normal}({\\bar \\mu},  \\sigma_0)\\] \\[{\\bar \\mu}  \\sim {\\operatorname{Normal}(0, 1.5)}\\] \\[\\sigma_0 \\sim {\\operatorname{Exponential}(1)}\\] \\[\\sigma \\sim {\\operatorname{Exponential}(1)}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#hyperprior",
+    "href": "mlm-8.html#hyperprior",
+    "title": "mlm",
+    "section": "Hyperprior",
+    "text": "Hyperprior\nWe now have a prior for the population of effects. This is a little different from what we are used to. We typically put a prior directly on parameters. Here, because are using a multi-level model, we are interested in the population of intercepts, not just a single intercept.\nIntercept in simple regression –&gt; a (prior/posterior) distribution of possible scores\nIntercept in mlm –&gt; a distribution of group/clusters of intercepts.\nNote how the population we are sampling from can have some distribution (mu, sigma), and that is different from the observed distribution of mu or the distribution of sigma"
+  },
+  {
+    "objectID": "mlm-8.html#parameters-that-depend-on-parameters",
+    "href": "mlm-8.html#parameters-that-depend-on-parameters",
+    "title": "mlm",
+    "section": "Parameters that depend on parameters",
+    "text": "Parameters that depend on parameters\n\n\nCode\n# normal density\nlibrary(beyonce)\nlibrary(patchwork)\n\nbp &lt;- beyonce_palette(128, n = 9, type = \"continuous\")\n\n\np1 &lt;-\n  tibble(x = seq(from = -3, to = 3, by = .1)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 0, y = .2,\n           label = \"normal\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = c(0, 1.5), y = .6,\n           label = c(\"italic(M)[0]\", \"italic(S)[0]\"), \n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# half-normal density\np2 &lt;-\n  tibble(x = seq(from = 0, to = 3, by = .01)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 1.5, y = .2,\n           label = \"half-normal\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = 1.5, y = .6,\n           label = \"0*','*~italic(S)[sigma][0]\", \n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\nmy_arrow &lt;- arrow(angle = 20, length = unit(0.35, \"cm\"), type = \"closed\")\n\n\n# a second normal density\np3 &lt;-\n  tibble(x = seq(from = -3, to = 3, by = .1)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 0, y = .2,\n           label = \"normal\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = c(0, 1.5), y = .6,\n           label = c(\"italic(M)[1]\", \"italic(S)[1]\"), \n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# a second half-normal density\np4 &lt;-\n  tibble(x = seq(from = 0, to = 3, by = .01)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 1.5, y = .2,\n           label = \"half-normal\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = 1.5, y = .6,\n           label = \"0*','*~italic(S)[sigma][1]\", \n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# four annotated arrows\np5 &lt;-\n  tibble(x    = c(.05, .35, .65, .95),\n         y    = c(1, 1, 1, 1),\n         xend = c(.32, .4, .65, .72),\n         yend = c(.2, .2, .2, .2)) %&gt;%\n  \n  ggplot(aes(x = x, xend = xend,\n             y = y, yend = yend)) +\n  geom_segment(arrow = my_arrow, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = c(.15, .35, .625, .78), y = .55,\n           label = \"'~'\",\n           size = 10, color = bp[1], family = \"Times\", parse = T) +\n  xlim(0, 1) +\n  theme_void()\n\n# third normal density\np6 &lt;-\n  tibble(x = seq(from = -3, to = 3, by = .1)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 0, y = .2,\n           label = \"normal\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = c(0, 1.5), y = .6,\n           label = c(\"mu[0]\", \"sigma[0]\"), \n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# fourth normal density\np7 &lt;-\n  tibble(x = seq(from = -3, to = 3, by = .1)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 0, y = .2,\n           label = \"normal\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = c(0, 1.5), y = .6,\n           label = c(\"mu[1]\", \"sigma[1]\"), \n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# two annotated arrows\np8 &lt;-\n  tibble(x    = c(.18, .82),\n         y    = c(1, 1),\n         xend = c(.36, .55),\n         yend = c(0, 0)) %&gt;%\n  \n  ggplot(aes(x = x, xend = xend,\n             y = y, yend = yend)) +\n  geom_segment(arrow = my_arrow, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = c(.18, .33, .64, .77), y = .55,\n           label = c(\"'~'\", \"italic(j)\", \"'~'\", \"italic(j)\"),\n           size = c(10, 7, 10, 7), \n           color = bp[1], family = \"Times\", parse = T) +\n  xlim(0, 1) +\n  theme_void()\n\n# exponential density\np9 &lt;-\n  tibble(x = seq(from = 0, to = 1, by = .01)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dexp(x, 2) / max(dexp(x, 2))))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = .5, y = .2,\n           label = \"exp\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = .5, y = .6,\n           label = \"italic(K)\",\n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# likelihood formula\np10 &lt;-\n  tibble(x = .5,\n         y = .25,\n         label = \"beta[0][italic(j)]+beta[1][italic(j)]*italic(x)[italic(i)*'|'*italic(j)]\") %&gt;% \n  \n  ggplot(aes(x = x, y = y, label = label)) +\n  geom_text(size = 7, color = bp[1], parse = T, family = \"Times\") +\n  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +\n  ylim(0, 1) +\n  theme_void()\n\n# half-normal density\np11 &lt;-\n  tibble(x = seq(from = 0, to = 3, by = .01)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dnorm(x)) / max(dnorm(x)))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 1.5, y = .2,\n           label = \"half-normal\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = 1.5, y = .6,\n           label = \"0*','*~italic(S)[sigma]\", \n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# four annotated arrows\np12 &lt;-\n  tibble(x    = c(.43, .43, 1.5, 2.5),\n         y    = c(1, .55, 1, 1),\n         xend = c(.43, 1.225, 1.5, 1.75),\n         yend = c(.8, .15, .2, .2)) %&gt;%\n  \n  ggplot(aes(x = x, xend = xend,\n             y = y, yend = yend)) +\n  geom_segment(arrow = my_arrow, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = c(.3, .7, 1.38, 2), y = c(.92, .22, .65, .6),\n           label = c(\"'~'\", \"'='\", \"'='\", \"'~'\"),\n           size = 10, \n           color = bp[1], family = \"Times\", parse = T) +\n  annotate(geom = \"text\",\n           x = .43, y = .7,\n           label = \"nu*minute+1\",\n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  xlim(0, 3) +\n  theme_void()\n\n# student-t density\np13 &lt;-\n  tibble(x = seq(from = -3, to = 3, by = .1)) %&gt;% \n  ggplot(aes(x = x, ymin = 0, ymax = (dt(x, 3) / max(dt(x, 3))))) +\n  geom_ribbon(fill = bp[6], size = 0) +\n  annotate(geom = \"text\",\n           x = 0, y = .2,\n           label = \"student t\",\n           size = 7, color = bp[1]) +\n  annotate(geom = \"text\",\n           x = 0, y = .6,\n           label = \"nu~~mu[italic(i)*'|'*italic(j)]~~sigma\",\n           size = 7, color = bp[1], family = \"Times\", parse = T) +\n  scale_x_continuous(expand = c(0, 0)) +\n  theme_void() +\n  theme(axis.line.x = element_line(size = 0.5, color = bp[1]))\n\n# the final annotated arrow\np14 &lt;-\n  tibble(x     = c(.375, .625),\n         y     = c(1/3, 1/3),\n         label = c(\"'~'\", \"italic(i)*'|'*italic(j)\")) %&gt;% \n  \n  ggplot(aes(x = x, y = y, label = label)) +\n  geom_text(size = c(10, 7), color = bp[1], parse = T, family = \"Times\") +\n  geom_segment(x = .5, xend = .5,\n               y = 1, yend = 0, \n               color = bp[1], arrow = my_arrow) +\n  xlim(0, 1) +\n  theme_void()\n\n# some text\np15 &lt;-\n  tibble(x     = .5,\n         y     = .5,\n         label = \"italic(y)[italic(i)*'|'*italic(j)]\") %&gt;% \n  \n  ggplot(aes(x = x, y = y, label = label)) +\n  geom_text(size = 7, color = bp[1], parse = T, family = \"Times\") +\n  xlim(0, 1) +\n  theme_void()\n\n# define the layout\nlayout &lt;- c(\n  area(t = 1, b = 2, l = 1, r = 3),\n  area(t = 1, b = 2, l = 5, r = 7),\n  area(t = 1, b = 2, l = 9, r = 11),\n  area(t = 1, b = 2, l = 13, r = 15),\n  area(t = 4, b = 5, l = 5, r = 7),\n  area(t = 4, b = 5, l = 9, r = 11),\n  area(t = 3, b = 4, l = 1, r = 15),\n  area(t = 7, b = 8, l = 3, r = 5),\n  area(t = 7, b = 8, l = 7, r = 9),\n  area(t = 7, b = 8, l = 11, r = 13),\n  area(t = 6, b = 7, l = 5, r = 11),\n  area(t = 10, b = 11, l = 7, r = 9),\n  area(t = 9, b = 10, l = 3, r = 13),\n  area(t = 12, b = 12, l = 7, r = 9),\n  area(t = 13, b = 13, l = 7, r = 9)\n)\n\n# combine and plot!\n(p1 + p2 + p3 + p4 + p6 + p7 + p5 + p9 + p10 + p11 + p8 + p13 + p12 + p14 + p15) + \n  plot_layout(design = layout) &\n  ylim(0, 1) &\n  theme(plot.margin = margin(0, 5.5, 0, 5.5))"
+  },
+  {
+    "objectID": "mlm-8.html#parameters-that-depend-on-parameters-1",
+    "href": "mlm-8.html#parameters-that-depend-on-parameters-1",
+    "title": "mlm",
+    "section": "Parameters that depend on parameters",
+    "text": "Parameters that depend on parameters"
+  },
+  {
+    "objectID": "mlm-8.html#partial-poolingshrinkage",
+    "href": "mlm-8.html#partial-poolingshrinkage",
+    "title": "mlm",
+    "section": "Partial pooling/Shrinkage",
+    "text": "Partial pooling/Shrinkage\n\\[\\text{y}_{ij}  \\sim \\operatorname{Normal}(\\mu_i, \\sigma_i)\\]\n\\[\\mu_i  = \\beta_{0[i]}\\]\n\\[\\beta_{0[j]} \\sim \\operatorname{Normal}({\\bar \\mu},  \\sigma_0)\\] \\[{\\bar \\mu}  \\sim {\\operatorname{Normal}(0, 1.5)}\\]\n\\[\\sigma_0 \\sim {\\operatorname{Normal}(0, 1.5)}\\]\n\\[\\sigma \\sim {\\operatorname{Exponential}(1)}\\]\n\\(\\sigma_0\\) can turn on/off/adjust shrinkage. Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling. We use our prior of \\(\\sigma_0\\) plus our data to get an estimate of the prior for \\(\\beta_{0[j]}\\). This is how we accurately partial pool."
+  },
+  {
+    "objectID": "mlm-8.html#level-1-predictors-1",
+    "href": "mlm-8.html#level-1-predictors-1",
+    "title": "mlm",
+    "section": "level 1 predictors",
+    "text": "level 1 predictors\n\\[\\text{y}_{ij}  \\sim \\operatorname{Normal}(\\mu_i, \\sigma)\\] \\[\\mu_i  = \\beta_{0[j]} + \\beta_{1[j]}Time_{ij}\\]\n\\[\\beta_{0[j]} \\sim \\operatorname{Normal}({\\bar \\mu}, \\sigma_0)\\] \\[{\\bar \\mu}  \\sim {\\operatorname{Normal}(0, 1.5)}\\] \\[\\sigma_0 \\sim {\\operatorname{Exponential}(1)}\\] \\[\\beta_{1[j]} \\sim {\\operatorname{Normal}(0, 1.5)}\\] \\[\\sigma \\sim {\\operatorname{Exponential}(1)}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#random-slopes",
+    "href": "mlm-8.html#random-slopes",
+    "title": "mlm",
+    "section": "Random slopes",
+    "text": "Random slopes\n\nModeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution\nInvolves lots of interactions\n\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2: \\[{\\beta}_{0j} = \\gamma_{00} + \\gamma_{01}G_{j} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + \\gamma_{11}G_{j} + U_{1j}\\]\n\\[\\begin{pmatrix} {U}_{0j} \\\\ {U}_{1j} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#random-slopes-1",
+    "href": "mlm-8.html#random-slopes-1",
+    "title": "mlm",
+    "section": "Random slopes",
+    "text": "Random slopes\n\\[y_i \\sim \\text{Normal}(\\mu, \\sigma)\\] \\[\\mu_i = \\beta_{0j} + \\beta_{1j}X_{ij}\\] \\[(\\beta_{0j}, \\beta_{1j}) \\sim \\text{MVNormal}  ([\\beta_0, \\beta_1], \\Sigma)\\]\n\\[\\Sigma =\n\\left(\\begin{array}{cc}\n\\sigma_{\\beta_0}&0\\\\\n0&\\sigma_{\\beta_1}\n\\end{array}\\right)R\n\\left(\\begin{array}{cc}\n\\sigma_{\\beta_0}&0\\\\\n0&\\sigma_{\\beta_1}\n\\end{array}\\right)\\] \\[\\beta_0 \\sim \\text{Normal}(0, 1)\\]\n\\[\\beta_1 \\sim \\text{Normal}(0, 1)\\] \\[\\sigma_{\\beta_0} \\sim \\text{Exponential}(1)\\] \\[\\sigma_{\\beta_1} \\sim \\text{Exponential}(1)\\] \\[\\sigma \\sim \\text{Exponential}(1)\\] \\[R \\sim \\text{LKJcorr(2)}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#lkj",
+    "href": "mlm-8.html#lkj",
+    "title": "mlm",
+    "section": "lkj",
+    "text": "lkj\nOur regularizing prior for correlation matrices. Has one parameter to tune the potential associations.\n\n\nCode\nlibrary(forcats)\n\nexpand.grid(\n  eta = 1:8,\n  K = 2:6\n) %&gt;%\n  ggplot(aes(y = fct_rev(ordered(eta)), dist = \"lkjcorr_marginal\", arg1 = K, arg2 = eta)) +\n  stat_dist_slab() +\n  facet_grid(~ paste0(K, \"x\", K)) +\n  labs(\n    title = paste0(\n      \"LKJ(eta) prior on different matrix sizes:\\n\"\n    ),\n    y = \"eta\",\n    x = \"Marginal correlation\"\n  ) +\n  theme(axis.title = element_text(hjust = 0))"
+  },
+  {
+    "objectID": "mlm-8.html#making-predictions",
+    "href": "mlm-8.html#making-predictions",
+    "title": "mlm",
+    "section": "Making predictions",
+    "text": "Making predictions\nWe often want to make predictions for different groups or individuals. The previous slide is one example. We made these predictions using/borrowing information from other individuals, through partial pooling. This improves our predictions.\nCan we improve it further? Think about predictions in presidential races, or think about if we want to make some decision for a cancer drug. Do we stick with these standard MLM based predictions?"
+  },
+  {
+    "objectID": "mlm-8.html#mr.-p",
+    "href": "mlm-8.html#mr.-p",
+    "title": "mlm",
+    "section": "Mr. P",
+    "text": "Mr. P\nImproving predictions by incorporating outside (of the model) information. MRP = multilevel regression with poststratification\nOne of the biggest problems with psych data is that it is unrepresentative. (Do you trust undergrads or adults off the street wanting to help science?) Often survey weights are used. But if we know the distribution of the broader population, we can reweight (post-stratify) our results to get more accurate estimates. Instead of making assumptions about how the observed sample was produced from the population, we make assumptions about how the observed sample can be used to reconstruct the rest of the population"
+  },
+  {
+    "objectID": "mlm-8.html#weighting-vs-postratifying",
+    "href": "mlm-8.html#weighting-vs-postratifying",
+    "title": "mlm",
+    "section": "Weighting vs postratifying",
+    "text": "Weighting vs postratifying\nWeighting is done all the time with data. It gives more or less “weight” to observations that are over or under sampled. Some people “count” more than others in the service of getting data that represents some population.\nPoststratification is similar in that it weights the posterior samples rather than the observations.\nWhy is this preferred? A few reasons, but mainly one can make generalization to new groups or groups with little data. Rather than weighting those specific individuals, partial pooling from other information will help with learning"
+  },
+  {
+    "objectID": "mlm-8.html#mr.p-not-limited-to-surveys",
+    "href": "mlm-8.html#mr.p-not-limited-to-surveys",
+    "title": "mlm",
+    "section": "Mr.P Not limited to surveys",
+    "text": "Mr.P Not limited to surveys\nExample (using brms) with experimental data – can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf"
   }
 ]

@@ -921,6 +921,14 @@ zips %>%
 ```
 
 
+--------
+
+
+```{r}
+pp_check(glm.10x)
+```
+
+
 
 ## Hurdle models/zero augmented
 
@@ -1006,6 +1014,14 @@ plot_predictions(
     condition = "x") +
     labs(y = "hu")
 ```
+
+
+------
+
+```{r}
+pp_check(glm.11x)
+```
+
 
 
 
@@ -1492,6 +1508,7 @@ glm.14 <-
 ```{r}
 summary(glm.14)
 ```
+
 
 
 
