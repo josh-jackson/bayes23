@@ -129,7 +129,7 @@ $${\beta}_{1j} = \gamma_{10}$$
 
 
 
-## Predictions for a person
+----------
 
 Level 1:
  
@@ -1879,7 +1879,7 @@ summary(test)
 
 ---------
   
-```{r} 
+```{r, eval = FALSE} 
  
 mlm.5 <- 
   brm(family = gaussian,
@@ -1904,20 +1904,20 @@ mlm.5 <-
 
 747 parameters in our posterior 
 ```{r}
-get_variables(mlm.5)
+# get_variables(mlm.5)
 ```
 
 ---------
 
 
 ```{r}
-summary(mlm.5)
+#summary(mlm.5)
 
 ```
 
 -----------
 
-```{r}
+```{r, eval = FALSE}
 #| code-fold: true
 partially_pooled_params2 <-
   coef(mlm.5)$ID [ , 1, 1:2] %>%
@@ -1956,7 +1956,7 @@ p2
 
 ------------
 
-```{r}
+```{r, eval = FALSE }
 #| code-fold: true
 mlm.5 %>%
   spread_draws(b_W.other, r_ID[ID, term]) %>%
