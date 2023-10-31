@@ -11,12 +11,17 @@ html:
 
 
 
+------------
+
+![](chelsea.jpeg)
+
+
 
 ## MLM review 
 
 $${\hat{Y}}_{i} = b_{0} + b_{1}X_{i} +  ... +\epsilon_{i}$$
 
-$${\hat{Y}}_{ij} = b_{0} + b_{1}X_{ij} + ... +\epsilon_{i}$$
+$${\hat{Y}}_{ij} = b_{0} + b_{1}X_{ij} + ... +\epsilon_{ij}$$
 Where j refers to some clustering or grouping variable and i refers to the observations within j
 
 ```{r}
@@ -69,8 +74,8 @@ $${Y}_{ij} = \beta_{0j}  + \varepsilon_{ij}$$
 Level 2
 $${\beta}_{0j} = \gamma_{00} + U_{0j}$$
 
-$${U}_{0j} \sim \mathcal{N}(0, \tau_{00}^{2})$$
-$${e}_{ij} \sim \mathcal{N}(0, \sigma^{2})$$
+$${U}_{0j} \sim\mathcal{N}(0, \tau_{00}^{2})$$
+$${e}_{ij} \sim\mathcal{N}(0, \sigma^{2})$$
 
 
 
@@ -244,73 +249,6 @@ Anytime you have repeated DVs you should use MLM as opposed to doing aggregation
 5. Parameters that depend on parameters
 
 
-```{r, message = FALSE}
-library(tidyverse)
-
-simp<- tribble(
-  ~ID, ~group,  ~test.score, ~study,
-1,1,5,1,
-2,1,7,3,
-3,2,4,2,
-4,2,6,4,
-5,3,3,3,
-6,3,5,5,
-7,4,2,4,
-8,4,4,6,
-9,5,1,5,
-10,5,3,7)
-```
-
--------
-
-
-```{r, echo=FALSE}
-simp %>% 
-ggplot(aes(x=study, y=test.score)) +
-    geom_point(aes(colour = factor(group)))
-```
-
--------
-
- What is the between person association between study and score? 
-```{r, echo = FALSE, message=FALSE}
-simp.1<- tribble(
-  ~ID, ~group,  ~test.score, ~study,
-  1,1,6,2,
-  2,2,5,3,
-  3,3,4,4,
-  4,4,3,5,
-  5,5,2,6)
-```
-
-
-```{r, echo=FALSE, message=FALSE}
-simp.1 %>% 
-ggplot(aes(x=study, y=test.score)) +
-    geom_point() +    
-    geom_smooth(method=lm, se=FALSE) +
-  geom_point(data = simp, aes(colour = factor(group)))
-```
-
----------
-
-What is the within person association?
-
-```{r, echo = FALSE, message=FALSE}
-simp %>% 
-ggplot(aes(x=study, y=test.score, group = group)) +
-    geom_point(aes(colour = factor(group))) +   
-    geom_smooth(aes(colour = factor(group)),method=lm,se=FALSE)
-```
-
-
-## 4 ways to think about MLMs
-
-1.  Different levels of analysis (average/person specific or between/within)\
-2.  Regressions within regressions (ie coefficients as outcomes)\
-3.  Variance decomposition\
-4.  Learning from other data through pooling/shrinkage
-
 ## Standard regression
 
 $${Y}_{i} = b_{0} + b_{1}X_{1} + b_{2}X_{2} + b_{3}X_{3}+... +\epsilon_{i}$$
@@ -329,7 +267,8 @@ Two options: 1. Collapse and average across.
 
 ## Example
 
-```{r, message = FALSE}
+```{r}
+#| code-fold: true
 library(tidyverse)
 library(broom)
 
