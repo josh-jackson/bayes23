@@ -19,9 +19,9 @@ html:
 
 ## MLM review 
 
-$${\hat{Y}}_{i} = b_{0} + b_{1}X_{i} +  ... +\epsilon_{i}$$
+$${Y}_{i} = b_{0} + b_{1}X_{i} +  ... +\epsilon_{i}$$
 
-$${\hat{Y}}_{ij} = b_{0} + b_{1}X_{ij} + ... +\epsilon_{ij}$$
+$${Y}_{ij} = b_{0} + b_{1}X_{ij} + ... +\epsilon_{ij}$$
 Where j refers to some clustering or grouping variable and i refers to the observations within j
 
 ```{r}
@@ -98,7 +98,9 @@ Akin to ANOVA if we treat $U_{0j}$ as between subjects variance & $\varepsilon_{
 
 ## Random and fixed effects
 
+:::: {.columns}
 
+::: {.column width="40%"}
 Level 1:
 $${Y}_{ij} = \beta_{0j}  + \varepsilon_{ij}$$
 
@@ -107,9 +109,15 @@ $${\beta}_{0j} = \gamma_{00} + U_{0j}$$
 Combined:
 $${Y}_{ij} = \gamma_{00} + U_{0j}  + \varepsilon_{ij}$$
 
+:::
+
+::: {.column width="60%"}
 $U_{0j}$ is considered a random effect, as it is varies across our grouping
 
 $\gamma_{00}$ is considered a fixed effect, as it is what is fixed (average) across our grouping
+:::
+
+::::
 
 
 
@@ -244,24 +252,15 @@ Anytime you have repeated DVs you should use MLM as opposed to doing aggregation
 
 1. Aggregation is bad 
 2. Regressions within regressions (ie coefficients as outcomes) 
-3. Variance decomposition  
-4. Learning from other data through pooling/shrinkage
-5. Parameters that depend on parameters
+3. Questions at different levels
+4. Variance decomposition  
+5. Learning from other data through pooling/shrinkage
+6. Parameters that depend on parameters
 
-
-## Standard regression
-
-$${Y}_{i} = b_{0} + b_{1}X_{1} + b_{2}X_{2} + b_{3}X_{3}+... +\epsilon_{i}$$
-
-$$\hat{Y}_{i} = b_{0} + b_{1}X_{1} + b_{2}X_{2} + b_{3}X_{3}+...$$
-
-Parameters are considered fixed where one regression value corresponds to everyone. I.e., that association between X1 and Y is the same for everyone.
-
-Each person has a Y, denoted by the subscript i, and each has a residual associated with them, also designated by i.
 
 ## Handling multiple DVs?
 
-But what if people had more than 1 DV, like we do with time? What do you do with multiple items, multiple trials, multiple \_\_\_\_ ?
+What if people had more than 1 DV, like we do with time? What do you do with multiple items, multiple trials, multiple \_\_\_\_ ?
 
 Two options: 1. Collapse and average across.
 
@@ -323,13 +322,28 @@ ggplot(aes(x=study, y=test.score, group = group)) +
     geom_smooth(aes(colour = factor(group)),method=lm,se=FALSE)
 ```
 
-## Aggregation obscures hypotheses
+## 1. Aggregation obscures hypotheses
 
 -   Between person H1: Do students who study more get better grades?
 
 -   Within person H2: When a student studies, do they get better grades?
 
--   H1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs (longitudinal but also almost any experimental situation) it is important to not aggregate.
+-   H1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs it is important to not aggregate.
+
+- #compositeskill
+
+
+## 2. Regressions within regressions
+
+Helps to take multilevel and split it into the different levels.
+
+Level 1 is the smallest unit of analysis (students, waves, trials, family members)
+
+Level 2 variables are what level 1 variables are "nested" in (people, schools, counties, families, dyads)
+
+We are going to use level one components to run a regression, all the while level 1 is also estimating a regression. (Coefficents as outcomes)
+
+------------------------------------------------------------------------
 
 
 ## Stroop example
@@ -340,23 +354,7 @@ $$Y_{i} = \beta_{0} + \beta_{1}X_{1} + \varepsilon_i$$
 
 ------------------------------------------------------------------------
 
-What if we ran a separate regression for everyone? We can then think of $\beta_{1}$ as a PERSON SPECIFIC EFFECT. What is the stoop effect for you?
 
-We could think of $\beta_{1}$ as a random variable where people deviate on stroop effect from the average (ie fixed effect). You can then treat this as a regression, complete with a residual.
-
-$$\beta_{1} = \gamma_{10} +\gamma_{11}Z_i+ U_{1i}$$
-
-## regressions within regressions
-
-Helps to take multilevel and split it into the different levels.
-
-Level 1 is the smallest unit of analysis (students, waves, trials, family members)
-
-Level 2 variables are what level 1 variables are "nested" in (people, schools, counties, families, dyads)
-
-We are going to use level one components to run a regression, all the while level 1 is also estimating a regression
-
-------------------------------------------------------------------------
 
 $$Y_{trials, i} = \beta_{0i} + \beta_{1i}X_{trial,i} + \varepsilon_{trial,i}$$
 
@@ -402,23 +400,25 @@ example %>% group_by(ID) %>%
   stat_dotsinterval() + ylab("density")
 ```
 
-## diferent levels and regressions within regressions
 
-To sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, but instead we ask regression questions at different levels of analysis.
+## 3. Diferent levels 
 
-At level 1 we can ask lower-unit questions e.g., if trials are nested within person, what predicts lengthier trials?
+To sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, and conduct  regressions from regressions. (Regression inception) 
 
-Longitudinally, if level 1 is observations, then we can ask level 1/observation level questions like if you're with people do you then feel happier
+The third way is to think of questions at different levels. At level 1 we can ask lower-unit questions e.g., if trials are nested within person, what predicts lengthier trials?
+
+If level 1 is made up of repeated observations, then we can ask level 1/observation level questions like does failure at the trial level impact future trial performance. 
 
 ------------------------------------------------------------------------
 
 At level 2 we can ask broader-unit questions. E.g., is age associated with stroop differences
 
-Longitudinally, if level 2 is people, then we can ask level 2/person level questions like if you have more social support are you happier
+Often level 2 is between person variables. 
 
 Both levels are simple regressions. Level 2 uses coefficients from level 1 as DVs. Level 1 variables are time varying, level 2 variables are time invariant
 
-## variance decomposition
+
+## 4. Variance decomposition
 
 For standard regression, we think of error as existing in one big bucket called $\varepsilon$ . Everything that we do not know goes into that bucket, from measurement error to unmeasured important factors.
 
@@ -428,27 +428,28 @@ $$Y_{trials, i} = \beta_{0i} + \beta_{1i}X_{trial,i} + \varepsilon_{trial}$$ $$\
 
 ------------------------------------------------------------------------
 
-::: columns
-::: {.column width="50%"}
-![](btw.png)
-:::
 
-::: {.column width="50%"}
+![](btw.png)
+
+Assume a simple intercept only model where we aggregate across types of trials. 
+
+
+---------
+
 ![](win.png)
-:::
-:::
+
+
+A MLM intercept only model takes what was previously chalked up to error and reassigns it into person specific "buckets"
 
 ------------------------------------------------------------------------
 
-Random effects used to be error, but they are going to be useful going forward.
+Model for the means (like normal) and now we have a model for the variance (random effects!)
 
-We will treat them as variables themselves e.g. individual differences in how people change
+We will treat random effects as variables themselves e.g. individual differences in reaction time or stroop effect. They index how much people DIFFER on some effect. e.g. does everyone show the same stroop effect?
 
-They index how much people DIFFER on some effect. e.g. does everyone change the same, or are there differences in how people change?
+We can relate the random effects to other random effects e.g., do people who show an effect have a slower reaction time?
 
-We can relate the random effects to other random effects e.g., do people who increase on X also start higher on X.
-
-## shrinkage/partial pooling
+## 5. Shrinkage/partial pooling
 
 -   We treat our group variable as coming from a population. All groups are alike (because they are from the same population), but different in their own way. Because of this it is helpful to use information from other groups to help make predictions.
 
@@ -456,13 +457,14 @@ We can relate the random effects to other random effects e.g., do people who inc
 
 ------------------------------------------------------------------------
 
-If we take our simplified stroop effect model, where we are only looking at reaction time as a DV (ignoring the different types of trials) we could fit a model like this (an empty model)
+If we take our simplified stroop effect model (an empty model)
 
 $$Y_{trials, i} = \beta_{0i} +  \varepsilon_{trial}$$
 
 $$\beta_{0} = \gamma_{00} + U_{0i}$$
 
 Where does $U_{0i}$ come from? If we calculated each by hand, through taking the average reaction time for a person i and subtracting that from the grand mean reaction time, would that equal $U_{0i}$ ?
+
 
 ## Complete, partial and no pooling
 
@@ -475,9 +477,9 @@ Where does $U_{0i}$ come from? If we calculated each by hand, through taking the
 -   Partial pooling prevents both over and under fitting of your data, leading to increased out of sample predictions.
 
 
-
-
 ## Complete pooling
+
+Ignores any dependency. Treats people as exchangeable. ANOVA equivalent. 
 
 ```{r}
 #| code-fold: true
@@ -489,6 +491,7 @@ ggplot(mlm, aes(x = week, y = SMN7)) + geom_point() + stat_smooth(method="lm") +
 
 ## No Pooling
 
+Everyone is unqiue and we cannot learn from how others perform. 
 ```{r}
 #| code-fold: true
 
@@ -506,14 +509,19 @@ library(viridis)
 ggplot(mlm, aes(x = week, y = SMN7, group = ID, colour = ID)) + stat_smooth(method = "lm", se = FALSE, alpha = .5) +scale_color_viridis()+  ylab("test score") + xlab("study amount") + geom_point()
 ```
 
+-------------
+
+Partial pooling aka shrinkage provides the optimal amount of learning from others. Assumes people come from the same distribution but are distinct from one another. 
+
+If you have a little data, then the safe bet is to look at the average. If you have a lot of data, you can ignore others. 
+
+In a way, this is similar to Bayesian reasoning where learning is based on how much information you have about a person with other people serving as a prior. 
 
 
-## Parameters that depend on other parameters
+## 6. Parameters that depend on other parameters
 
 
-The extent of shrinkage depends on a few things (eg number of observations per group) but also depends on our priors. This is known as a hyperprior
-
-$$\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma_i)$$
+$$\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)$$
 $$\mu_i  = \beta_{0[j]}$$ 
 
 $$\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)$$
@@ -524,15 +532,12 @@ $$\sigma \sim {\operatorname{Exponential}(1)}$$
 
 ## Hyperprior
 
-We now have a prior for the population of effects. This is a little different from what we are used to. We typically put a prior directly on parameters. Here, because are using a multi-level model, we are interested in the population of intercepts, not just a single intercept. 
+We now have a prior for the population of effects. We typically put a prior directly on parameters. Here, because are using a multilevel model, we are interested in the population of intercepts, not just a single intercept. 
 
 Intercept in simple regression --> a (prior/posterior) distribution of possible scores
 
 Intercept in mlm --> a distribution of group/clusters of intercepts. 
-
-Note how the population we are sampling from can have some distribution (mu, sigma), and that is different from the observed distribution of mu or the distribution of sigma
-
-
+The population we are sampling from can have a distribution (mu, sigma), and that distribution is different from the observed distribution of mu (or sigma)
 
 
 ## Parameters that depend on parameters
@@ -891,7 +896,7 @@ The population is larger than what we have. This is true for almost anything we 
 
 $$\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)$$
 $$\mu_i  = \beta_{0[j]}$$ 
-This line indicates we have varying intercepts that vary over individual j. Much like going from level 1 -> 2, we do priors on that parameter. Indicates that there is a distribution FOR EACH PERSON/GROUP. The distribution needs a prior. 
+This line indicates we have varying intercepts that vary over individual j. Each parameter estimated needs a prior. 
 $$\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)$$
 $${\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}$$
 $$\sigma_0 \sim {\operatorname{Exponential}(1)}$$

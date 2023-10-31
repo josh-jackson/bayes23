@@ -401,8 +401,8 @@
 <img data-src="chelsea.jpeg" class="r-stretch"></section>
 <section id="mlm-review" class="slide level2">
 <h2>MLM review</h2>
-<p><span class="math display">\[{\hat{Y}}_{i} = b_{0} + b_{1}X_{i} +  ... +\epsilon_{i}\]</span></p>
-<p><span class="math display">\[{\hat{Y}}_{ij} = b_{0} + b_{1}X_{ij} + ... +\epsilon_{ij}\]</span> Where j refers to some clustering or grouping variable and i refers to the observations within j</p>
+<p><span class="math display">\[{Y}_{i} = b_{0} + b_{1}X_{i} +  ... +\epsilon_{i}\]</span></p>
+<p><span class="math display">\[{Y}_{ij} = b_{0} + b_{1}X_{ij} + ... +\epsilon_{ij}\]</span> Where j refers to some clustering or grouping variable and i refers to the observations within j</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>data <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/josh-jackson/bayes/master/mlm.csv"</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -445,10 +445,15 @@
 </section>
 <section id="random-and-fixed-effects" class="slide level2">
 <h2>Random and fixed effects</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
 <p>Level 1: <span class="math display">\[{Y}_{ij} = \beta_{0j}  + \varepsilon_{ij}\]</span></p>
 <p>Level 2: <span class="math display">\[{\beta}_{0j} = \gamma_{00} + U_{0j}\]</span> Combined: <span class="math display">\[{Y}_{ij} = \gamma_{00} + U_{0j}  + \varepsilon_{ij}\]</span></p>
+</div><div class="column" style="width:60%;">
 <p><span class="math inline">\(U_{0j}\)</span> is considered a random effect, as it is varies across our grouping</p>
 <p><span class="math inline">\(\gamma_{00}\)</span> is considered a fixed effect, as it is what is fixed (average) across our grouping</p>
+</div>
+</div>
 </section>
 <section id="level-1-predictors" class="slide level2">
 <h2>Level 1 predictors</h2>
@@ -526,22 +531,16 @@
 <ol type="1">
 <li>Aggregation is bad</li>
 <li>Regressions within regressions (ie coefficients as outcomes)</li>
+<li>Questions at different levels</li>
 <li>Variance decomposition<br>
 </li>
 <li>Learning from other data through pooling/shrinkage</li>
 <li>Parameters that depend on parameters</li>
 </ol>
 </section>
-<section id="standard-regression" class="slide level2">
-<h2>Standard regression</h2>
-<p><span class="math display">\[{Y}_{i} = b_{0} + b_{1}X_{1} + b_{2}X_{2} + b_{3}X_{3}+... +\epsilon_{i}\]</span></p>
-<p><span class="math display">\[\hat{Y}_{i} = b_{0} + b_{1}X_{1} + b_{2}X_{2} + b_{3}X_{3}+...\]</span></p>
-<p>Parameters are considered fixed where one regression value corresponds to everyone. I.e., that association between X1 and Y is the same for everyone.</p>
-<p>Each person has a Y, denoted by the subscript i, and each has a residual associated with them, also designated by i.</p>
-</section>
 <section id="handling-multiple-dvs" class="slide level2">
 <h2>Handling multiple DVs?</h2>
-<p>But what if people had more than 1 DV, like we do with time? What do you do with multiple items, multiple trials, multiple ____ ?</p>
+<p>What if people had more than 1 DV, like we do with time? What do you do with multiple items, multiple trials, multiple ____ ?</p>
 <p>Two options: 1. Collapse and average across.</p>
 </section>
 <section id="example" class="slide level2">
@@ -578,30 +577,25 @@
 
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
 <section id="aggregation-obscures-hypotheses" class="slide level2">
-<h2>Aggregation obscures hypotheses</h2>
+<h2>1. Aggregation obscures hypotheses</h2>
 <ul>
 <li><p>Between person H1: Do students who study more get better grades?</p></li>
 <li><p>Within person H2: When a student studies, do they get better grades?</p></li>
-<li><p>H1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs (longitudinal but also almost any experimental situation) it is important to not aggregate.</p></li>
+<li><p>H1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs it is important to not aggregate.</p></li>
+<li><p>#compositeskill</p></li>
 </ul>
+</section>
+<section id="regressions-within-regressions" class="slide level2">
+<h2>2. Regressions within regressions</h2>
+<p>Helps to take multilevel and split it into the different levels.</p>
+<p>Level 1 is the smallest unit of analysis (students, waves, trials, family members)</p>
+<p>Level 2 variables are what level 1 variables are “nested” in (people, schools, counties, families, dyads)</p>
+<p>We are going to use level one components to run a regression, all the while level 1 is also estimating a regression. (Coefficents as outcomes)</p>
 </section>
 <section id="stroop-example" class="slide level2">
 <h2>Stroop example</h2>
 <p>We calculate stroop scores by looking at repeated trials of congruent vs not congruent. This is dummy coded such that the <span class="math inline">\(\beta_{1}\)</span> reflects the average stroop effect. How much slower are people in incongruent trials?</p>
 <p><span class="math display">\[Y_{i} = \beta_{0} + \beta_{1}X_{1} + \varepsilon_i\]</span></p>
-</section>
-<section class="slide level2">
-
-<p>What if we ran a separate regression for everyone? We can then think of <span class="math inline">\(\beta_{1}\)</span> as a PERSON SPECIFIC EFFECT. What is the stoop effect for you?</p>
-<p>We could think of <span class="math inline">\(\beta_{1}\)</span> as a random variable where people deviate on stroop effect from the average (ie fixed effect). You can then treat this as a regression, complete with a residual.</p>
-<p><span class="math display">\[\beta_{1} = \gamma_{10} +\gamma_{11}Z_i+ U_{1i}\]</span></p>
-</section>
-<section id="regressions-within-regressions" class="slide level2">
-<h2>regressions within regressions</h2>
-<p>Helps to take multilevel and split it into the different levels.</p>
-<p>Level 1 is the smallest unit of analysis (students, waves, trials, family members)</p>
-<p>Level 2 variables are what level 1 variables are “nested” in (people, schools, counties, families, dyads)</p>
-<p>We are going to use level one components to run a regression, all the while level 1 is also estimating a regression</p>
 </section>
 <section class="slide level2">
 
@@ -652,43 +646,42 @@
 
 </div>
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
-<section id="diferent-levels-and-regressions-within-regressions" class="slide level2">
-<h2>diferent levels and regressions within regressions</h2>
-<p>To sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, but instead we ask regression questions at different levels of analysis.</p>
-<p>At level 1 we can ask lower-unit questions e.g., if trials are nested within person, what predicts lengthier trials?</p>
-<p>Longitudinally, if level 1 is observations, then we can ask level 1/observation level questions like if you’re with people do you then feel happier</p>
+<section id="diferent-levels" class="slide level2">
+<h2>3. Diferent levels</h2>
+<p>To sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, and conduct regressions from regressions. (Regression inception)</p>
+<p>The third way is to think of questions at different levels. At level 1 we can ask lower-unit questions e.g., if trials are nested within person, what predicts lengthier trials?</p>
+<p>If level 1 is made up of repeated observations, then we can ask level 1/observation level questions like does failure at the trial level impact future trial performance.</p>
 </section>
 <section class="slide level2">
 
 <p>At level 2 we can ask broader-unit questions. E.g., is age associated with stroop differences</p>
-<p>Longitudinally, if level 2 is people, then we can ask level 2/person level questions like if you have more social support are you happier</p>
+<p>Often level 2 is between person variables.</p>
 <p>Both levels are simple regressions. Level 2 uses coefficients from level 1 as DVs. Level 1 variables are time varying, level 2 variables are time invariant</p>
 </section>
 <section id="variance-decomposition" class="slide level2">
-<h2>variance decomposition</h2>
+<h2>4. Variance decomposition</h2>
 <p>For standard regression, we think of error as existing in one big bucket called <span class="math inline">\(\varepsilon\)</span> . Everything that we do not know goes into that bucket, from measurement error to unmeasured important factors.</p>
 <p>For MLMs we will be breaking up ( <span class="math inline">\(\varepsilon\)</span> ) into multiple buckets. These useful “buckets” (Us) are what we refer to as random/varying effects.</p>
 <p><span class="math display">\[Y_{trials, i} = \beta_{0i} + \beta_{1i}X_{trial,i} + \varepsilon_{trial}\]</span> <span class="math display">\[\beta_{0} = \gamma_{00} + U_{0i}\]</span> <span class="math display">\[\beta_{1} = \gamma_{10} +\gamma_{11}Z_i+ U_{1i}\]</span></p>
 </section>
 <section class="slide level2">
 
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="btw.png"></p>
-</div><div class="column" style="width:50%;">
-<p><img data-src="win.png"></p>
-</div>
-</div>
+
+<img data-src="btw.png" class="r-stretch"><p>Assume a simple intercept only model where we aggregate across types of trials.</p>
 </section>
 <section class="slide level2">
 
-<p>Random effects used to be error, but they are going to be useful going forward.</p>
-<p>We will treat them as variables themselves e.g.&nbsp;individual differences in how people change</p>
-<p>They index how much people DIFFER on some effect. e.g.&nbsp;does everyone change the same, or are there differences in how people change?</p>
-<p>We can relate the random effects to other random effects e.g., do people who increase on X also start higher on X.</p>
+
+<img data-src="win.png" class="r-stretch"><p>A MLM intercept only model takes what was previously chalked up to error and reassigns it into person specific “buckets”</p>
+</section>
+<section class="slide level2">
+
+<p>Model for the means (like normal) and now we have a model for the variance (random effects!)</p>
+<p>We will treat random effects as variables themselves e.g.&nbsp;individual differences in reaction time or stroop effect. They index how much people DIFFER on some effect. e.g.&nbsp;does everyone show the same stroop effect?</p>
+<p>We can relate the random effects to other random effects e.g., do people who show an effect have a slower reaction time?</p>
 </section>
 <section id="shrinkagepartial-pooling" class="slide level2">
-<h2>shrinkage/partial pooling</h2>
+<h2>5. Shrinkage/partial pooling</h2>
 <ul>
 <li><p>We treat our group variable as coming from a population. All groups are alike (because they are from the same population), but different in their own way. Because of this it is helpful to use information from other groups to help make predictions.</p></li>
 <li><p>We do this in standard regression where we make predictions based on values from the whole dataset (not just binned Xs). A similar analogy for MLM is running a regression for each group. We want to pool as this leads to better predictions as we are not overfitting our data!</p></li>
@@ -696,7 +689,7 @@
 </section>
 <section class="slide level2">
 
-<p>If we take our simplified stroop effect model, where we are only looking at reaction time as a DV (ignoring the different types of trials) we could fit a model like this (an empty model)</p>
+<p>If we take our simplified stroop effect model (an empty model)</p>
 <p><span class="math display">\[Y_{trials, i} = \beta_{0i} +  \varepsilon_{trial}\]</span></p>
 <p><span class="math display">\[\beta_{0} = \gamma_{00} + U_{0i}\]</span></p>
 <p>Where does <span class="math inline">\(U_{0i}\)</span> come from? If we calculated each by hand, through taking the average reaction time for a person i and subtracting that from the grand mean reaction time, would that equal <span class="math inline">\(U_{0i}\)</span> ?</p>
@@ -712,6 +705,7 @@
 </section>
 <section id="complete-pooling" class="slide level2">
 <h2>Complete pooling</h2>
+<p>Ignores any dependency. Treats people as exchangeable. ANOVA equivalent.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -723,6 +717,7 @@
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
 <section id="no-pooling" class="slide level2">
 <h2>No Pooling</h2>
+<p>Everyone is unqiue and we cannot learn from how others perform.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -742,18 +737,22 @@
 
 </div>
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<p>Partial pooling aka shrinkage provides the optimal amount of learning from others. Assumes people come from the same distribution but are distinct from one another.</p>
+<p>If you have a little data, then the safe bet is to look at the average. If you have a lot of data, you can ignore others.</p>
+<p>In a way, this is similar to Bayesian reasoning where learning is based on how much information you have about a person with other people serving as a prior.</p>
+</section>
 <section id="parameters-that-depend-on-other-parameters" class="slide level2">
-<h2>Parameters that depend on other parameters</h2>
-<p>The extent of shrinkage depends on a few things (eg number of observations per group) but also depends on our priors. This is known as a hyperprior</p>
-<p><span class="math display">\[\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma_i)\]</span> <span class="math display">\[\mu_i  = \beta_{0[j]}\]</span></p>
+<h2>6. Parameters that depend on other parameters</h2>
+<p><span class="math display">\[\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)\]</span> <span class="math display">\[\mu_i  = \beta_{0[j]}\]</span></p>
 <p><span class="math display">\[\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)\]</span> <span class="math display">\[{\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}\]</span> <span class="math display">\[\sigma_0 \sim {\operatorname{Exponential}(1)}\]</span> <span class="math display">\[\sigma \sim {\operatorname{Exponential}(1)}\]</span></p>
 </section>
 <section id="hyperprior" class="slide level2">
 <h2>Hyperprior</h2>
-<p>We now have a prior for the population of effects. This is a little different from what we are used to. We typically put a prior directly on parameters. Here, because are using a multi-level model, we are interested in the population of intercepts, not just a single intercept.</p>
+<p>We now have a prior for the population of effects. We typically put a prior directly on parameters. Here, because are using a multilevel model, we are interested in the population of intercepts, not just a single intercept.</p>
 <p>Intercept in simple regression –&gt; a (prior/posterior) distribution of possible scores</p>
-<p>Intercept in mlm –&gt; a distribution of group/clusters of intercepts.</p>
-<p>Note how the population we are sampling from can have some distribution (mu, sigma), and that is different from the observed distribution of mu or the distribution of sigma</p>
+<p>Intercept in mlm –&gt; a distribution of group/clusters of intercepts. The population we are sampling from can have a distribution (mu, sigma), and that distribution is different from the observed distribution of mu (or sigma)</p>
 </section>
 <section id="parameters-that-depend-on-parameters" class="slide level2">
 <h2>Parameters that depend on parameters</h2>
@@ -1155,7 +1154,7 @@ mlm.2 -58.1       8.8  </code></pre>
 </section>
 <section class="slide level2">
 
-<p><span class="math display">\[\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)\]</span> <span class="math display">\[\mu_i  = \beta_{0[j]}\]</span> This line indicates we have varying intercepts that vary over individual j. Much like going from level 1 -&gt; 2, we do priors on that parameter. Indicates that there is a distribution FOR EACH PERSON/GROUP. The distribution needs a prior. <span class="math display">\[\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)\]</span> <span class="math display">\[{\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}\]</span> <span class="math display">\[\sigma_0 \sim {\operatorname{Exponential}(1)}\]</span> <span class="math display">\[\sigma \sim {\operatorname{Exponential}(1)}\]</span></p>
+<p><span class="math display">\[\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)\]</span> <span class="math display">\[\mu_i  = \beta_{0[j]}\]</span> This line indicates we have varying intercepts that vary over individual j. Each parameter estimated needs a prior. <span class="math display">\[\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)\]</span> <span class="math display">\[{\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}\]</span> <span class="math display">\[\sigma_0 \sim {\operatorname{Exponential}(1)}\]</span> <span class="math display">\[\sigma \sim {\operatorname{Exponential}(1)}\]</span></p>
 </section>
 <section id="parameters-that-depend-on-parameters-1" class="slide level2">
 <h2>Parameters that depend on parameters</h2>

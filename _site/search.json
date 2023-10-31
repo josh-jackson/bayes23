@@ -1894,7 +1894,7 @@
     "href": "mlm-8.html#mlm-review",
     "title": "mlm",
     "section": "MLM review",
-    "text": "MLM review\n\\[{\\hat{Y}}_{i} = b_{0} + b_{1}X_{i} +  ... +\\epsilon_{i}\\]\n\\[{\\hat{Y}}_{ij} = b_{0} + b_{1}X_{ij} + ... +\\epsilon_{ij}\\] Where j refers to some clustering or grouping variable and i refers to the observations within j\n\ndata &lt;- \"https://raw.githubusercontent.com/josh-jackson/bayes/master/mlm.csv\"\n\nmlm &lt;- read.csv(data)"
+    "text": "MLM review\n\\[{Y}_{i} = b_{0} + b_{1}X_{i} +  ... +\\epsilon_{i}\\]\n\\[{Y}_{ij} = b_{0} + b_{1}X_{ij} + ... +\\epsilon_{ij}\\] Where j refers to some clustering or grouping variable and i refers to the observations within j\n\ndata &lt;- \"https://raw.githubusercontent.com/josh-jackson/bayes/master/mlm.csv\"\n\nmlm &lt;- read.csv(data)"
   },
   {
     "objectID": "mlm-8.html#empty-model",
@@ -1908,7 +1908,7 @@
     "href": "mlm-8.html#random-and-fixed-effects",
     "title": "mlm",
     "section": "Random and fixed effects",
-    "text": "Random and fixed effects\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\varepsilon_{ij}\\]\nLevel 2: \\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\] Combined: \\[{Y}_{ij} = \\gamma_{00} + U_{0j}  + \\varepsilon_{ij}\\]\n\\(U_{0j}\\) is considered a random effect, as it is varies across our grouping\n\\(\\gamma_{00}\\) is considered a fixed effect, as it is what is fixed (average) across our grouping"
+    "text": "Random and fixed effects\n\n\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\varepsilon_{ij}\\]\nLevel 2: \\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\] Combined: \\[{Y}_{ij} = \\gamma_{00} + U_{0j}  + \\varepsilon_{ij}\\]\n\n\\(U_{0j}\\) is considered a random effect, as it is varies across our grouping\n\\(\\gamma_{00}\\) is considered a fixed effect, as it is what is fixed (average) across our grouping"
   },
   {
     "objectID": "mlm-8.html#level-1-predictors",
@@ -1971,7 +1971,7 @@
     "href": "mlm-8.html#mlm-intuitions",
     "title": "mlm",
     "section": "MLM intuitions",
-    "text": "MLM intuitions\nAnytime you have repeated DVs you should use MLM as opposed to doing aggregation outside the model. While that should be your default, it is helpful to conceptualize why it is helpful.\n\nAggregation is bad\nRegressions within regressions (ie coefficients as outcomes)\nVariance decomposition\n\nLearning from other data through pooling/shrinkage\nParameters that depend on parameters"
+    "text": "MLM intuitions\nAnytime you have repeated DVs you should use MLM as opposed to doing aggregation outside the model. While that should be your default, it is helpful to conceptualize why it is helpful.\n\nAggregation is bad\nRegressions within regressions (ie coefficients as outcomes)\nQuestions at different levels\nVariance decomposition\n\nLearning from other data through pooling/shrinkage\nParameters that depend on parameters"
   },
   {
     "objectID": "mlm-8.html#ways-to-think-about-mlms",
@@ -1992,7 +1992,7 @@
     "href": "mlm-8.html#handling-multiple-dvs",
     "title": "mlm",
     "section": "Handling multiple DVs?",
-    "text": "Handling multiple DVs?\nBut what if people had more than 1 DV, like we do with time? What do you do with multiple items, multiple trials, multiple ____ ?\nTwo options: 1. Collapse and average across."
+    "text": "Handling multiple DVs?\nWhat if people had more than 1 DV, like we do with time? What do you do with multiple items, multiple trials, multiple ____ ?\nTwo options: 1. Collapse and average across."
   },
   {
     "objectID": "mlm-8.html#example",
@@ -2005,8 +2005,8 @@
     "objectID": "mlm-8.html#aggregation-obscures-hypotheses",
     "href": "mlm-8.html#aggregation-obscures-hypotheses",
     "title": "mlm",
-    "section": "Aggregation obscures hypotheses",
-    "text": "Aggregation obscures hypotheses\n\nBetween person H1: Do students who study more get better grades?\nWithin person H2: When a student studies, do they get better grades?\nH1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs (longitudinal but also almost any experimental situation) it is important to not aggregate."
+    "section": "1. Aggregation obscures hypotheses",
+    "text": "1. Aggregation obscures hypotheses\n\nBetween person H1: Do students who study more get better grades?\nWithin person H2: When a student studies, do they get better grades?\nH1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs it is important to not aggregate.\n#compositeskill"
   },
   {
     "objectID": "mlm-8.html#stroop-example",
@@ -2019,8 +2019,8 @@
     "objectID": "mlm-8.html#regressions-within-regressions",
     "href": "mlm-8.html#regressions-within-regressions",
     "title": "mlm",
-    "section": "regressions within regressions",
-    "text": "regressions within regressions\nHelps to take multilevel and split it into the different levels.\nLevel 1 is the smallest unit of analysis (students, waves, trials, family members)\nLevel 2 variables are what level 1 variables are “nested” in (people, schools, counties, families, dyads)\nWe are going to use level one components to run a regression, all the while level 1 is also estimating a regression"
+    "section": "2. Regressions within regressions",
+    "text": "2. Regressions within regressions\nHelps to take multilevel and split it into the different levels.\nLevel 1 is the smallest unit of analysis (students, waves, trials, family members)\nLevel 2 variables are what level 1 variables are “nested” in (people, schools, counties, families, dyads)\nWe are going to use level one components to run a regression, all the while level 1 is also estimating a regression. (Coefficents as outcomes)"
   },
   {
     "objectID": "mlm-8.html#diferent-levels-and-regressions-within-regressions",
@@ -2033,15 +2033,15 @@
     "objectID": "mlm-8.html#variance-decomposition",
     "href": "mlm-8.html#variance-decomposition",
     "title": "mlm",
-    "section": "variance decomposition",
-    "text": "variance decomposition\nFor standard regression, we think of error as existing in one big bucket called \\(\\varepsilon\\) . Everything that we do not know goes into that bucket, from measurement error to unmeasured important factors.\nFor MLMs we will be breaking up ( \\(\\varepsilon\\) ) into multiple buckets. These useful “buckets” (Us) are what we refer to as random/varying effects.\n\\[Y_{trials, i} = \\beta_{0i} + \\beta_{1i}X_{trial,i} + \\varepsilon_{trial}\\] \\[\\beta_{0} = \\gamma_{00} + U_{0i}\\] \\[\\beta_{1} = \\gamma_{10} +\\gamma_{11}Z_i+ U_{1i}\\]"
+    "section": "4. Variance decomposition",
+    "text": "4. Variance decomposition\nFor standard regression, we think of error as existing in one big bucket called \\(\\varepsilon\\) . Everything that we do not know goes into that bucket, from measurement error to unmeasured important factors.\nFor MLMs we will be breaking up ( \\(\\varepsilon\\) ) into multiple buckets. These useful “buckets” (Us) are what we refer to as random/varying effects.\n\\[Y_{trials, i} = \\beta_{0i} + \\beta_{1i}X_{trial,i} + \\varepsilon_{trial}\\] \\[\\beta_{0} = \\gamma_{00} + U_{0i}\\] \\[\\beta_{1} = \\gamma_{10} +\\gamma_{11}Z_i+ U_{1i}\\]"
   },
   {
     "objectID": "mlm-8.html#shrinkagepartial-pooling",
     "href": "mlm-8.html#shrinkagepartial-pooling",
     "title": "mlm",
-    "section": "shrinkage/partial pooling",
-    "text": "shrinkage/partial pooling\n\nWe treat our group variable as coming from a population. All groups are alike (because they are from the same population), but different in their own way. Because of this it is helpful to use information from other groups to help make predictions.\nWe do this in standard regression where we make predictions based on values from the whole dataset (not just binned Xs). A similar analogy for MLM is running a regression for each group. We want to pool as this leads to better predictions as we are not overfitting our data!"
+    "section": "5. Shrinkage/partial pooling",
+    "text": "5. Shrinkage/partial pooling\n\nWe treat our group variable as coming from a population. All groups are alike (because they are from the same population), but different in their own way. Because of this it is helpful to use information from other groups to help make predictions.\nWe do this in standard regression where we make predictions based on values from the whole dataset (not just binned Xs). A similar analogy for MLM is running a regression for each group. We want to pool as this leads to better predictions as we are not overfitting our data!"
   },
   {
     "objectID": "mlm-8.html#complete-partial-and-no-pooling",
@@ -2055,14 +2055,14 @@
     "href": "mlm-8.html#complete-pooling",
     "title": "mlm",
     "section": "Complete pooling",
-    "text": "Complete pooling\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7)) + geom_point() + stat_smooth(method=\"lm\") +ylab(\"test score\") + xlab(\"study\") +  theme(axis.ticks.y = element_blank(),\n        axis.text.y = element_blank())"
+    "text": "Complete pooling\nIgnores any dependency. Treats people as exchangeable. ANOVA equivalent.\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7)) + geom_point() + stat_smooth(method=\"lm\") +ylab(\"test score\") + xlab(\"study\") +  theme(axis.ticks.y = element_blank(),\n        axis.text.y = element_blank())"
   },
   {
     "objectID": "mlm-8.html#no-pooling",
     "href": "mlm-8.html#no-pooling",
     "title": "mlm",
     "section": "No Pooling",
-    "text": "No Pooling\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7, group = ID)) + geom_line() +  geom_point() + facet_wrap( ~ ID) +ylab(\"test score\") + xlab(\"study\")"
+    "text": "No Pooling\nEveryone is unqiue and we cannot learn from how others perform.\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7, group = ID)) + geom_line() +  geom_point() + facet_wrap( ~ ID) +ylab(\"test score\") + xlab(\"study\")"
   },
   {
     "objectID": "mlm-8.html#partial-pooling-aka-shrinkage",
@@ -2075,15 +2075,15 @@
     "objectID": "mlm-8.html#parameters-that-depend-on-other-parameters",
     "href": "mlm-8.html#parameters-that-depend-on-other-parameters",
     "title": "mlm",
-    "section": "Parameters that depend on other parameters",
-    "text": "Parameters that depend on other parameters\nThe extent of shrinkage depends on a few things (eg number of observations per group) but also depends on our priors. This is known as a hyperprior\n\\[\\text{y}_{ij}  \\sim \\operatorname{Normal}(\\mu_i, \\sigma_i)\\] \\[\\mu_i  = \\beta_{0[j]}\\]\n\\[\\beta_{0[j]} \\sim \\operatorname{Normal}({\\bar \\mu},  \\sigma_0)\\] \\[{\\bar \\mu}  \\sim {\\operatorname{Normal}(0, 1.5)}\\] \\[\\sigma_0 \\sim {\\operatorname{Exponential}(1)}\\] \\[\\sigma \\sim {\\operatorname{Exponential}(1)}\\]"
+    "section": "6. Parameters that depend on other parameters",
+    "text": "6. Parameters that depend on other parameters\n\\[\\text{y}_{ij}  \\sim \\operatorname{Normal}(\\mu_i, \\sigma)\\] \\[\\mu_i  = \\beta_{0[j]}\\]\n\\[\\beta_{0[j]} \\sim \\operatorname{Normal}({\\bar \\mu},  \\sigma_0)\\] \\[{\\bar \\mu}  \\sim {\\operatorname{Normal}(0, 1.5)}\\] \\[\\sigma_0 \\sim {\\operatorname{Exponential}(1)}\\] \\[\\sigma \\sim {\\operatorname{Exponential}(1)}\\]"
   },
   {
     "objectID": "mlm-8.html#hyperprior",
     "href": "mlm-8.html#hyperprior",
     "title": "mlm",
     "section": "Hyperprior",
-    "text": "Hyperprior\nWe now have a prior for the population of effects. This is a little different from what we are used to. We typically put a prior directly on parameters. Here, because are using a multi-level model, we are interested in the population of intercepts, not just a single intercept.\nIntercept in simple regression –&gt; a (prior/posterior) distribution of possible scores\nIntercept in mlm –&gt; a distribution of group/clusters of intercepts.\nNote how the population we are sampling from can have some distribution (mu, sigma), and that is different from the observed distribution of mu or the distribution of sigma"
+    "text": "Hyperprior\nWe now have a prior for the population of effects. We typically put a prior directly on parameters. Here, because are using a multilevel model, we are interested in the population of intercepts, not just a single intercept.\nIntercept in simple regression –&gt; a (prior/posterior) distribution of possible scores\nIntercept in mlm –&gt; a distribution of group/clusters of intercepts. The population we are sampling from can have a distribution (mu, sigma), and that distribution is different from the observed distribution of mu (or sigma)"
   },
   {
     "objectID": "mlm-8.html#parameters-that-depend-on-parameters",
@@ -2168,5 +2168,12 @@
     "title": "HW-3",
     "section": "",
     "text": "We will continue to use the mortality dataset from the GLM class for our next homework.\n\n\"https://raw.githubusercontent.com/josh-jackson/bayes/master/static/Lectures/mortality.csv\"\n\n[1] \"https://raw.githubusercontent.com/josh-jackson/bayes/master/static/Lectures/mortality.csv\"\n\n\n\nRun a logistic regression where premature mortality is predicted by risky behavior. Interpret the coefficients in terms of\n\n\nLogits\nLogits converted to odds\nNHST test using a confidence interval of your choosing\nNHST test using Probability of Direction\nNHST test using ROPE\nNHST test using Bayes Factor\n\n\nCreate predicted values for different levels of risky behavior. What is my probability of premature mortality if I was 1 sd deviation below the mean of risky behavior? 2 SDs above? Make sure to include CIs around these estimates.\nGraph the predicted relationship between risky behavior and premature mortality with probability as the Y axis.\nRun two new models with risky behavior AND IQ as predictors of premature mortality – one where they are main effects and another where they interact. Calculate psis-loo and waic for these two models and use them to compare with the previous model from #1. Which model is a better model?\nGraph the effect of IQ from the best fitting model in #4. Include both the expected value confidence band and the prediction confidence band.\nCreate your own version of pp_check on the model in #5 to examine the posterior predictive distribution. Interpret."
+  },
+  {
+    "objectID": "mlm-8.html#diferent-levels",
+    "href": "mlm-8.html#diferent-levels",
+    "title": "mlm",
+    "section": "3. Diferent levels",
+    "text": "3. Diferent levels\nTo sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, and conduct regressions from regressions. (Regression inception)\nThe third way is to think of questions at different levels. At level 1 we can ask lower-unit questions e.g., if trials are nested within person, what predicts lengthier trials?\nIf level 1 is made up of repeated observations, then we can ask level 1/observation level questions like does failure at the trial level impact future trial performance."
   }
 ]
