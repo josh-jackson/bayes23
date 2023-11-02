@@ -2055,14 +2055,14 @@
     "href": "mlm-8.html#complete-pooling",
     "title": "mlm",
     "section": "Complete pooling",
-    "text": "Complete pooling\nIgnores any dependency. Treats people as exchangeable. ANOVA equivalent.\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7)) + geom_point() + stat_smooth(method=\"lm\") +ylab(\"test score\") + xlab(\"study\") +  theme(axis.ticks.y = element_blank(),\n        axis.text.y = element_blank())"
+    "text": "Complete pooling\nIgnores any dependency. Doesn’t learn from others, assumes everyone is the same. Underfits the model.\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7)) + geom_point() + stat_smooth(method=\"lm\") +ylab(\"test score\") + xlab(\"study\") +  theme(axis.ticks.y = element_blank(),\n        axis.text.y = element_blank())"
   },
   {
     "objectID": "mlm-8.html#no-pooling",
     "href": "mlm-8.html#no-pooling",
     "title": "mlm",
     "section": "No Pooling",
-    "text": "No Pooling\nEveryone is unqiue and we cannot learn from how others perform.\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7, group = ID)) + geom_line() +  geom_point() + facet_wrap( ~ ID) +ylab(\"test score\") + xlab(\"study\")"
+    "text": "No Pooling\nEveryone is unqiue and we cannot learn from others. Leads to overfitting\n\n\nCode\nggplot(mlm, aes(x = week, y = SMN7, group = ID)) + geom_line() +  geom_point() + facet_wrap( ~ ID) +ylab(\"test score\") + xlab(\"study\")"
   },
   {
     "objectID": "mlm-8.html#partial-pooling-aka-shrinkage",
@@ -2175,5 +2175,19 @@
     "title": "mlm",
     "section": "3. Diferent levels",
     "text": "3. Diferent levels\nTo sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, and conduct regressions from regressions. (Regression inception)\nThe third way is to think of questions at different levels. At level 1 we can ask lower-unit questions e.g., if trials are nested within person, what predicts lengthier trials?\nIf level 1 is made up of repeated observations, then we can ask level 1/observation level questions like does failure at the trial level impact future trial performance."
+  },
+  {
+    "objectID": "mlm-8.html#lkj-1-parameter-correlation-prior",
+    "href": "mlm-8.html#lkj-1-parameter-correlation-prior",
+    "title": "mlm",
+    "section": "lkj 1 parameter correlation prior",
+    "text": "lkj 1 parameter correlation prior\n\n\nCode\nlibrary(forcats)\n\nexpand.grid(\n  eta = 1:8,\n  K = 2:6\n) %&gt;%\n  ggplot(aes(y = fct_rev(ordered(eta)), dist = \"lkjcorr_marginal\", arg1 = K, arg2 = eta)) +\n  stat_dist_slab() +\n  facet_grid(~ paste0(K, \"x\", K)) +\n  labs(\n    title = paste0(\n      \"LKJ(eta) prior on different matrix sizes:\\n\"\n    ),\n    y = \"eta\",\n    x = \"Marginal correlation\"\n  ) +\n  theme(axis.title = element_text(hjust = 0))"
+  },
+  {
+    "objectID": "mlm-8.html#partial-pooling-aka-shrinkage-aka-regularization",
+    "href": "mlm-8.html#partial-pooling-aka-shrinkage-aka-regularization",
+    "title": "mlm",
+    "section": "Partial pooling aka shrinkage aka regularization",
+    "text": "Partial pooling aka shrinkage aka regularization\n\n\nCode\nlibrary(viridis)\nggplot(mlm, aes(x = week, y = SMN7, group = ID, colour = ID)) + stat_smooth(method = \"lm\", se = FALSE, alpha = .5) +scale_color_viridis()+  ylab(\"test score\") + xlab(\"study amount\") + geom_point()"
   }
 ]
