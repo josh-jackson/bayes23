@@ -1321,48 +1321,24 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 </div>
 </section>
-<section class="slide level2">
-
-<div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">library</span>(posterior)</span>
-<span id="cb24-2"><a href="#cb24-2"></a>posterior<span class="sc">::</span><span class="fu">summarise_draws</span>(mlm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 99 × 10
-   variable        mean   median      sd     mad      q5      q95  rhat ess_bulk
-   &lt;chr&gt;          &lt;num&gt;    &lt;num&gt;   &lt;num&gt;   &lt;num&gt;   &lt;num&gt;    &lt;num&gt; &lt;num&gt;    &lt;num&gt;
- 1 b_Intercept  1.89e-1  1.89e-1 0.00677 0.00668  0.178   2.00e-1  1.00    7203.
- 2 sd_ID__Int…  5.66e-2  5.63e-2 0.00566 0.00548  0.0478  6.64e-2  1.00    5431.
- 3 sigma        4.74e-2  4.73e-2 0.00289 0.00286  0.0429  5.24e-2  1.00    9902.
- 4 r_ID[6,Int…  1.74e-4  1.27e-4 0.0252  0.0249  -0.0413  4.16e-2  1.00   27182.
- 5 r_ID[29,In… -4.84e-2 -4.82e-2 0.0296  0.0297  -0.0969  2.79e-4  1.00   29535.
- 6 r_ID[34,In… -6.14e-2 -6.14e-2 0.0292  0.0291  -0.109  -1.40e-2  1.00   27144.
- 7 r_ID[36,In… -2.24e-2 -2.25e-2 0.0293  0.0293  -0.0711  2.57e-2  1.00   31028.
- 8 r_ID[37,In… -3.33e-3 -3.41e-3 0.0252  0.0251  -0.0447  3.82e-2  1.00   28836.
- 9 r_ID[48,In…  2.35e-2  2.34e-2 0.0251  0.0248  -0.0177  6.42e-2  1.00   25902.
-10 r_ID[53,In…  2.34e-4  2.52e-4 0.0287  0.0284  -0.0472  4.78e-2  1.00   31644.
-# ℹ 89 more rows
-# ℹ 1 more variable: ess_tail &lt;num&gt;</code></pre>
-</div>
-</div>
-</section>
-<section class="slide level2">
-
-<p>What does it mean that we are learning from our data? Or that the priors are based on our data?</p>
-<p>Well we set up the prior for values we are not directly estimating. We are instead using those priors plus data to help us create estimates that are informed by the prior but also by the data.</p>
-</section>
 <section id="partial-poolingshrinkage" class="slide level2">
+<h2>Partial pooling/Shrinkage</h2>
+<p><span class="math inline">\(\sigma_0\)</span> (our random effect) can turn on/off/adjust shrinkage.</p>
+<p>Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling.</p>
+<p>We use our prior of <span class="math inline">\(\sigma_0\)</span> plus our data to get an estimate of <span class="math inline">\(\beta_{0[j]}\)</span>. This is how we accurately partial pool.</p>
+</section>
+<section id="partial-poolingshrinkage-1" class="slide level2">
 <h2>Partial pooling/Shrinkage</h2>
 <p><span class="math display">\[\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma_i)\]</span></p>
 <p><span class="math display">\[\mu_i  = \beta_{0[i]}\]</span></p>
 <p><span class="math display">\[\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)\]</span> <span class="math display">\[{\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}\]</span></p>
 <p><span class="math display">\[\sigma_0 \sim {\operatorname{Normal}(0, 1.5)}\]</span></p>
 <p><span class="math display">\[\sigma \sim {\operatorname{Exponential}(1)}\]</span></p>
-<p><span class="math inline">\(\sigma_0\)</span> can turn on/off/adjust shrinkage. Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling. We use our prior of <span class="math inline">\(\sigma_0\)</span> plus our data to get an estimate of the prior for <span class="math inline">\(\beta_{0[j]}\)</span>. This is how we accurately partial pool.</p>
 </section>
-<section class="slide level2">
-
+<section id="working-with-mlm-posterior" class="slide level2">
+<h2>working with mlm posterior</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">summary</span>(mlm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">summary</span>(mlm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1393,8 +1369,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">library</span>(tidybayes)</span>
-<span id="cb28-2"><a href="#cb28-2"></a><span class="fu">get_variables</span>(mlm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">library</span>(tidybayes)</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="fu">get_variables</span>(mlm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  [1] "b_Intercept"         "sd_ID__Intercept"    "sigma"              
   [4] "r_ID[6,Intercept]"   "r_ID[29,Intercept]"  "r_ID[34,Intercept]" 
@@ -1437,8 +1413,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb30-2"><a href="#cb30-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID, term]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID, term]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,456,000 × 6
 # Groups:   ID, term [91]
@@ -1462,8 +1438,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,456,000 × 5
 # Groups:   ID [91]
@@ -1486,9 +1462,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb34-2"><a href="#cb34-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
-<span id="cb34-3"><a href="#cb34-3"></a> <span class="fu">median_qi</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a> <span class="fu">median_qi</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 91 × 8
       ID term           r_ID   .lower   .upper .width .point .interval
@@ -1512,19 +1488,19 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
-<span id="cb36-3"><a href="#cb36-3"></a>  <span class="fu">left_join</span>(mlm <span class="sc">%&gt;%</span> <span class="fu">select</span> (ID, CON) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON))) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-4"><a href="#cb36-4"></a> <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb36-5"><a href="#cb36-5"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
-<span id="cb36-6"><a href="#cb36-6"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> r_ID), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
-<span id="cb36-7"><a href="#cb36-7"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb36-8"><a href="#cb36-8"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
-<span id="cb36-9"><a href="#cb36-9"></a>  <span class="st">"orange is model based, black circles are observed means"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2"></a>  <span class="fu">spread_draws</span>(r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3"></a>  <span class="fu">left_join</span>(mlm <span class="sc">%&gt;%</span> <span class="fu">select</span> (ID, CON) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON))) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-4"><a href="#cb34-4"></a> <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb34-5"><a href="#cb34-5"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> r_ID), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
+<span id="cb34-7"><a href="#cb34-7"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb34-8"><a href="#cb34-8"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
+<span id="cb34-9"><a href="#cb34-9"></a>  <span class="st">"orange is model based, black circles are observed means"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-31-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-30-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>Think back to {lme4} and <code>ranef</code> <code>coef</code> and <code>fixef</code> functions.</p>
@@ -1534,8 +1510,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb37-2"><a href="#cb37-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,456,000 × 7
 # Groups:   ID, term [91]
@@ -1558,9 +1534,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb39-2"><a href="#cb39-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span> </span>
-<span id="cb39-3"><a href="#cb39-3"></a>   <span class="fu">mutate</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-3"><a href="#cb37-3"></a>   <span class="fu">mutate</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,456,000 × 8
 # Groups:   ID, term [91]
@@ -1585,59 +1561,59 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb41-2"><a href="#cb41-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
-<span id="cb41-3"><a href="#cb41-3"></a>  <span class="fu">mutate</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) <span class="sc">%&gt;%</span></span>
-<span id="cb41-4"><a href="#cb41-4"></a>  <span class="fu">left_join</span>(mlm <span class="sc">%&gt;%</span> <span class="fu">select</span> (ID, CON) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON))) <span class="sc">%&gt;%</span> </span>
-<span id="cb41-5"><a href="#cb41-5"></a> <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb41-6"><a href="#cb41-6"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
-<span id="cb41-7"><a href="#cb41-7"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> person_I), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
-<span id="cb41-8"><a href="#cb41-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb41-9"><a href="#cb41-9"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
-<span id="cb41-10"><a href="#cb41-10"></a>  <span class="st">"orange is model based, black circles are observed means"</span>) <span class="sc">+</span></span>
-<span id="cb41-11"><a href="#cb41-11"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.1849846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
+<span id="cb39-3"><a href="#cb39-3"></a>  <span class="fu">mutate</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) <span class="sc">%&gt;%</span></span>
+<span id="cb39-4"><a href="#cb39-4"></a>  <span class="fu">left_join</span>(mlm <span class="sc">%&gt;%</span> <span class="fu">select</span> (ID, CON) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON))) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-5"><a href="#cb39-5"></a> <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb39-6"><a href="#cb39-6"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
+<span id="cb39-7"><a href="#cb39-7"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> person_I), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
+<span id="cb39-8"><a href="#cb39-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb39-9"><a href="#cb39-9"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
+<span id="cb39-10"><a href="#cb39-10"></a>  <span class="st">"orange is model based, black circles are observed means"</span>) <span class="sc">+</span></span>
+<span id="cb39-11"><a href="#cb39-11"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.1849846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
+<span id="cb40-2"><a href="#cb40-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
+<span id="cb40-3"><a href="#cb40-3"></a>   <span class="fu">median_qi</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) <span class="sc">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>( <span class="at">y =</span> <span class="fu">reorder</span>(ID, person_I), <span class="at">x =</span> person_I, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper)) <span class="sc">+</span></span>
+<span id="cb40-5"><a href="#cb40-5"></a>  <span class="fu">geom_pointinterval</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"est"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"ID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-34-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a>mlm<span class="fl">.1</span> <span class="sc">%&gt;%</span></span>
-<span id="cb42-2"><a href="#cb42-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
-<span id="cb42-3"><a href="#cb42-3"></a>   <span class="fu">median_qi</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) <span class="sc">%&gt;%</span></span>
-<span id="cb42-4"><a href="#cb42-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>( <span class="at">y =</span> <span class="fu">reorder</span>(ID, person_I), <span class="at">x =</span> person_I, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper)) <span class="sc">+</span></span>
-<span id="cb42-5"><a href="#cb42-5"></a>  <span class="fu">geom_pointinterval</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"est"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"ID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-35-1.png" width="960" class="r-stretch"></section>
-<section class="slide level2">
-
 <p>Set prior for random effect to almost zero for complete pooling.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>mlm<span class="fl">.1</span>p <span class="ot">&lt;-</span> </span>
-<span id="cb43-2"><a href="#cb43-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
-<span id="cb43-3"><a href="#cb43-3"></a>      CON <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
-<span id="cb43-4"><a href="#cb43-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb43-5"><a href="#cb43-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, .<span class="dv">00001</span>), <span class="at">class =</span> sd), </span>
-<span id="cb43-6"><a href="#cb43-6"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
-<span id="cb43-7"><a href="#cb43-7"></a>      <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
-<span id="cb43-8"><a href="#cb43-8"></a>      <span class="at">sample_prior =</span> <span class="st">"yes"</span>,</span>
-<span id="cb43-9"><a href="#cb43-9"></a>      <span class="at">file =</span> <span class="st">"mlm.1p"</span>,</span>
-<span id="cb43-10"><a href="#cb43-10"></a>       <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb43-11"><a href="#cb43-11"></a>      <span class="at">data =</span> mlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>mlm<span class="fl">.1</span>p <span class="ot">&lt;-</span> </span>
+<span id="cb41-2"><a href="#cb41-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
+<span id="cb41-3"><a href="#cb41-3"></a>      CON <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb41-4"><a href="#cb41-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb41-5"><a href="#cb41-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, .<span class="dv">00001</span>), <span class="at">class =</span> sd), </span>
+<span id="cb41-6"><a href="#cb41-6"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb41-7"><a href="#cb41-7"></a>      <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb41-8"><a href="#cb41-8"></a>      <span class="at">sample_prior =</span> <span class="st">"yes"</span>,</span>
+<span id="cb41-9"><a href="#cb41-9"></a>      <span class="at">file =</span> <span class="st">"mlm.1p"</span>,</span>
+<span id="cb41-10"><a href="#cb41-10"></a>       <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb41-11"><a href="#cb41-11"></a>      <span class="at">data =</span> mlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">summary</span>(mlm<span class="fl">.1</span>p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">summary</span>(mlm<span class="fl">.1</span>p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1670,26 +1646,26 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a>mlm<span class="fl">.1</span>p <span class="sc">%&gt;%</span></span>
-<span id="cb46-2"><a href="#cb46-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
-<span id="cb46-3"><a href="#cb46-3"></a>  <span class="fu">mutate</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) <span class="sc">%&gt;%</span></span>
-<span id="cb46-4"><a href="#cb46-4"></a>  <span class="fu">left_join</span>(mlm <span class="sc">%&gt;%</span> <span class="fu">select</span> (ID, CON) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON))) <span class="sc">%&gt;%</span> </span>
-<span id="cb46-5"><a href="#cb46-5"></a> <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb46-6"><a href="#cb46-6"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
-<span id="cb46-7"><a href="#cb46-7"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> person_I), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
-<span id="cb46-8"><a href="#cb46-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb46-9"><a href="#cb46-9"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
-<span id="cb46-10"><a href="#cb46-10"></a>  <span class="st">"complete pooling"</span>) <span class="sc">+</span></span>
-<span id="cb46-11"><a href="#cb46-11"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.189846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>mlm<span class="fl">.1</span>p <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">spread_draws</span>(b_Intercept, r_ID[ID, term]) <span class="sc">%&gt;%</span></span>
+<span id="cb44-3"><a href="#cb44-3"></a>  <span class="fu">mutate</span>(<span class="at">person_I =</span> b_Intercept <span class="sc">+</span> r_ID) <span class="sc">%&gt;%</span></span>
+<span id="cb44-4"><a href="#cb44-4"></a>  <span class="fu">left_join</span>(mlm <span class="sc">%&gt;%</span> <span class="fu">select</span> (ID, CON) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON))) <span class="sc">%&gt;%</span> </span>
+<span id="cb44-5"><a href="#cb44-5"></a> <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb44-6"><a href="#cb44-6"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
+<span id="cb44-7"><a href="#cb44-7"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> person_I), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
+<span id="cb44-8"><a href="#cb44-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb44-9"><a href="#cb44-9"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
+<span id="cb44-10"><a href="#cb44-10"></a>  <span class="st">"complete pooling"</span>) <span class="sc">+</span></span>
+<span id="cb44-11"><a href="#cb44-11"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.189846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-38-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-37-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>No pooling means you are not learning from other data, which is by default not an MLM model. We already fit this fixed effects no intercept model above.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">summary</span>(mlm.id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">summary</span>(mlm.id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1807,26 +1783,26 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>data2<span class="ot">&lt;-</span>mlm <span class="sc">%&gt;%</span> <span class="fu">select</span>(ID, CON) <span class="sc">%&gt;%</span></span>
-<span id="cb49-2"><a href="#cb49-2"></a>  <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span></span>
-<span id="cb49-3"><a href="#cb49-3"></a>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON)) <span class="sc">%&gt;%</span> </span>
-<span id="cb49-4"><a href="#cb49-4"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
-<span id="cb49-5"><a href="#cb49-5"></a></span>
-<span id="cb49-6"><a href="#cb49-6"></a>mlm.id <span class="sc">%&gt;%</span> <span class="fu">tidy_draws</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb49-7"><a href="#cb49-7"></a>  <span class="fu">pivot_longer</span>(b_ID.f6<span class="sc">:</span>b_ID.f229, <span class="at">names_to =</span> <span class="st">"ID"</span>, <span class="at">values_to =</span> <span class="st">"CON_I"</span>, <span class="at">names_prefix =</span> <span class="st">"b_ID.f"</span>, <span class="at">names_transform =</span> <span class="fu">list</span>(<span class="at">ID =</span> as.integer)) <span class="sc">%&gt;%</span> </span>
-<span id="cb49-8"><a href="#cb49-8"></a><span class="fu">left_join</span>(data2) <span class="sc">%&gt;%</span> </span>
-<span id="cb49-9"><a href="#cb49-9"></a>  <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span> </span>
-<span id="cb49-10"><a href="#cb49-10"></a>   <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb49-11"><a href="#cb49-11"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
-<span id="cb49-12"><a href="#cb49-12"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON_I), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
-<span id="cb49-13"><a href="#cb49-13"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb49-14"><a href="#cb49-14"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
-<span id="cb49-15"><a href="#cb49-15"></a>  <span class="st">"NO pooling"</span>) <span class="sc">+</span></span>
-<span id="cb49-16"><a href="#cb49-16"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.1849846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>data2<span class="ot">&lt;-</span>mlm <span class="sc">%&gt;%</span> <span class="fu">select</span>(ID, CON) <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a href="#cb47-2"></a>  <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span></span>
+<span id="cb47-3"><a href="#cb47-3"></a>  <span class="fu">mutate</span>(<span class="at">CON =</span> <span class="fu">mean</span>(CON)) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-4"><a href="#cb47-4"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb47-5"><a href="#cb47-5"></a></span>
+<span id="cb47-6"><a href="#cb47-6"></a>mlm.id <span class="sc">%&gt;%</span> <span class="fu">tidy_draws</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb47-7"><a href="#cb47-7"></a>  <span class="fu">pivot_longer</span>(b_ID.f6<span class="sc">:</span>b_ID.f229, <span class="at">names_to =</span> <span class="st">"ID"</span>, <span class="at">values_to =</span> <span class="st">"CON_I"</span>, <span class="at">names_prefix =</span> <span class="st">"b_ID.f"</span>, <span class="at">names_transform =</span> <span class="fu">list</span>(<span class="at">ID =</span> as.integer)) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-8"><a href="#cb47-8"></a><span class="fu">left_join</span>(data2) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-9"><a href="#cb47-9"></a>  <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-10"><a href="#cb47-10"></a>   <span class="fu">median_qi</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb47-11"><a href="#cb47-11"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ID)) <span class="sc">+</span></span>
+<span id="cb47-12"><a href="#cb47-12"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON_I), <span class="at">color =</span> <span class="st">"orange2"</span>) <span class="sc">+</span></span>
+<span id="cb47-13"><a href="#cb47-13"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb47-14"><a href="#cb47-14"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
+<span id="cb47-15"><a href="#cb47-15"></a>  <span class="st">"NO pooling"</span>) <span class="sc">+</span></span>
+<span id="cb47-16"><a href="#cb47-16"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.1849846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-40-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-39-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>MLM will automatically create the best fitting model – balancing between over and under fitting. It identifies the value of sigma of the random effect that is ideal.</p>
@@ -1835,10 +1811,10 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>mlm.id <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm.id, <span class="st">"loo"</span>)</span>
-<span id="cb50-2"><a href="#cb50-2"></a>mlm<span class="fl">.1</span>p <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm<span class="fl">.1</span>p, <span class="st">"loo"</span>)</span>
-<span id="cb50-3"><a href="#cb50-3"></a>mlm<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm<span class="fl">.1</span>, <span class="st">"loo"</span>)</span>
-<span id="cb50-4"><a href="#cb50-4"></a><span class="fu">loo_compare</span>(mlm.id, mlm<span class="fl">.1</span>p, mlm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>mlm.id <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm.id, <span class="st">"loo"</span>)</span>
+<span id="cb48-2"><a href="#cb48-2"></a>mlm<span class="fl">.1</span>p <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm<span class="fl">.1</span>p, <span class="st">"loo"</span>)</span>
+<span id="cb48-3"><a href="#cb48-3"></a>mlm<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm<span class="fl">.1</span>, <span class="st">"loo"</span>)</span>
+<span id="cb48-4"><a href="#cb48-4"></a><span class="fu">loo_compare</span>(mlm.id, mlm<span class="fl">.1</span>p, mlm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       elpd_diff se_diff
 mlm.1    0.0       0.0  
@@ -1859,7 +1835,7 @@ mlm.1p -58.1       8.8  </code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">get_prior</span>(CON <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> time <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), <span class="at">data =</span> mlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="fu">get_prior</span>(CON <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> time <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), <span class="at">data =</span> mlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  prior     class      coef group resp dpar nlpar lb ub
                  (flat)         b                                      
@@ -1883,24 +1859,24 @@ mlm.1p -58.1       8.8  </code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a>mlm<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
-<span id="cb54-2"><a href="#cb54-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
-<span id="cb54-3"><a href="#cb54-3"></a>      CON <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> time <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
-<span id="cb54-4"><a href="#cb54-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb54-5"><a href="#cb54-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> b),</span>
-<span id="cb54-6"><a href="#cb54-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> sd), </span>
-<span id="cb54-7"><a href="#cb54-7"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
-<span id="cb54-8"><a href="#cb54-8"></a>      <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
-<span id="cb54-9"><a href="#cb54-9"></a>      <span class="at">sample_prior =</span> <span class="st">"yes"</span>,</span>
-<span id="cb54-10"><a href="#cb54-10"></a>      <span class="at">file =</span> <span class="st">"mlm.3"</span>,</span>
-<span id="cb54-11"><a href="#cb54-11"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb54-12"><a href="#cb54-12"></a>      <span class="at">data =</span> mlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a>mlm<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb52-2"><a href="#cb52-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
+<span id="cb52-3"><a href="#cb52-3"></a>      CON <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> time <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb52-4"><a href="#cb52-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb52-5"><a href="#cb52-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> b),</span>
+<span id="cb52-6"><a href="#cb52-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> sd), </span>
+<span id="cb52-7"><a href="#cb52-7"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb52-8"><a href="#cb52-8"></a>      <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb52-9"><a href="#cb52-9"></a>      <span class="at">sample_prior =</span> <span class="st">"yes"</span>,</span>
+<span id="cb52-10"><a href="#cb52-10"></a>      <span class="at">file =</span> <span class="st">"mlm.3"</span>,</span>
+<span id="cb52-11"><a href="#cb52-11"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb52-12"><a href="#cb52-12"></a>      <span class="at">data =</span> mlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">summary</span>(mlm<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="fu">summary</span>(mlm<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1932,7 +1908,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">posterior_summary</span>(mlm<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">posterior_summary</span>(mlm<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                         Estimate    Est.Error          Q2.5         Q97.5
 b_Intercept          1.939778e-01  0.007941985  1.783368e-01  2.094254e-01
@@ -2036,6 +2012,50 @@ prior_sigma          9.932137e-01  1.005350563  2.528490e-02  3.682698e+00
 prior_sd_ID          1.195759e+00  0.898614921  4.316324e-02  3.350468e+00
 lprior              -3.336070e+00  0.002985242 -3.342260e+00 -3.330640e+00
 lp__                 2.304329e+02 11.002378103  2.078374e+02  2.510074e+02</code></pre>
+</div>
+</div>
+</section>
+<section id="whats-in-our-posterior" class="slide level2">
+<h2>whats in our posterior?</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">get_variables</span>(mlm<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "b_Intercept"         "b_time"              "sd_ID__Intercept"   
+  [4] "sigma"               "r_ID[6,Intercept]"   "r_ID[29,Intercept]" 
+  [7] "r_ID[34,Intercept]"  "r_ID[36,Intercept]"  "r_ID[37,Intercept]" 
+ [10] "r_ID[48,Intercept]"  "r_ID[53,Intercept]"  "r_ID[54,Intercept]" 
+ [13] "r_ID[58,Intercept]"  "r_ID[61,Intercept]"  "r_ID[66,Intercept]" 
+ [16] "r_ID[67,Intercept]"  "r_ID[69,Intercept]"  "r_ID[71,Intercept]" 
+ [19] "r_ID[74,Intercept]"  "r_ID[75,Intercept]"  "r_ID[76,Intercept]" 
+ [22] "r_ID[78,Intercept]"  "r_ID[79,Intercept]"  "r_ID[80,Intercept]" 
+ [25] "r_ID[81,Intercept]"  "r_ID[82,Intercept]"  "r_ID[85,Intercept]" 
+ [28] "r_ID[86,Intercept]"  "r_ID[87,Intercept]"  "r_ID[89,Intercept]" 
+ [31] "r_ID[91,Intercept]"  "r_ID[92,Intercept]"  "r_ID[93,Intercept]" 
+ [34] "r_ID[94,Intercept]"  "r_ID[96,Intercept]"  "r_ID[97,Intercept]" 
+ [37] "r_ID[98,Intercept]"  "r_ID[99,Intercept]"  "r_ID[101,Intercept]"
+ [40] "r_ID[102,Intercept]" "r_ID[103,Intercept]" "r_ID[104,Intercept]"
+ [43] "r_ID[105,Intercept]" "r_ID[106,Intercept]" "r_ID[110,Intercept]"
+ [46] "r_ID[112,Intercept]" "r_ID[114,Intercept]" "r_ID[115,Intercept]"
+ [49] "r_ID[116,Intercept]" "r_ID[120,Intercept]" "r_ID[122,Intercept]"
+ [52] "r_ID[125,Intercept]" "r_ID[127,Intercept]" "r_ID[129,Intercept]"
+ [55] "r_ID[135,Intercept]" "r_ID[136,Intercept]" "r_ID[137,Intercept]"
+ [58] "r_ID[140,Intercept]" "r_ID[141,Intercept]" "r_ID[142,Intercept]"
+ [61] "r_ID[143,Intercept]" "r_ID[144,Intercept]" "r_ID[146,Intercept]"
+ [64] "r_ID[149,Intercept]" "r_ID[150,Intercept]" "r_ID[152,Intercept]"
+ [67] "r_ID[153,Intercept]" "r_ID[155,Intercept]" "r_ID[156,Intercept]"
+ [70] "r_ID[159,Intercept]" "r_ID[160,Intercept]" "r_ID[162,Intercept]"
+ [73] "r_ID[163,Intercept]" "r_ID[165,Intercept]" "r_ID[167,Intercept]"
+ [76] "r_ID[169,Intercept]" "r_ID[171,Intercept]" "r_ID[174,Intercept]"
+ [79] "r_ID[182,Intercept]" "r_ID[187,Intercept]" "r_ID[189,Intercept]"
+ [82] "r_ID[190,Intercept]" "r_ID[193,Intercept]" "r_ID[194,Intercept]"
+ [85] "r_ID[201,Intercept]" "r_ID[204,Intercept]" "r_ID[205,Intercept]"
+ [88] "r_ID[208,Intercept]" "r_ID[209,Intercept]" "r_ID[211,Intercept]"
+ [91] "r_ID[214,Intercept]" "r_ID[219,Intercept]" "r_ID[222,Intercept]"
+ [94] "r_ID[223,Intercept]" "r_ID[229,Intercept]" "prior_Intercept"    
+ [97] "prior_b"             "prior_sigma"         "prior_sd_ID"        
+[100] "lprior"              "lp__"                "accept_stat__"      
+[103] "treedepth__"         "stepsize__"          "divergent__"        
+[106] "n_leapfrog__"        "energy__"           </code></pre>
 </div>
 </div>
 </section>
@@ -2481,408 +2501,23 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-58-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
-<p>coef = fixef + raneff</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="fu">ranef</span>(mlm<span class="fl">.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>mlm<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm<span class="fl">.1</span>, <span class="st">"loo"</span>)</span>
+<span id="cb74-2"><a href="#cb74-2"></a>mlm<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(mlm<span class="fl">.2</span>, <span class="st">"loo"</span>)</span>
+<span id="cb74-3"><a href="#cb74-3"></a><span class="fu">loo_compare</span>(mlm<span class="fl">.1</span>, mlm<span class="fl">.2</span>, <span class="at">criterion =</span> <span class="st">"loo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$ID
-, , Intercept
-
-        Estimate  Est.Error          Q2.5         Q97.5
-6    0.007615453 0.03252224 -0.0578827275  0.0737854450
-29  -0.038522996 0.03441149 -0.1055137500  0.0320436775
-34  -0.047083982 0.03618702 -0.1162136750  0.0270344450
-36  -0.022320498 0.03162196 -0.0870033775  0.0388022725
-37   0.007656584 0.03146658 -0.0524625450  0.0740345600
-48   0.031615185 0.03122640 -0.0279744650  0.0944293925
-53   0.010476539 0.03486882 -0.0569304300  0.0823023100
-54   0.048527727 0.02925550 -0.0089570085  0.1061710250
-58   0.034719594 0.02751295 -0.0202769150  0.0882244625
-61  -0.068692682 0.03439984 -0.1372267000 -0.0012850443
-66   0.036022969 0.02822510 -0.0209428050  0.0897944000
-67   0.013410944 0.02576122 -0.0365262125  0.0644596925
-69   0.013336496 0.03023983 -0.0459410150  0.0723857250
-71  -0.103963603 0.02786510 -0.1586993500 -0.0502826275
-74   0.013148162 0.02730057 -0.0402124500  0.0664050800
-75   0.057652262 0.03009998 -0.0006680034  0.1165857750
-76  -0.073175560 0.02713120 -0.1267734500 -0.0203639950
-78   0.043709835 0.02784872 -0.0120468600  0.0979385400
-79  -0.045399472 0.03140469 -0.1083763250  0.0154457850
-80  -0.032052762 0.03270438 -0.0972109175  0.0327624625
-81   0.040462983 0.02767271 -0.0148234125  0.0951225050
-82   0.115803413 0.02585824  0.0641412225  0.1662157250
-85  -0.027387728 0.02934635 -0.0844615250  0.0298338825
-86  -0.057584543 0.02962470 -0.1159385000  0.0006214602
-87  -0.058118892 0.02974881 -0.1167742500  0.0006038926
-89  -0.045870683 0.02565755 -0.0972854900  0.0048550312
-91  -0.014820238 0.02544880 -0.0639787875  0.0349605400
-92   0.010176988 0.02585820 -0.0405100900  0.0612099575
-93   0.052968220 0.02660675  0.0006414136  0.1059083000
-94  -0.058906832 0.02574714 -0.1099539750 -0.0082552420
-96   0.028165441 0.02934842 -0.0293566050  0.0860670900
-97   0.048551963 0.02378491  0.0024616653  0.0955530500
-98  -0.040178599 0.02371451 -0.0859624875  0.0068937800
-99  -0.007500986 0.02344070 -0.0545115725  0.0381018425
-101  0.043383885 0.02589996 -0.0070595170  0.0946530800
-102 -0.001323921 0.02357714 -0.0484182600  0.0444872850
-103 -0.028799621 0.02954785 -0.0869398950  0.0292530025
-104 -0.013909269 0.02940668 -0.0716470725  0.0450257600
-105 -0.022891713 0.02551184 -0.0728020050  0.0281616925
-106  0.006191776 0.02561836 -0.0437309850  0.0565493750
-110 -0.004154105 0.02642290 -0.0560751600  0.0478691225
-112 -0.080096132 0.02660208 -0.1327171500 -0.0283985725
-114 -0.048250346 0.02654446 -0.1002302000  0.0038963780
-115 -0.042402763 0.02621694 -0.0948810025  0.0081977222
-116 -0.040154239 0.02651747 -0.0927206950  0.0113551025
-120  0.118989213 0.03100491  0.0572451850  0.1786435500
-122 -0.017513890 0.02578695 -0.0682411000  0.0333923400
-125  0.003294487 0.02590884 -0.0469308575  0.0537190200
-127  0.030279255 0.02635988 -0.0219628750  0.0823614375
-129 -0.046506924 0.02970629 -0.1046983500  0.0115732050
-135  0.084698474 0.02598733  0.0337368575  0.1356741250
-136  0.082864310 0.02616971  0.0322435100  0.1350587250
-137  0.074771228 0.02972832  0.0154131600  0.1333669250
-140 -0.048543514 0.02955252 -0.1072460000  0.0090248392
-141 -0.001257417 0.03025288 -0.0620127175  0.0576920625
-142 -0.009229460 0.02967048 -0.0674717500  0.0492496050
-143  0.087489258 0.02914816  0.0301408025  0.1449002500
-144 -0.013988989 0.03020311 -0.0737685925  0.0453288750
-146  0.013256309 0.03013604 -0.0459311775  0.0726141650
-149  0.029135926 0.02961398 -0.0292106025  0.0872875075
-150  0.007271138 0.02924965 -0.0504092925  0.0649698925
-152  0.023131288 0.02881053 -0.0334762250  0.0808113725
-153 -0.030783118 0.02970065 -0.0886153050  0.0274846300
-155 -0.035667088 0.03076378 -0.0967039200  0.0241325150
-156 -0.042890656 0.02602960 -0.0938660325  0.0076036865
-159 -0.051085547 0.02943605 -0.1092207750  0.0060545250
-160 -0.013093617 0.03000212 -0.0728977175  0.0449497200
-162  0.167639066 0.02860649  0.1114064750  0.2245313250
-163 -0.042839384 0.03019477 -0.1026945750  0.0163224600
-165  0.006586790 0.02970690 -0.0515849175  0.0660422400
-167 -0.041717561 0.02995113 -0.1010228500  0.0179313575
-169  0.040888104 0.03014918 -0.0183745850  0.1000542000
-171  0.028888742 0.02932718 -0.0281135800  0.0871267800
-174  0.054888625 0.03033926 -0.0042051312  0.1149615750
-182 -0.003455581 0.03016133 -0.0622636200  0.0565081675
-187 -0.093128911 0.03035454 -0.1538470000 -0.0338192600
-189  0.020560531 0.02993873 -0.0391723225  0.0792529825
-190 -0.046084827 0.02949334 -0.1037250750  0.0128021475
-193  0.013043210 0.02976309 -0.0450824125  0.0726577200
-194 -0.050775806 0.03032844 -0.1098691250  0.0089867597
-201 -0.003287438 0.03006902 -0.0626416475  0.0561954800
-204  0.073907283 0.03046740  0.0146331025  0.1337221000
-205  0.003158917 0.02997340 -0.0562664175  0.0625249300
-208  0.008258996 0.03041757 -0.0518646750  0.0682629475
-209  0.015012128 0.03028262 -0.0436128150  0.0743595250
-211 -0.036201358 0.02974412 -0.0953698050  0.0218172300
-214  0.064221324 0.03057080  0.0040684545  0.1245375250
-219  0.029328662 0.03033499 -0.0302262775  0.0897274800
-222 -0.041794064 0.02976366 -0.1013622250  0.0163525625
-223 -0.013377983 0.03012596 -0.0727548875  0.0468946775
-229 -0.034582345 0.02959948 -0.0925194700  0.0237317525
-
-, , time
-
-         Estimate   Est.Error         Q2.5       Q97.5
-6    1.355056e-04 0.004542989 -0.009930840 0.010379977
-29  -1.198426e-03 0.004956269 -0.013512320 0.007981281
-34  -1.758486e-03 0.005102954 -0.015002260 0.006687913
-36   6.715553e-04 0.004942463 -0.009159028 0.012951875
-37  -9.385577e-04 0.004565985 -0.012282935 0.007479675
-48  -3.589154e-04 0.004555361 -0.010845973 0.008902104
-53  -9.956419e-04 0.004736298 -0.012792885 0.007886260
-54   7.138628e-04 0.004495710 -0.008441363 0.011203702
-58   1.695987e-03 0.005275195 -0.007136931 0.015867805
-61  -1.127045e-04 0.004654304 -0.010250925 0.010359127
-66   2.328290e-03 0.004824371 -0.005016221 0.014723060
-67  -1.238025e-04 0.004236539 -0.009439422 0.009169404
-69  -5.777132e-04 0.004967028 -0.012372687 0.009381806
-71  -6.712784e-04 0.005784931 -0.013558690 0.011339987
-74   4.136031e-04 0.004060902 -0.007948930 0.009625788
-75   1.474266e-03 0.005276229 -0.007793251 0.014926745
-76   7.334171e-05 0.005225282 -0.011050697 0.012009730
-78   1.425417e-03 0.004470655 -0.006584369 0.012382112
-79   9.608141e-04 0.005272771 -0.008857370 0.014086470
-80  -3.513418e-04 0.004500662 -0.010257140 0.009331658
-81   1.640714e-03 0.004621611 -0.006156402 0.012871807
-82   1.589305e-03 0.005052699 -0.007819075 0.013602202
-85   4.138393e-04 0.004949899 -0.010088640 0.011799312
-86   4.526474e-04 0.005234104 -0.010275338 0.012432250
-87  -1.531745e-03 0.005569631 -0.015698535 0.007904927
-89   6.579730e-04 0.004920299 -0.009077636 0.012656320
-91  -2.517045e-04 0.004797226 -0.011203665 0.010161167
-92  -2.314991e-04 0.004618758 -0.010866920 0.009481332
-93  -1.227419e-03 0.005233022 -0.014578717 0.007891778
-94  -4.632159e-04 0.005025626 -0.012225293 0.009905601
-96   3.114694e-04 0.005094874 -0.010314660 0.011535065
-97   6.088999e-04 0.004902012 -0.009049323 0.012150535
-98  -1.922769e-03 0.005318095 -0.015593238 0.006562407
-99   3.555635e-04 0.004785581 -0.009420397 0.011349610
-101  3.459962e-04 0.004881576 -0.009974814 0.011610680
-102 -2.140147e-04 0.004682780 -0.010995352 0.009551509
-103  1.702971e-05 0.005060913 -0.010903527 0.011290227
-104 -9.572873e-05 0.004872183 -0.011343865 0.010432742
-105 -4.709613e-04 0.004950786 -0.012364297 0.009757181
-106 -3.080508e-04 0.004671084 -0.011009220 0.009622250
-110 -1.038097e-03 0.004653318 -0.012670890 0.007661036
-112  1.074708e-03 0.005280828 -0.008364053 0.014198962
-114  9.460187e-04 0.005163576 -0.008735931 0.013830337
-115  1.789562e-03 0.005216273 -0.006556593 0.015738347
-116  1.669794e-03 0.005269921 -0.006779861 0.015918187
-120 -9.157938e-04 0.006179902 -0.016175958 0.011071712
-122  5.907547e-04 0.004655939 -0.008462240 0.011620057
-125  2.730565e-04 0.004719445 -0.009775196 0.011066740
-127 -7.038811e-04 0.004953320 -0.012810347 0.008769380
-129  3.203448e-04 0.005092938 -0.010118285 0.011804352
-135  1.462619e-03 0.005519207 -0.008387139 0.015181175
-136 -1.055205e-03 0.005332518 -0.014264035 0.008937337
-137 -7.805538e-04 0.005439064 -0.013637575 0.009897000
-140  2.106810e-04 0.005078636 -0.010761347 0.012022280
-141  1.345032e-03 0.005035710 -0.007392660 0.014107627
-142  9.301592e-06 0.004737211 -0.010473283 0.010783900
-143 -5.747088e-05 0.005485877 -0.012410733 0.011834662
-144  8.863202e-04 0.004875429 -0.008095965 0.012710700
-146  6.625338e-04 0.004814246 -0.008905776 0.012084800
-149 -7.684240e-04 0.004886548 -0.012692597 0.008953670
-150  4.617370e-04 0.004683161 -0.009403544 0.011692910
-152 -7.678470e-04 0.005045208 -0.013247500 0.009127926
-153 -1.379591e-03 0.005008199 -0.013982560 0.007399784
-155  3.616377e-04 0.005052166 -0.010165110 0.012066872
-156 -9.985046e-04 0.005068714 -0.013600845 0.008407128
-159  4.573291e-04 0.005244907 -0.010076245 0.013271827
-160  1.737954e-03 0.005229764 -0.006474576 0.015277752
-162 -2.370641e-03 0.007343209 -0.020936570 0.010038907
-163  1.183655e-05 0.004856271 -0.010672720 0.011127160
-165 -1.127790e-03 0.004864667 -0.013500717 0.007712752
-167 -7.077635e-04 0.004768041 -0.012246347 0.008667861
-169 -3.648755e-04 0.005019194 -0.012390090 0.009836439
-171 -6.977894e-04 0.004770940 -0.012060078 0.008874214
-174 -9.621205e-04 0.005077317 -0.013487787 0.008484766
-182  5.237751e-04 0.004718996 -0.008716350 0.011790100
-187  1.372144e-05 0.005162792 -0.011428495 0.011581592
-189  1.770557e-03 0.005178402 -0.006267084 0.015569040
-190 -1.007282e-03 0.005011369 -0.013079912 0.008516649
-193 -8.804816e-04 0.004861901 -0.012506155 0.008103943
-194 -6.429425e-04 0.005013373 -0.012745040 0.009525531
-201  5.475888e-04 0.004619639 -0.008727812 0.011507385
-204 -1.523694e-03 0.005399577 -0.015859212 0.007873040
-205 -7.761356e-04 0.004886587 -0.012779012 0.008703031
-208  1.756128e-03 0.005314003 -0.006872487 0.015391820
-209  1.300288e-03 0.004820871 -0.007158682 0.013250587
-211 -1.276512e-03 0.005179498 -0.014436540 0.007713174
-214 -3.450529e-04 0.004980358 -0.012002282 0.009990670
-219  8.871930e-04 0.004833811 -0.008401774 0.012616665
-222  1.436926e-03 0.005123047 -0.007370131 0.015075517
-223 -2.236541e-03 0.005496413 -0.017103960 0.005826009
-229 -1.738052e-03 0.005286092 -0.014962237 0.007019519</code></pre>
-</div>
-</div>
-</section>
-<section class="slide level2">
-
-<p>coef = fixef + raneff</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="fu">coef</span>(mlm<span class="fl">.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$ID
-, , Intercept
-
-      Estimate  Est.Error       Q2.5     Q97.5
-6   0.20197711 0.03312215 0.13629758 0.2686843
-29  0.15583866 0.03508179 0.08739648 0.2266863
-34  0.14727767 0.03675446 0.07731670 0.2224352
-36  0.17204116 0.03170521 0.10852342 0.2334044
-37  0.20201824 0.03214163 0.14035118 0.2700478
-48  0.22597684 0.03157051 0.16506324 0.2900255
-53  0.20483820 0.03524434 0.13712673 0.2758132
-54  0.24288938 0.02942424 0.18498264 0.3009498
-58  0.22908125 0.02728236 0.17460751 0.2815035
-61  0.12566897 0.03492297 0.05551168 0.1935232
-66  0.23038463 0.02800373 0.17372926 0.2838676
-67  0.20777260 0.02575239 0.15717044 0.2585607
-69  0.20769815 0.03010346 0.14848124 0.2670535
-71  0.09039805 0.02775266 0.03612870 0.1442382
-74  0.20750982 0.02725151 0.15432573 0.2611940
-75  0.25201392 0.02979166 0.19362551 0.3097358
-76  0.12118610 0.02700761 0.06790960 0.1737814
-78  0.23807149 0.02768293 0.18281630 0.2916082
-79  0.14896218 0.03128202 0.08657505 0.2101104
-80  0.16230890 0.03300146 0.09653027 0.2269164
-81  0.23482464 0.02747335 0.17882378 0.2882614
-82  0.31016507 0.02535712 0.25945639 0.3596315
-85  0.16697393 0.02891874 0.11138238 0.2238516
-86  0.13677711 0.02928522 0.07955120 0.1944214
-87  0.13624276 0.02967727 0.07824745 0.1952127
-89  0.14849097 0.02517805 0.09906474 0.1979867
-91  0.17954142 0.02493577 0.13032801 0.2289275
-92  0.20453864 0.02561286 0.15438635 0.2547167
-93  0.24732988 0.02627798 0.19573415 0.2994517
-94  0.13545483 0.02538544 0.08508083 0.1850772
-96  0.22252710 0.02897806 0.16541237 0.2790787
-97  0.24291362 0.02332169 0.19710864 0.2886775
-98  0.15418306 0.02340449 0.10887163 0.2009407
-99  0.18686067 0.02298683 0.14121080 0.2318663
-101 0.23774554 0.02542983 0.18771998 0.2886209
-102 0.19303774 0.02312655 0.14781750 0.2387189
-103 0.16556204 0.02914410 0.10847919 0.2223128
-104 0.18045239 0.02890798 0.12351663 0.2375007
-105 0.17146994 0.02503019 0.12208264 0.2205833
-106 0.20055343 0.02531624 0.15096108 0.2502141
-110 0.19020755 0.02629955 0.13801353 0.2419980
-112 0.11426552 0.02606774 0.06310262 0.1646636
-114 0.14611131 0.02616748 0.09517720 0.1970049
-115 0.15195889 0.02588511 0.10056968 0.2022763
-116 0.15420742 0.02603708 0.10221876 0.2045115
-120 0.31335087 0.03054124 0.25239471 0.3722826
-122 0.17684777 0.02532354 0.12738015 0.2266601
-125 0.19765614 0.02549701 0.14845285 0.2474907
-127 0.22464091 0.02589104 0.17386840 0.2752126
-129 0.14785473 0.02920763 0.09028326 0.2044223
-135 0.27906013 0.02542475 0.22951447 0.3288388
-136 0.27722597 0.02574994 0.22747060 0.3279517
-137 0.26913289 0.02924663 0.21020172 0.3274080
-140 0.14581814 0.02912052 0.08858507 0.2020198
-141 0.19310424 0.02996978 0.13386296 0.2518129
-142 0.18513220 0.02946063 0.12734467 0.2430851
-143 0.28185091 0.02863065 0.22571527 0.3374455
-144 0.18037267 0.03003837 0.12126835 0.2390942
-146 0.20761797 0.02991765 0.14926726 0.2662614
-149 0.22349758 0.02953178 0.16633117 0.2815753
-150 0.20163279 0.02905575 0.14506061 0.2585936
-152 0.21749294 0.02850600 0.16162463 0.2738252
-153 0.16357854 0.02962247 0.10613301 0.2218612
-155 0.15869457 0.03073348 0.09745924 0.2176829
-156 0.15147100 0.02583430 0.10109383 0.2013918
-159 0.14327611 0.02909629 0.08598505 0.1999305
-160 0.18126804 0.02984718 0.12182726 0.2393006
-162 0.36200072 0.02811508 0.30693350 0.4180443
-163 0.15152227 0.02993162 0.09277292 0.2100370
-165 0.20094845 0.02960133 0.14232319 0.2602228
-167 0.15264410 0.02978636 0.09394262 0.2112675
-169 0.23524976 0.02995950 0.17631329 0.2946652
-171 0.22325040 0.02908590 0.16702498 0.2810668
-174 0.24925028 0.03013152 0.19010338 0.3087372
-182 0.19090608 0.02996169 0.13169306 0.2505353
-187 0.10123275 0.03018818 0.04028655 0.1609882
-189 0.21492219 0.02964694 0.15507301 0.2722769
-190 0.14827683 0.02931657 0.09159391 0.2068285
-193 0.20740487 0.02952540 0.15026663 0.2665222
-194 0.14358585 0.03009075 0.08495676 0.2023702
-201 0.19107422 0.02977168 0.13263540 0.2492340
-204 0.26826894 0.03033500 0.20858014 0.3275495
-205 0.19752057 0.02982269 0.13816578 0.2561400
-208 0.20262065 0.03011276 0.14254070 0.2611259
-209 0.20937378 0.03005141 0.15097768 0.2675993
-211 0.15816030 0.02959448 0.09937452 0.2159369
-214 0.25858298 0.03024844 0.19865241 0.3183141
-219 0.22369032 0.03000554 0.16410931 0.2835013
-222 0.15256759 0.02951596 0.09374690 0.2094176
-223 0.18098367 0.02989263 0.12206652 0.2407062
-229 0.15977931 0.02946188 0.10178128 0.2173246
-
-, , time
-
-         Estimate   Est.Error         Q2.5       Q97.5
-6   -0.0027309611 0.004986505 -0.013689579 0.007766937
-29  -0.0040648932 0.005529643 -0.017340728 0.005607243
-34  -0.0046249527 0.005625424 -0.018602977 0.004761649
-36  -0.0021949114 0.005388073 -0.012685686 0.010259374
-37  -0.0038050245 0.005003585 -0.015650961 0.005018518
-48  -0.0032253822 0.004950476 -0.014242920 0.006106532
-53  -0.0038621086 0.005229834 -0.016580240 0.005395507
-54  -0.0021526040 0.004800248 -0.011797360 0.008313826
-58  -0.0011704796 0.005567250 -0.010836818 0.012741982
-61  -0.0029791713 0.005199060 -0.013929714 0.007938344
-66  -0.0005381767 0.004998151 -0.008699570 0.011913001
-67  -0.0029902693 0.004662899 -0.013289058 0.006500820
-69  -0.0034441800 0.005394906 -0.016083391 0.006684785
-71  -0.0035377451 0.006316103 -0.017372389 0.009275506
-74  -0.0024528636 0.004416105 -0.011469521 0.006959489
-75  -0.0013922003 0.005549904 -0.011528849 0.012146969
-76  -0.0027931250 0.005779747 -0.014758311 0.009436959
-78  -0.0014410501 0.004689536 -0.010032536 0.009458592
-79  -0.0019056526 0.005753676 -0.012755602 0.011422442
-80  -0.0032178086 0.004997651 -0.014017297 0.006713816
-81  -0.0012257529 0.004828245 -0.009859522 0.010182692
-82  -0.0012771618 0.005163704 -0.011020368 0.010455581
-85  -0.0024526274 0.005434575 -0.013980416 0.009257729
-86  -0.0024138194 0.005772473 -0.014540184 0.010054380
-87  -0.0043982114 0.006180879 -0.019700242 0.005958717
-89  -0.0022084938 0.005431254 -0.012894936 0.010192368
-91  -0.0031181713 0.005302914 -0.014922649 0.007407841
-92  -0.0030979659 0.005135415 -0.014706782 0.007239811
-93  -0.0040938859 0.005633149 -0.017822653 0.005444915
-94  -0.0033296826 0.005574531 -0.016104345 0.007824486
-96  -0.0025549973 0.005513580 -0.014164247 0.009130955
-97  -0.0022575668 0.005262437 -0.012698825 0.009507674
-98  -0.0047892362 0.005904891 -0.019534308 0.004574096
-99  -0.0025109032 0.005171280 -0.012989376 0.008947423
-101 -0.0025204705 0.005242175 -0.013490724 0.008756880
-102 -0.0030804814 0.005155190 -0.014639157 0.007001263
-103 -0.0028494370 0.005554444 -0.014596341 0.008868654
-104 -0.0029621955 0.005359079 -0.015087302 0.008060122
-105 -0.0033374281 0.005489336 -0.016319193 0.007372623
-106 -0.0031745175 0.005173027 -0.014736320 0.007206560
-110 -0.0039045640 0.005172487 -0.016575438 0.005065785
-112 -0.0017917585 0.005777434 -0.012314171 0.011747677
-114 -0.0019204481 0.005583164 -0.012817005 0.011320890
-115 -0.0010769052 0.005591060 -0.010651192 0.012847529
-116 -0.0011966726 0.005618386 -0.010578799 0.013083642
-120 -0.0037822606 0.006488150 -0.019512646 0.008360040
-122 -0.0022757120 0.005074167 -0.012152635 0.009021942
-125 -0.0025934102 0.005161355 -0.013619820 0.008635732
-127 -0.0035703479 0.005388703 -0.016403388 0.006122268
-129 -0.0025461219 0.005614502 -0.013826437 0.009511345
-135 -0.0014038482 0.005736879 -0.011834751 0.012227976
-136 -0.0039216715 0.005694687 -0.017694778 0.006206600
-137 -0.0036470206 0.005817287 -0.017109930 0.007321650
-140 -0.0026557858 0.005600005 -0.014558548 0.009759744
-141 -0.0015214347 0.005380638 -0.011131377 0.011326477
-142 -0.0028571652 0.005186636 -0.014278228 0.007875486
-143 -0.0029239376 0.005795787 -0.015776951 0.009004066
-144 -0.0019801466 0.005290951 -0.012065512 0.009877582
-146 -0.0022039330 0.005220086 -0.012641457 0.009284224
-149 -0.0036348908 0.005393241 -0.016367598 0.006648429
-150 -0.0024047297 0.005130908 -0.013154379 0.008842366
-152 -0.0036343137 0.005541653 -0.017032018 0.006749408
-153 -0.0042460574 0.005560010 -0.017801309 0.005295990
-155 -0.0025048291 0.005550465 -0.013913141 0.009508840
-156 -0.0038649714 0.005628445 -0.017317347 0.006076050
-159 -0.0024091376 0.005749131 -0.014121824 0.010452410
-160 -0.0011285129 0.005512218 -0.010300054 0.012549254
-162 -0.0052371073 0.007615294 -0.024432430 0.007338546
-163 -0.0028546302 0.005288405 -0.014038129 0.008575273
-165 -0.0039942563 0.005439021 -0.017361901 0.005446728
-167 -0.0035742303 0.005331856 -0.016185788 0.006527780
-169 -0.0032313422 0.005448254 -0.015957742 0.007385511
-171 -0.0035642561 0.005217498 -0.015605457 0.006286555
-174 -0.0038285872 0.005485346 -0.017029549 0.006198719
-182 -0.0023426917 0.005148417 -0.012628165 0.009249444
-187 -0.0028527453 0.005681214 -0.015022710 0.009238203
-189 -0.0010959097 0.005491860 -0.010230155 0.012766546
-190 -0.0038737487 0.005571374 -0.016895730 0.006516643
-193 -0.0037469483 0.005373155 -0.016396695 0.005851630
-194 -0.0035094092 0.005544837 -0.016272444 0.007215368
-201 -0.0023188780 0.005081389 -0.012527198 0.009291226
-204 -0.0043901612 0.005753174 -0.019050656 0.005257239
-205 -0.0036426023 0.005387022 -0.016398992 0.006353623
-208 -0.0011103389 0.005646008 -0.010605954 0.012615961
-209 -0.0015661792 0.005209625 -0.011042314 0.010415549
-211 -0.0041429786 0.005747871 -0.018371000 0.005669600
-214 -0.0032115197 0.005381063 -0.015347309 0.007362489
-219 -0.0019792737 0.005163922 -0.011917970 0.009517950
-222 -0.0014295403 0.005524686 -0.011232661 0.012240749
-223 -0.0051030078 0.006058856 -0.020566784 0.003924420
-229 -0.0046045189 0.005822911 -0.018933284 0.004995994</code></pre>
+<pre><code>      elpd_diff se_diff
+mlm.1   0.0       0.0  
+mlm.2 -58.1       8.8  </code></pre>
 </div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb78-2"><a href="#cb78-2"></a>esm <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/bayes2022/main/static/Lectures/esm_w1_RENAMED.csv"</span>)</span>
-<span id="cb78-3"><a href="#cb78-3"></a>esm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb76-2"><a href="#cb76-2"></a>esm <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/bayes2022/main/static/Lectures/esm_w1_RENAMED.csv"</span>)</span>
+<span id="cb76-3"><a href="#cb76-3"></a>esm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 11,540 × 89
     ...1 esm.IDnum.w1 esm.PRO01.w1 esm.PRO02.w1 esm.PRO03.w1
@@ -2912,13 +2547,13 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a>esm<span class="sc">$</span>PA <span class="ot">&lt;-</span> esm<span class="sc">$</span>esm.NQ11.w1</span>
-<span id="cb80-2"><a href="#cb80-2"></a>esm<span class="sc">$</span>W.other <span class="ot">&lt;-</span> esm<span class="sc">$</span>esm.ST04.w1</span>
-<span id="cb80-3"><a href="#cb80-3"></a>esm<span class="sc">$</span>ID <span class="ot">&lt;-</span> esm<span class="sc">$</span>esm.IDnum.w1</span>
-<span id="cb80-4"><a href="#cb80-4"></a></span>
-<span id="cb80-5"><a href="#cb80-5"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb80-6"><a href="#cb80-6"></a>test <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PA <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">|</span> ID), <span class="at">data =</span> esm )</span>
-<span id="cb80-7"><a href="#cb80-7"></a><span class="fu">summary</span>(test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a>esm<span class="sc">$</span>PA <span class="ot">&lt;-</span> esm<span class="sc">$</span>esm.NQ11.w1</span>
+<span id="cb78-2"><a href="#cb78-2"></a>esm<span class="sc">$</span>W.other <span class="ot">&lt;-</span> esm<span class="sc">$</span>esm.ST04.w1</span>
+<span id="cb78-3"><a href="#cb78-3"></a>esm<span class="sc">$</span>ID <span class="ot">&lt;-</span> esm<span class="sc">$</span>esm.IDnum.w1</span>
+<span id="cb78-4"><a href="#cb78-4"></a></span>
+<span id="cb78-5"><a href="#cb78-5"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb78-6"><a href="#cb78-6"></a>test <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PA <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">|</span> ID), <span class="at">data =</span> esm )</span>
+<span id="cb78-7"><a href="#cb78-7"></a><span class="fu">summary</span>(test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML ['lmerMod']
@@ -2952,33 +2587,441 @@ W.other -0.686</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1"></a>mlm<span class="fl">.5</span> <span class="ot">&lt;-</span> </span>
-<span id="cb82-2"><a href="#cb82-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
-<span id="cb82-3"><a href="#cb82-3"></a>      PA <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">|</span> ID),</span>
-<span id="cb82-4"><a href="#cb82-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb82-5"><a href="#cb82-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> b),</span>
-<span id="cb82-6"><a href="#cb82-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">10</span>, <span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">coef =</span> Intercept, <span class="at">group =</span> ID), </span>
-<span id="cb82-7"><a href="#cb82-7"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">10</span>, <span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">coef =</span> W.other, <span class="at">group =</span> ID), </span>
-<span id="cb82-8"><a href="#cb82-8"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma),</span>
-<span id="cb82-9"><a href="#cb82-9"></a>                <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">10</span>), <span class="at">class =</span> cor)),</span>
-<span id="cb82-10"><a href="#cb82-10"></a>      <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
-<span id="cb82-11"><a href="#cb82-11"></a>      <span class="at">sample_prior =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb82-12"><a href="#cb82-12"></a>      <span class="at">file =</span> <span class="st">"mlm.5"</span>,</span>
-<span id="cb82-13"><a href="#cb82-13"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb82-14"><a href="#cb82-14"></a>      <span class="at">data =</span> esm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a>mlm<span class="fl">.5</span> <span class="ot">&lt;-</span> </span>
+<span id="cb80-2"><a href="#cb80-2"></a>  <span class="fu">brm</span>(<span class="at">family =</span> gaussian,</span>
+<span id="cb80-3"><a href="#cb80-3"></a>      PA <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> W.other  <span class="sc">|</span> ID),</span>
+<span id="cb80-4"><a href="#cb80-4"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb80-5"><a href="#cb80-5"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> b),</span>
+<span id="cb80-6"><a href="#cb80-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">10</span>, <span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">coef =</span> Intercept, <span class="at">group =</span> ID), </span>
+<span id="cb80-7"><a href="#cb80-7"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">10</span>, <span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">coef =</span> W.other, <span class="at">group =</span> ID), </span>
+<span id="cb80-8"><a href="#cb80-8"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma),</span>
+<span id="cb80-9"><a href="#cb80-9"></a>                <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">10</span>), <span class="at">class =</span> cor)),</span>
+<span id="cb80-10"><a href="#cb80-10"></a>      <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb80-11"><a href="#cb80-11"></a>      <span class="at">sample_prior =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb80-12"><a href="#cb80-12"></a>      <span class="at">file =</span> <span class="st">"mlm.5"</span>,</span>
+<span id="cb80-13"><a href="#cb80-13"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb80-14"><a href="#cb80-14"></a>      <span class="at">data =</span> esm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <p>747 parameters in our posterior</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="co"># get_variables(mlm.5)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a><span class="fu">get_variables</span>(mlm<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "b_Intercept"                "b_W.other"                 
+  [3] "sd_ID__Intercept"           "sd_ID__W.other"            
+  [5] "cor_ID__Intercept__W.other" "sigma"                     
+  [7] "r_ID[81,Intercept]"         "r_ID[86,Intercept]"        
+  [9] "r_ID[87,Intercept]"         "r_ID[88,Intercept]"        
+ [11] "r_ID[89,Intercept]"         "r_ID[90,Intercept]"        
+ [13] "r_ID[91,Intercept]"         "r_ID[92,Intercept]"        
+ [15] "r_ID[93,Intercept]"         "r_ID[94,Intercept]"        
+ [17] "r_ID[95,Intercept]"         "r_ID[97,Intercept]"        
+ [19] "r_ID[98,Intercept]"         "r_ID[100,Intercept]"       
+ [21] "r_ID[101,Intercept]"        "r_ID[102,Intercept]"       
+ [23] "r_ID[104,Intercept]"        "r_ID[10105,Intercept]"     
+ [25] "r_ID[10106,Intercept]"      "r_ID[10107,Intercept]"     
+ [27] "r_ID[10108,Intercept]"      "r_ID[10109,Intercept]"     
+ [29] "r_ID[10110,Intercept]"      "r_ID[10111,Intercept]"     
+ [31] "r_ID[10112,Intercept]"      "r_ID[10113,Intercept]"     
+ [33] "r_ID[10114,Intercept]"      "r_ID[10116,Intercept]"     
+ [35] "r_ID[10117,Intercept]"      "r_ID[10118,Intercept]"     
+ [37] "r_ID[10121,Intercept]"      "r_ID[10122,Intercept]"     
+ [39] "r_ID[10123,Intercept]"      "r_ID[10124,Intercept]"     
+ [41] "r_ID[10125,Intercept]"      "r_ID[10126,Intercept]"     
+ [43] "r_ID[10127,Intercept]"      "r_ID[10128,Intercept]"     
+ [45] "r_ID[10129,Intercept]"      "r_ID[10130,Intercept]"     
+ [47] "r_ID[10131,Intercept]"      "r_ID[10132,Intercept]"     
+ [49] "r_ID[10133,Intercept]"      "r_ID[10134,Intercept]"     
+ [51] "r_ID[10136,Intercept]"      "r_ID[10137,Intercept]"     
+ [53] "r_ID[10138,Intercept]"      "r_ID[10139,Intercept]"     
+ [55] "r_ID[10141,Intercept]"      "r_ID[10143,Intercept]"     
+ [57] "r_ID[10144,Intercept]"      "r_ID[10145,Intercept]"     
+ [59] "r_ID[10147,Intercept]"      "r_ID[10148,Intercept]"     
+ [61] "r_ID[10149,Intercept]"      "r_ID[10150,Intercept]"     
+ [63] "r_ID[10151,Intercept]"      "r_ID[10153,Intercept]"     
+ [65] "r_ID[10154,Intercept]"      "r_ID[10155,Intercept]"     
+ [67] "r_ID[10157,Intercept]"      "r_ID[10158,Intercept]"     
+ [69] "r_ID[10159,Intercept]"      "r_ID[10160,Intercept]"     
+ [71] "r_ID[10161,Intercept]"      "r_ID[10162,Intercept]"     
+ [73] "r_ID[10164,Intercept]"      "r_ID[10166,Intercept]"     
+ [75] "r_ID[10167,Intercept]"      "r_ID[10171,Intercept]"     
+ [77] "r_ID[10172,Intercept]"      "r_ID[10173,Intercept]"     
+ [79] "r_ID[10174,Intercept]"      "r_ID[10175,Intercept]"     
+ [81] "r_ID[10176,Intercept]"      "r_ID[10177,Intercept]"     
+ [83] "r_ID[10178,Intercept]"      "r_ID[10180,Intercept]"     
+ [85] "r_ID[10181,Intercept]"      "r_ID[10184,Intercept]"     
+ [87] "r_ID[10185,Intercept]"      "r_ID[10186,Intercept]"     
+ [89] "r_ID[10187,Intercept]"      "r_ID[10188,Intercept]"     
+ [91] "r_ID[10190,Intercept]"      "r_ID[10192,Intercept]"     
+ [93] "r_ID[10193,Intercept]"      "r_ID[10194,Intercept]"     
+ [95] "r_ID[10195,Intercept]"      "r_ID[10196,Intercept]"     
+ [97] "r_ID[10197,Intercept]"      "r_ID[10198,Intercept]"     
+ [99] "r_ID[10199,Intercept]"      "r_ID[10200,Intercept]"     
+[101] "r_ID[10201,Intercept]"      "r_ID[10202,Intercept]"     
+[103] "r_ID[10203,Intercept]"      "r_ID[10204,Intercept]"     
+[105] "r_ID[10205,Intercept]"      "r_ID[10206,Intercept]"     
+[107] "r_ID[10207,Intercept]"      "r_ID[10208,Intercept]"     
+[109] "r_ID[10210,Intercept]"      "r_ID[10211,Intercept]"     
+[111] "r_ID[10212,Intercept]"      "r_ID[10213,Intercept]"     
+[113] "r_ID[10214,Intercept]"      "r_ID[10215,Intercept]"     
+[115] "r_ID[10216,Intercept]"      "r_ID[10217,Intercept]"     
+[117] "r_ID[10219,Intercept]"      "r_ID[10220,Intercept]"     
+[119] "r_ID[10221,Intercept]"      "r_ID[10222,Intercept]"     
+[121] "r_ID[10223,Intercept]"      "r_ID[10226,Intercept]"     
+[123] "r_ID[10227,Intercept]"      "r_ID[10228,Intercept]"     
+[125] "r_ID[10229,Intercept]"      "r_ID[10230,Intercept]"     
+[127] "r_ID[10231,Intercept]"      "r_ID[10232,Intercept]"     
+[129] "r_ID[10233,Intercept]"      "r_ID[10234,Intercept]"     
+[131] "r_ID[10236,Intercept]"      "r_ID[10237,Intercept]"     
+[133] "r_ID[10238,Intercept]"      "r_ID[10239,Intercept]"     
+[135] "r_ID[10240,Intercept]"      "r_ID[10241,Intercept]"     
+[137] "r_ID[10242,Intercept]"      "r_ID[10243,Intercept]"     
+[139] "r_ID[10244,Intercept]"      "r_ID[10245,Intercept]"     
+[141] "r_ID[10247,Intercept]"      "r_ID[10248,Intercept]"     
+[143] "r_ID[10249,Intercept]"      "r_ID[10250,Intercept]"     
+[145] "r_ID[10251,Intercept]"      "r_ID[10253,Intercept]"     
+[147] "r_ID[10255,Intercept]"      "r_ID[10256,Intercept]"     
+[149] "r_ID[10258,Intercept]"      "r_ID[10259,Intercept]"     
+[151] "r_ID[10260,Intercept]"      "r_ID[10266,Intercept]"     
+[153] "r_ID[10267,Intercept]"      "r_ID[10268,Intercept]"     
+[155] "r_ID[10269,Intercept]"      "r_ID[10270,Intercept]"     
+[157] "r_ID[10271,Intercept]"      "r_ID[10272,Intercept]"     
+[159] "r_ID[10273,Intercept]"      "r_ID[10274,Intercept]"     
+[161] "r_ID[10275,Intercept]"      "r_ID[10276,Intercept]"     
+[163] "r_ID[10277,Intercept]"      "r_ID[10280,Intercept]"     
+[165] "r_ID[10281,Intercept]"      "r_ID[10285,Intercept]"     
+[167] "r_ID[10286,Intercept]"      "r_ID[10287,Intercept]"     
+[169] "r_ID[10288,Intercept]"      "r_ID[10289,Intercept]"     
+[171] "r_ID[10290,Intercept]"      "r_ID[10291,Intercept]"     
+[173] "r_ID[10292,Intercept]"      "r_ID[10293,Intercept]"     
+[175] "r_ID[10294,Intercept]"      "r_ID[10295,Intercept]"     
+[177] "r_ID[10296,Intercept]"      "r_ID[10299,Intercept]"     
+[179] "r_ID[10301,Intercept]"      "r_ID[10304,Intercept]"     
+[181] "r_ID[10305,Intercept]"      "r_ID[10308,Intercept]"     
+[183] "r_ID[10309,Intercept]"      "r_ID[10310,Intercept]"     
+[185] "r_ID[10311,Intercept]"      "r_ID[10312,Intercept]"     
+[187] "r_ID[10313,Intercept]"      "r_ID[10314,Intercept]"     
+[189] "r_ID[10315,Intercept]"      "r_ID[10316,Intercept]"     
+[191] "r_ID[10317,Intercept]"      "r_ID[10318,Intercept]"     
+[193] "r_ID[10319,Intercept]"      "r_ID[10320,Intercept]"     
+[195] "r_ID[10322,Intercept]"      "r_ID[10323,Intercept]"     
+[197] "r_ID[10324,Intercept]"      "r_ID[10325,Intercept]"     
+[199] "r_ID[10326,Intercept]"      "r_ID[10327,Intercept]"     
+[201] "r_ID[10328,Intercept]"      "r_ID[10329,Intercept]"     
+[203] "r_ID[10330,Intercept]"      "r_ID[10331,Intercept]"     
+[205] "r_ID[10332,Intercept]"      "r_ID[10333,Intercept]"     
+[207] "r_ID[10335,Intercept]"      "r_ID[10336,Intercept]"     
+[209] "r_ID[10337,Intercept]"      "r_ID[10338,Intercept]"     
+[211] "r_ID[10340,Intercept]"      "r_ID[10341,Intercept]"     
+[213] "r_ID[10342,Intercept]"      "r_ID[10343,Intercept]"     
+[215] "r_ID[10345,Intercept]"      "r_ID[10347,Intercept]"     
+[217] "r_ID[10348,Intercept]"      "r_ID[10349,Intercept]"     
+[219] "r_ID[10350,Intercept]"      "r_ID[10351,Intercept]"     
+[221] "r_ID[10352,Intercept]"      "r_ID[10353,Intercept]"     
+[223] "r_ID[10354,Intercept]"      "r_ID[10357,Intercept]"     
+[225] "r_ID[10358,Intercept]"      "r_ID[10359,Intercept]"     
+[227] "r_ID[10360,Intercept]"      "r_ID[10361,Intercept]"     
+[229] "r_ID[10363,Intercept]"      "r_ID[10364,Intercept]"     
+[231] "r_ID[10365,Intercept]"      "r_ID[10366,Intercept]"     
+[233] "r_ID[10367,Intercept]"      "r_ID[10368,Intercept]"     
+[235] "r_ID[10369,Intercept]"      "r_ID[10370,Intercept]"     
+[237] "r_ID[10371,Intercept]"      "r_ID[10372,Intercept]"     
+[239] "r_ID[10373,Intercept]"      "r_ID[10374,Intercept]"     
+[241] "r_ID[10378,Intercept]"      "r_ID[10379,Intercept]"     
+[243] "r_ID[10380,Intercept]"      "r_ID[10381,Intercept]"     
+[245] "r_ID[10382,Intercept]"      "r_ID[10383,Intercept]"     
+[247] "r_ID[10384,Intercept]"      "r_ID[10386,Intercept]"     
+[249] "r_ID[10388,Intercept]"      "r_ID[10389,Intercept]"     
+[251] "r_ID[10390,Intercept]"      "r_ID[10391,Intercept]"     
+[253] "r_ID[10392,Intercept]"      "r_ID[10394,Intercept]"     
+[255] "r_ID[10397,Intercept]"      "r_ID[10398,Intercept]"     
+[257] "r_ID[10399,Intercept]"      "r_ID[10402,Intercept]"     
+[259] "r_ID[10404,Intercept]"      "r_ID[10407,Intercept]"     
+[261] "r_ID[10408,Intercept]"      "r_ID[10409,Intercept]"     
+[263] "r_ID[10411,Intercept]"      "r_ID[10412,Intercept]"     
+[265] "r_ID[10413,Intercept]"      "r_ID[10414,Intercept]"     
+[267] "r_ID[10415,Intercept]"      "r_ID[10418,Intercept]"     
+[269] "r_ID[10421,Intercept]"      "r_ID[10422,Intercept]"     
+[271] "r_ID[10423,Intercept]"      "r_ID[10426,Intercept]"     
+[273] "r_ID[10427,Intercept]"      "r_ID[10428,Intercept]"     
+[275] "r_ID[10429,Intercept]"      "r_ID[10431,Intercept]"     
+[277] "r_ID[10432,Intercept]"      "r_ID[10433,Intercept]"     
+[279] "r_ID[10434,Intercept]"      "r_ID[10435,Intercept]"     
+[281] "r_ID[10436,Intercept]"      "r_ID[10437,Intercept]"     
+[283] "r_ID[10438,Intercept]"      "r_ID[10439,Intercept]"     
+[285] "r_ID[10440,Intercept]"      "r_ID[10441,Intercept]"     
+[287] "r_ID[10442,Intercept]"      "r_ID[10444,Intercept]"     
+[289] "r_ID[10445,Intercept]"      "r_ID[10447,Intercept]"     
+[291] "r_ID[10448,Intercept]"      "r_ID[10449,Intercept]"     
+[293] "r_ID[10450,Intercept]"      "r_ID[10451,Intercept]"     
+[295] "r_ID[10452,Intercept]"      "r_ID[10453,Intercept]"     
+[297] "r_ID[10454,Intercept]"      "r_ID[10455,Intercept]"     
+[299] "r_ID[10456,Intercept]"      "r_ID[10457,Intercept]"     
+[301] "r_ID[10459,Intercept]"      "r_ID[10460,Intercept]"     
+[303] "r_ID[10461,Intercept]"      "r_ID[10462,Intercept]"     
+[305] "r_ID[10463,Intercept]"      "r_ID[10465,Intercept]"     
+[307] "r_ID[10466,Intercept]"      "r_ID[10469,Intercept]"     
+[309] "r_ID[10470,Intercept]"      "r_ID[10471,Intercept]"     
+[311] "r_ID[10472,Intercept]"      "r_ID[10473,Intercept]"     
+[313] "r_ID[10474,Intercept]"      "r_ID[10475,Intercept]"     
+[315] "r_ID[10476,Intercept]"      "r_ID[10477,Intercept]"     
+[317] "r_ID[10479,Intercept]"      "r_ID[10480,Intercept]"     
+[319] "r_ID[10481,Intercept]"      "r_ID[10483,Intercept]"     
+[321] "r_ID[10484,Intercept]"      "r_ID[10485,Intercept]"     
+[323] "r_ID[10486,Intercept]"      "r_ID[10487,Intercept]"     
+[325] "r_ID[10488,Intercept]"      "r_ID[10490,Intercept]"     
+[327] "r_ID[10492,Intercept]"      "r_ID[10493,Intercept]"     
+[329] "r_ID[10494,Intercept]"      "r_ID[10495,Intercept]"     
+[331] "r_ID[10496,Intercept]"      "r_ID[10497,Intercept]"     
+[333] "r_ID[10498,Intercept]"      "r_ID[10500,Intercept]"     
+[335] "r_ID[10503,Intercept]"      "r_ID[10506,Intercept]"     
+[337] "r_ID[10508,Intercept]"      "r_ID[10509,Intercept]"     
+[339] "r_ID[10510,Intercept]"      "r_ID[10511,Intercept]"     
+[341] "r_ID[10512,Intercept]"      "r_ID[10513,Intercept]"     
+[343] "r_ID[10515,Intercept]"      "r_ID[10516,Intercept]"     
+[345] "r_ID[10517,Intercept]"      "r_ID[10518,Intercept]"     
+[347] "r_ID[10522,Intercept]"      "r_ID[10523,Intercept]"     
+[349] "r_ID[10524,Intercept]"      "r_ID[10525,Intercept]"     
+[351] "r_ID[10526,Intercept]"      "r_ID[10528,Intercept]"     
+[353] "r_ID[10529,Intercept]"      "r_ID[10530,Intercept]"     
+[355] "r_ID[10532,Intercept]"      "r_ID[10533,Intercept]"     
+[357] "r_ID[10535,Intercept]"      "r_ID[10536,Intercept]"     
+[359] "r_ID[10537,Intercept]"      "r_ID[10538,Intercept]"     
+[361] "r_ID[10539,Intercept]"      "r_ID[10540,Intercept]"     
+[363] "r_ID[10541,Intercept]"      "r_ID[10542,Intercept]"     
+[365] "r_ID[10543,Intercept]"      "r_ID[10544,Intercept]"     
+[367] "r_ID[10545,Intercept]"      "r_ID[10547,Intercept]"     
+[369] "r_ID[10549,Intercept]"      "r_ID[10550,Intercept]"     
+[371] "r_ID[81,W.other]"           "r_ID[86,W.other]"          
+[373] "r_ID[87,W.other]"           "r_ID[88,W.other]"          
+[375] "r_ID[89,W.other]"           "r_ID[90,W.other]"          
+[377] "r_ID[91,W.other]"           "r_ID[92,W.other]"          
+[379] "r_ID[93,W.other]"           "r_ID[94,W.other]"          
+[381] "r_ID[95,W.other]"           "r_ID[97,W.other]"          
+[383] "r_ID[98,W.other]"           "r_ID[100,W.other]"         
+[385] "r_ID[101,W.other]"          "r_ID[102,W.other]"         
+[387] "r_ID[104,W.other]"          "r_ID[10105,W.other]"       
+[389] "r_ID[10106,W.other]"        "r_ID[10107,W.other]"       
+[391] "r_ID[10108,W.other]"        "r_ID[10109,W.other]"       
+[393] "r_ID[10110,W.other]"        "r_ID[10111,W.other]"       
+[395] "r_ID[10112,W.other]"        "r_ID[10113,W.other]"       
+[397] "r_ID[10114,W.other]"        "r_ID[10116,W.other]"       
+[399] "r_ID[10117,W.other]"        "r_ID[10118,W.other]"       
+[401] "r_ID[10121,W.other]"        "r_ID[10122,W.other]"       
+[403] "r_ID[10123,W.other]"        "r_ID[10124,W.other]"       
+[405] "r_ID[10125,W.other]"        "r_ID[10126,W.other]"       
+[407] "r_ID[10127,W.other]"        "r_ID[10128,W.other]"       
+[409] "r_ID[10129,W.other]"        "r_ID[10130,W.other]"       
+[411] "r_ID[10131,W.other]"        "r_ID[10132,W.other]"       
+[413] "r_ID[10133,W.other]"        "r_ID[10134,W.other]"       
+[415] "r_ID[10136,W.other]"        "r_ID[10137,W.other]"       
+[417] "r_ID[10138,W.other]"        "r_ID[10139,W.other]"       
+[419] "r_ID[10141,W.other]"        "r_ID[10143,W.other]"       
+[421] "r_ID[10144,W.other]"        "r_ID[10145,W.other]"       
+[423] "r_ID[10147,W.other]"        "r_ID[10148,W.other]"       
+[425] "r_ID[10149,W.other]"        "r_ID[10150,W.other]"       
+[427] "r_ID[10151,W.other]"        "r_ID[10153,W.other]"       
+[429] "r_ID[10154,W.other]"        "r_ID[10155,W.other]"       
+[431] "r_ID[10157,W.other]"        "r_ID[10158,W.other]"       
+[433] "r_ID[10159,W.other]"        "r_ID[10160,W.other]"       
+[435] "r_ID[10161,W.other]"        "r_ID[10162,W.other]"       
+[437] "r_ID[10164,W.other]"        "r_ID[10166,W.other]"       
+[439] "r_ID[10167,W.other]"        "r_ID[10171,W.other]"       
+[441] "r_ID[10172,W.other]"        "r_ID[10173,W.other]"       
+[443] "r_ID[10174,W.other]"        "r_ID[10175,W.other]"       
+[445] "r_ID[10176,W.other]"        "r_ID[10177,W.other]"       
+[447] "r_ID[10178,W.other]"        "r_ID[10180,W.other]"       
+[449] "r_ID[10181,W.other]"        "r_ID[10184,W.other]"       
+[451] "r_ID[10185,W.other]"        "r_ID[10186,W.other]"       
+[453] "r_ID[10187,W.other]"        "r_ID[10188,W.other]"       
+[455] "r_ID[10190,W.other]"        "r_ID[10192,W.other]"       
+[457] "r_ID[10193,W.other]"        "r_ID[10194,W.other]"       
+[459] "r_ID[10195,W.other]"        "r_ID[10196,W.other]"       
+[461] "r_ID[10197,W.other]"        "r_ID[10198,W.other]"       
+[463] "r_ID[10199,W.other]"        "r_ID[10200,W.other]"       
+[465] "r_ID[10201,W.other]"        "r_ID[10202,W.other]"       
+[467] "r_ID[10203,W.other]"        "r_ID[10204,W.other]"       
+[469] "r_ID[10205,W.other]"        "r_ID[10206,W.other]"       
+[471] "r_ID[10207,W.other]"        "r_ID[10208,W.other]"       
+[473] "r_ID[10210,W.other]"        "r_ID[10211,W.other]"       
+[475] "r_ID[10212,W.other]"        "r_ID[10213,W.other]"       
+[477] "r_ID[10214,W.other]"        "r_ID[10215,W.other]"       
+[479] "r_ID[10216,W.other]"        "r_ID[10217,W.other]"       
+[481] "r_ID[10219,W.other]"        "r_ID[10220,W.other]"       
+[483] "r_ID[10221,W.other]"        "r_ID[10222,W.other]"       
+[485] "r_ID[10223,W.other]"        "r_ID[10226,W.other]"       
+[487] "r_ID[10227,W.other]"        "r_ID[10228,W.other]"       
+[489] "r_ID[10229,W.other]"        "r_ID[10230,W.other]"       
+[491] "r_ID[10231,W.other]"        "r_ID[10232,W.other]"       
+[493] "r_ID[10233,W.other]"        "r_ID[10234,W.other]"       
+[495] "r_ID[10236,W.other]"        "r_ID[10237,W.other]"       
+[497] "r_ID[10238,W.other]"        "r_ID[10239,W.other]"       
+[499] "r_ID[10240,W.other]"        "r_ID[10241,W.other]"       
+[501] "r_ID[10242,W.other]"        "r_ID[10243,W.other]"       
+[503] "r_ID[10244,W.other]"        "r_ID[10245,W.other]"       
+[505] "r_ID[10247,W.other]"        "r_ID[10248,W.other]"       
+[507] "r_ID[10249,W.other]"        "r_ID[10250,W.other]"       
+[509] "r_ID[10251,W.other]"        "r_ID[10253,W.other]"       
+[511] "r_ID[10255,W.other]"        "r_ID[10256,W.other]"       
+[513] "r_ID[10258,W.other]"        "r_ID[10259,W.other]"       
+[515] "r_ID[10260,W.other]"        "r_ID[10266,W.other]"       
+[517] "r_ID[10267,W.other]"        "r_ID[10268,W.other]"       
+[519] "r_ID[10269,W.other]"        "r_ID[10270,W.other]"       
+[521] "r_ID[10271,W.other]"        "r_ID[10272,W.other]"       
+[523] "r_ID[10273,W.other]"        "r_ID[10274,W.other]"       
+[525] "r_ID[10275,W.other]"        "r_ID[10276,W.other]"       
+[527] "r_ID[10277,W.other]"        "r_ID[10280,W.other]"       
+[529] "r_ID[10281,W.other]"        "r_ID[10285,W.other]"       
+[531] "r_ID[10286,W.other]"        "r_ID[10287,W.other]"       
+[533] "r_ID[10288,W.other]"        "r_ID[10289,W.other]"       
+[535] "r_ID[10290,W.other]"        "r_ID[10291,W.other]"       
+[537] "r_ID[10292,W.other]"        "r_ID[10293,W.other]"       
+[539] "r_ID[10294,W.other]"        "r_ID[10295,W.other]"       
+[541] "r_ID[10296,W.other]"        "r_ID[10299,W.other]"       
+[543] "r_ID[10301,W.other]"        "r_ID[10304,W.other]"       
+[545] "r_ID[10305,W.other]"        "r_ID[10308,W.other]"       
+[547] "r_ID[10309,W.other]"        "r_ID[10310,W.other]"       
+[549] "r_ID[10311,W.other]"        "r_ID[10312,W.other]"       
+[551] "r_ID[10313,W.other]"        "r_ID[10314,W.other]"       
+[553] "r_ID[10315,W.other]"        "r_ID[10316,W.other]"       
+[555] "r_ID[10317,W.other]"        "r_ID[10318,W.other]"       
+[557] "r_ID[10319,W.other]"        "r_ID[10320,W.other]"       
+[559] "r_ID[10322,W.other]"        "r_ID[10323,W.other]"       
+[561] "r_ID[10324,W.other]"        "r_ID[10325,W.other]"       
+[563] "r_ID[10326,W.other]"        "r_ID[10327,W.other]"       
+[565] "r_ID[10328,W.other]"        "r_ID[10329,W.other]"       
+[567] "r_ID[10330,W.other]"        "r_ID[10331,W.other]"       
+[569] "r_ID[10332,W.other]"        "r_ID[10333,W.other]"       
+[571] "r_ID[10335,W.other]"        "r_ID[10336,W.other]"       
+[573] "r_ID[10337,W.other]"        "r_ID[10338,W.other]"       
+[575] "r_ID[10340,W.other]"        "r_ID[10341,W.other]"       
+[577] "r_ID[10342,W.other]"        "r_ID[10343,W.other]"       
+[579] "r_ID[10345,W.other]"        "r_ID[10347,W.other]"       
+[581] "r_ID[10348,W.other]"        "r_ID[10349,W.other]"       
+[583] "r_ID[10350,W.other]"        "r_ID[10351,W.other]"       
+[585] "r_ID[10352,W.other]"        "r_ID[10353,W.other]"       
+[587] "r_ID[10354,W.other]"        "r_ID[10357,W.other]"       
+[589] "r_ID[10358,W.other]"        "r_ID[10359,W.other]"       
+[591] "r_ID[10360,W.other]"        "r_ID[10361,W.other]"       
+[593] "r_ID[10363,W.other]"        "r_ID[10364,W.other]"       
+[595] "r_ID[10365,W.other]"        "r_ID[10366,W.other]"       
+[597] "r_ID[10367,W.other]"        "r_ID[10368,W.other]"       
+[599] "r_ID[10369,W.other]"        "r_ID[10370,W.other]"       
+[601] "r_ID[10371,W.other]"        "r_ID[10372,W.other]"       
+[603] "r_ID[10373,W.other]"        "r_ID[10374,W.other]"       
+[605] "r_ID[10378,W.other]"        "r_ID[10379,W.other]"       
+[607] "r_ID[10380,W.other]"        "r_ID[10381,W.other]"       
+[609] "r_ID[10382,W.other]"        "r_ID[10383,W.other]"       
+[611] "r_ID[10384,W.other]"        "r_ID[10386,W.other]"       
+[613] "r_ID[10388,W.other]"        "r_ID[10389,W.other]"       
+[615] "r_ID[10390,W.other]"        "r_ID[10391,W.other]"       
+[617] "r_ID[10392,W.other]"        "r_ID[10394,W.other]"       
+[619] "r_ID[10397,W.other]"        "r_ID[10398,W.other]"       
+[621] "r_ID[10399,W.other]"        "r_ID[10402,W.other]"       
+[623] "r_ID[10404,W.other]"        "r_ID[10407,W.other]"       
+[625] "r_ID[10408,W.other]"        "r_ID[10409,W.other]"       
+[627] "r_ID[10411,W.other]"        "r_ID[10412,W.other]"       
+[629] "r_ID[10413,W.other]"        "r_ID[10414,W.other]"       
+[631] "r_ID[10415,W.other]"        "r_ID[10418,W.other]"       
+[633] "r_ID[10421,W.other]"        "r_ID[10422,W.other]"       
+[635] "r_ID[10423,W.other]"        "r_ID[10426,W.other]"       
+[637] "r_ID[10427,W.other]"        "r_ID[10428,W.other]"       
+[639] "r_ID[10429,W.other]"        "r_ID[10431,W.other]"       
+[641] "r_ID[10432,W.other]"        "r_ID[10433,W.other]"       
+[643] "r_ID[10434,W.other]"        "r_ID[10435,W.other]"       
+[645] "r_ID[10436,W.other]"        "r_ID[10437,W.other]"       
+[647] "r_ID[10438,W.other]"        "r_ID[10439,W.other]"       
+[649] "r_ID[10440,W.other]"        "r_ID[10441,W.other]"       
+[651] "r_ID[10442,W.other]"        "r_ID[10444,W.other]"       
+[653] "r_ID[10445,W.other]"        "r_ID[10447,W.other]"       
+[655] "r_ID[10448,W.other]"        "r_ID[10449,W.other]"       
+[657] "r_ID[10450,W.other]"        "r_ID[10451,W.other]"       
+[659] "r_ID[10452,W.other]"        "r_ID[10453,W.other]"       
+[661] "r_ID[10454,W.other]"        "r_ID[10455,W.other]"       
+[663] "r_ID[10456,W.other]"        "r_ID[10457,W.other]"       
+[665] "r_ID[10459,W.other]"        "r_ID[10460,W.other]"       
+[667] "r_ID[10461,W.other]"        "r_ID[10462,W.other]"       
+[669] "r_ID[10463,W.other]"        "r_ID[10465,W.other]"       
+[671] "r_ID[10466,W.other]"        "r_ID[10469,W.other]"       
+[673] "r_ID[10470,W.other]"        "r_ID[10471,W.other]"       
+[675] "r_ID[10472,W.other]"        "r_ID[10473,W.other]"       
+[677] "r_ID[10474,W.other]"        "r_ID[10475,W.other]"       
+[679] "r_ID[10476,W.other]"        "r_ID[10477,W.other]"       
+[681] "r_ID[10479,W.other]"        "r_ID[10480,W.other]"       
+[683] "r_ID[10481,W.other]"        "r_ID[10483,W.other]"       
+[685] "r_ID[10484,W.other]"        "r_ID[10485,W.other]"       
+[687] "r_ID[10486,W.other]"        "r_ID[10487,W.other]"       
+[689] "r_ID[10488,W.other]"        "r_ID[10490,W.other]"       
+[691] "r_ID[10492,W.other]"        "r_ID[10493,W.other]"       
+[693] "r_ID[10494,W.other]"        "r_ID[10495,W.other]"       
+[695] "r_ID[10496,W.other]"        "r_ID[10497,W.other]"       
+[697] "r_ID[10498,W.other]"        "r_ID[10500,W.other]"       
+[699] "r_ID[10503,W.other]"        "r_ID[10506,W.other]"       
+[701] "r_ID[10508,W.other]"        "r_ID[10509,W.other]"       
+[703] "r_ID[10510,W.other]"        "r_ID[10511,W.other]"       
+[705] "r_ID[10512,W.other]"        "r_ID[10513,W.other]"       
+[707] "r_ID[10515,W.other]"        "r_ID[10516,W.other]"       
+[709] "r_ID[10517,W.other]"        "r_ID[10518,W.other]"       
+[711] "r_ID[10522,W.other]"        "r_ID[10523,W.other]"       
+[713] "r_ID[10524,W.other]"        "r_ID[10525,W.other]"       
+[715] "r_ID[10526,W.other]"        "r_ID[10528,W.other]"       
+[717] "r_ID[10529,W.other]"        "r_ID[10530,W.other]"       
+[719] "r_ID[10532,W.other]"        "r_ID[10533,W.other]"       
+[721] "r_ID[10535,W.other]"        "r_ID[10536,W.other]"       
+[723] "r_ID[10537,W.other]"        "r_ID[10538,W.other]"       
+[725] "r_ID[10539,W.other]"        "r_ID[10540,W.other]"       
+[727] "r_ID[10541,W.other]"        "r_ID[10542,W.other]"       
+[729] "r_ID[10543,W.other]"        "r_ID[10544,W.other]"       
+[731] "r_ID[10545,W.other]"        "r_ID[10547,W.other]"       
+[733] "r_ID[10549,W.other]"        "r_ID[10550,W.other]"       
+[735] "prior_Intercept"            "prior_b"                   
+[737] "prior_sigma"                "prior_sd_ID__Intercept"    
+[739] "prior_sd_ID__W.other"       "prior_cor_ID"              
+[741] "lprior"                     "lp__"                      
+[743] "accept_stat__"              "treedepth__"               
+[745] "stepsize__"                 "divergent__"               
+[747] "n_leapfrog__"               "energy__"                  </code></pre>
+</div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a><span class="co">#summary(mlm.5)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="fu">summary</span>(mlm<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: PA ~ 1 + W.other + (1 + W.other | ID) 
+   Data: esm (Number of observations: 9461) 
+  Draws: 4 chains, each with iter = 4000; warmup = 1000; thin = 1;
+         total post-warmup draws = 12000
+
+Group-Level Effects: 
+~ID (Number of levels: 364) 
+                       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+sd(Intercept)              0.50      0.03     0.44     0.55 1.00     4405
+sd(W.other)                0.18      0.04     0.10     0.26 1.00     1251
+cor(Intercept,W.other)    -0.43      0.11    -0.63    -0.19 1.00    10095
+                       Tail_ESS
+sd(Intercept)              7218
+sd(W.other)                1834
+cor(Intercept,W.other)     6956
+
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept     3.15      0.04     3.08     3.22 1.00     5313     7266
+W.other       0.32      0.03     0.27     0.37 1.00    15524     9887
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.85      0.01     0.84     0.86 1.00    17740     8791
+
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
 </div>
 </section>
 <section class="slide level2">
@@ -3020,8 +3063,9 @@ W.other -0.686</code></pre>
 <span id="cb85-32"><a href="#cb85-32"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(params<span class="sc">$</span>Intercept))</span>
 <span id="cb85-33"><a href="#cb85-33"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+
 </div>
-</section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-65-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
@@ -3035,8 +3079,9 @@ W.other -0.686</code></pre>
 <span id="cb86-6"><a href="#cb86-6"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">alpha =</span> .<span class="dv">1</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"est"</span>)  <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">axis.title.y=</span><span class="fu">element_blank</span>(),</span>
 <span id="cb86-7"><a href="#cb86-7"></a>        <span class="at">axis.text.y=</span><span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+
 </div>
-</section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-66-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
@@ -3147,7 +3192,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-71-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-70-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
@@ -3163,7 +3208,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-72-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-71-1.png" width="960" class="r-stretch"></section>
 <section id="making-predictions" class="slide level2">
 <h2>Making predictions</h2>
 <p>We often want to make predictions for different groups or individuals. The previous slide is one example. We made these predictions using/borrowing information from other individuals, through partial pooling. This improves our predictions.</p>
@@ -3316,7 +3361,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-78-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-77-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>Census data we will use to make predictions. We will make predictions for every combination of variable we are interested in (state, age, decade married, edu)</p>
@@ -3473,7 +3518,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-82-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-81-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>The general idea is that we can create predictions based on what we want to do with the predictions. Previously when we wanted to plot prediction lines we made predictions across the levels of X. When we want to see observational level variability we incorporate sigma in the predictions rather than focus on expected predictions. If we wanted the CI around a specific value rather than a band then we calculate predictions around that X value. All involve feeding in data.</p>

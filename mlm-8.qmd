@@ -1145,18 +1145,14 @@ posterior_samples(mlm.id) %>%
   summarise(mean=mean(value), sd=sd(value))
 ```
 
-------------------------------------------------------------------------
 
-```{r}
-library(posterior)
-posterior::summarise_draws(mlm.1)
-```
+## Partial pooling/Shrinkage
 
-------------------------------------------------------------------------
+$\sigma_0$ (our random effect) can turn on/off/adjust shrinkage. 
 
-What does it mean that we are learning from our data? Or that the priors are based on our data?
+Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling. 
 
-Well we set up the prior for values we are not directly estimating. We are instead using those priors plus data to help us create estimates that are informed by the prior but also by the data.
+We use our prior of $\sigma_0$ plus our data to get an estimate of $\beta_{0[j]}$. This is how we accurately partial pool.
 
 ## Partial pooling/Shrinkage
 
@@ -1170,9 +1166,8 @@ $$\sigma_0 \sim {\operatorname{Normal}(0, 1.5)}$$
 
 $$\sigma \sim {\operatorname{Exponential}(1)}$$
 
-$\sigma_0$ can turn on/off/adjust shrinkage. Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling. We use our prior of $\sigma_0$ plus our data to get an estimate of the prior for $\beta_{0[j]}$. This is how we accurately partial pool.
 
-------------------------------------------------------------------------
+## working with mlm posterior
 
 ```{r}
 summary(mlm.1)
@@ -1418,6 +1413,14 @@ summary(mlm.3)
 ```{r}
 posterior_summary(mlm.3)
 ```
+
+## whats in our posterior? 
+
+```{r}
+get_variables(mlm.3)
+```
+
+
 
 
 ## Introducing random slopes
@@ -1759,21 +1762,16 @@ mlm.4 %>%
   geom_pointinterval() + xlab("est") + ylab("ID")
 ```
 
-------------------------------------------------------------------------
 
-coef = fixef + raneff
 
-```{r}
-ranef(mlm.4)
-```
-
-------------------------------------------------------------------------
-
-coef = fixef + raneff
+-------
 
 ```{r}
-coef(mlm.4)
+mlm.3 <- add_criterion(mlm.1, "loo")
+mlm.4 <- add_criterion(mlm.2, "loo")
+loo_compare(mlm.1, mlm.2, criterion = "loo")
 ```
+
 
 ------------------------------------------------------------------------
 
@@ -1798,7 +1796,7 @@ summary(test)
 
 ------------------------------------------------------------------------
 
-```{r, eval = FALSE}
+```{r}
  
 mlm.5 <- 
   brm(family = gaussian,
@@ -1822,19 +1820,19 @@ mlm.5 <-
 747 parameters in our posterior
 
 ```{r}
-# get_variables(mlm.5)
+get_variables(mlm.5)
 ```
 
 ------------------------------------------------------------------------
 
 ```{r}
-#summary(mlm.5)
+summary(mlm.5)
 
 ```
 
 ------------------------------------------------------------------------
 
-```{r, eval = FALSE}
+```{r}
 #| code-fold: true
 partially_pooled_params2 <-
   coef(mlm.5)$ID [ , 1, 1:2] %>%
@@ -1873,7 +1871,7 @@ p2
 
 ------------------------------------------------------------------------
 
-```{r, eval = FALSE }
+```{r}
 #| code-fold: true
 mlm.5 %>%
   spread_draws(b_W.other, r_ID[ID, term]) %>%

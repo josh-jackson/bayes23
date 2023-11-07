@@ -2104,7 +2104,7 @@
     "href": "mlm-8.html#partial-poolingshrinkage",
     "title": "mlm",
     "section": "Partial pooling/Shrinkage",
-    "text": "Partial pooling/Shrinkage\n\\[\\text{y}_{ij}  \\sim \\operatorname{Normal}(\\mu_i, \\sigma_i)\\]\n\\[\\mu_i  = \\beta_{0[i]}\\]\n\\[\\beta_{0[j]} \\sim \\operatorname{Normal}({\\bar \\mu},  \\sigma_0)\\] \\[{\\bar \\mu}  \\sim {\\operatorname{Normal}(0, 1.5)}\\]\n\\[\\sigma_0 \\sim {\\operatorname{Normal}(0, 1.5)}\\]\n\\[\\sigma \\sim {\\operatorname{Exponential}(1)}\\]\n\\(\\sigma_0\\) can turn on/off/adjust shrinkage. Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling. We use our prior of \\(\\sigma_0\\) plus our data to get an estimate of the prior for \\(\\beta_{0[j]}\\). This is how we accurately partial pool."
+    "text": "Partial pooling/Shrinkage\n\\(\\sigma_0\\) (our random effect) can turn on/off/adjust shrinkage.\nSetting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling.\nWe use our prior of \\(\\sigma_0\\) plus our data to get an estimate of \\(\\beta_{0[j]}\\). This is how we accurately partial pool."
   },
   {
     "objectID": "mlm-8.html#level-1-predictors-1",
@@ -2217,5 +2217,26 @@
     "title": "mlm",
     "section": "Multivariate distributions",
     "text": "Multivariate distributions\nr = 0. Knowing about 1 parameter doesn’t tell you anything about the other."
+  },
+  {
+    "objectID": "mlm-8.html#partial-poolingshrinkage-1",
+    "href": "mlm-8.html#partial-poolingshrinkage-1",
+    "title": "mlm",
+    "section": "Partial pooling/Shrinkage",
+    "text": "Partial pooling/Shrinkage\n\\[\\text{y}_{ij}  \\sim \\operatorname{Normal}(\\mu_i, \\sigma_i)\\]\n\\[\\mu_i  = \\beta_{0[i]}\\]\n\\[\\beta_{0[j]} \\sim \\operatorname{Normal}({\\bar \\mu},  \\sigma_0)\\] \\[{\\bar \\mu}  \\sim {\\operatorname{Normal}(0, 1.5)}\\]\n\\[\\sigma_0 \\sim {\\operatorname{Normal}(0, 1.5)}\\]\n\\[\\sigma \\sim {\\operatorname{Exponential}(1)}\\]"
+  },
+  {
+    "objectID": "mlm-8.html#working-with-mlm-posterior",
+    "href": "mlm-8.html#working-with-mlm-posterior",
+    "title": "mlm",
+    "section": "working with mlm posterior",
+    "text": "working with mlm posterior\n\nsummary(mlm.1)\n\n Family: gaussian \n  Links: mu = identity; sigma = identity \nFormula: CON ~ 1 + (1 | ID) \n   Data: mlm (Number of observations: 225) \n  Draws: 4 chains, each with iter = 5000; warmup = 1000; thin = 1;\n         total post-warmup draws = 16000\n\nGroup-Level Effects: \n~ID (Number of levels: 91) \n              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS\nsd(Intercept)     0.06      0.01     0.05     0.07 1.00     5431     8578\n\nPopulation-Level Effects: \n          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS\nIntercept     0.19      0.01     0.18     0.20 1.00     7203    10549\n\nFamily Specific Parameters: \n      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS\nsigma     0.05      0.00     0.04     0.05 1.00     9902    11403\n\nDraws were sampled using sample(hmc). For each parameter, Bulk_ESS\nand Tail_ESS are effective sample size measures, and Rhat is the potential\nscale reduction factor on split chains (at convergence, Rhat = 1)."
+  },
+  {
+    "objectID": "mlm-8.html#whats-in-our-posterior",
+    "href": "mlm-8.html#whats-in-our-posterior",
+    "title": "mlm",
+    "section": "whats in our posterior?",
+    "text": "whats in our posterior?\n\nget_variables(mlm.3)\n\n  [1] \"b_Intercept\"         \"b_time\"              \"sd_ID__Intercept\"   \n  [4] \"sigma\"               \"r_ID[6,Intercept]\"   \"r_ID[29,Intercept]\" \n  [7] \"r_ID[34,Intercept]\"  \"r_ID[36,Intercept]\"  \"r_ID[37,Intercept]\" \n [10] \"r_ID[48,Intercept]\"  \"r_ID[53,Intercept]\"  \"r_ID[54,Intercept]\" \n [13] \"r_ID[58,Intercept]\"  \"r_ID[61,Intercept]\"  \"r_ID[66,Intercept]\" \n [16] \"r_ID[67,Intercept]\"  \"r_ID[69,Intercept]\"  \"r_ID[71,Intercept]\" \n [19] \"r_ID[74,Intercept]\"  \"r_ID[75,Intercept]\"  \"r_ID[76,Intercept]\" \n [22] \"r_ID[78,Intercept]\"  \"r_ID[79,Intercept]\"  \"r_ID[80,Intercept]\" \n [25] \"r_ID[81,Intercept]\"  \"r_ID[82,Intercept]\"  \"r_ID[85,Intercept]\" \n [28] \"r_ID[86,Intercept]\"  \"r_ID[87,Intercept]\"  \"r_ID[89,Intercept]\" \n [31] \"r_ID[91,Intercept]\"  \"r_ID[92,Intercept]\"  \"r_ID[93,Intercept]\" \n [34] \"r_ID[94,Intercept]\"  \"r_ID[96,Intercept]\"  \"r_ID[97,Intercept]\" \n [37] \"r_ID[98,Intercept]\"  \"r_ID[99,Intercept]\"  \"r_ID[101,Intercept]\"\n [40] \"r_ID[102,Intercept]\" \"r_ID[103,Intercept]\" \"r_ID[104,Intercept]\"\n [43] \"r_ID[105,Intercept]\" \"r_ID[106,Intercept]\" \"r_ID[110,Intercept]\"\n [46] \"r_ID[112,Intercept]\" \"r_ID[114,Intercept]\" \"r_ID[115,Intercept]\"\n [49] \"r_ID[116,Intercept]\" \"r_ID[120,Intercept]\" \"r_ID[122,Intercept]\"\n [52] \"r_ID[125,Intercept]\" \"r_ID[127,Intercept]\" \"r_ID[129,Intercept]\"\n [55] \"r_ID[135,Intercept]\" \"r_ID[136,Intercept]\" \"r_ID[137,Intercept]\"\n [58] \"r_ID[140,Intercept]\" \"r_ID[141,Intercept]\" \"r_ID[142,Intercept]\"\n [61] \"r_ID[143,Intercept]\" \"r_ID[144,Intercept]\" \"r_ID[146,Intercept]\"\n [64] \"r_ID[149,Intercept]\" \"r_ID[150,Intercept]\" \"r_ID[152,Intercept]\"\n [67] \"r_ID[153,Intercept]\" \"r_ID[155,Intercept]\" \"r_ID[156,Intercept]\"\n [70] \"r_ID[159,Intercept]\" \"r_ID[160,Intercept]\" \"r_ID[162,Intercept]\"\n [73] \"r_ID[163,Intercept]\" \"r_ID[165,Intercept]\" \"r_ID[167,Intercept]\"\n [76] \"r_ID[169,Intercept]\" \"r_ID[171,Intercept]\" \"r_ID[174,Intercept]\"\n [79] \"r_ID[182,Intercept]\" \"r_ID[187,Intercept]\" \"r_ID[189,Intercept]\"\n [82] \"r_ID[190,Intercept]\" \"r_ID[193,Intercept]\" \"r_ID[194,Intercept]\"\n [85] \"r_ID[201,Intercept]\" \"r_ID[204,Intercept]\" \"r_ID[205,Intercept]\"\n [88] \"r_ID[208,Intercept]\" \"r_ID[209,Intercept]\" \"r_ID[211,Intercept]\"\n [91] \"r_ID[214,Intercept]\" \"r_ID[219,Intercept]\" \"r_ID[222,Intercept]\"\n [94] \"r_ID[223,Intercept]\" \"r_ID[229,Intercept]\" \"prior_Intercept\"    \n [97] \"prior_b\"             \"prior_sigma\"         \"prior_sd_ID\"        \n[100] \"lprior\"              \"lp__\"                \"accept_stat__\"      \n[103] \"treedepth__\"         \"stepsize__\"          \"divergent__\"        \n[106] \"n_leapfrog__\"        \"energy__\""
   }
 ]
