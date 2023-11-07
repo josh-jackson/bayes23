@@ -1045,6 +1045,15 @@
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
+<p>If we are estimating a mean, we can divide that up into two priors:</p>
+<ol type="1">
+<li><p>A distribution of our best guess at the mean e.g., N(3,.5) means I am very confident in my guess vs N(3,50). This is all about the mean.</p></li>
+<li><p>A distribution that represents the spread around that mean e.g., N(0,1) suggests small spread vs (0,100) suggest people may differ a lot (Even though the distribution has the same mean).</p></li>
+</ol>
+<p>Fixed effect describes #1 whereas random effects describe #2</p>
+</section>
+<section class="slide level2">
+
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">library</span>(brms)</span>
 <span id="cb11-2"><a href="#cb11-2"></a>mlm<span class="fl">.1</span> <span class="ot">&lt;-</span> </span>
@@ -1149,12 +1158,14 @@ mlm.2 -58.1       8.8  </code></pre>
 </section>
 <section class="slide level2">
 
-<p>Notice how the intercept is the same in each of these models. Even the CIs. Conceptually they are different though. The intercept is directly modeled in the standard regression. In the MLM it is better thought of as the map of the distribution of random effects.</p>
-<p>The population is larger than what we have. This is true for almost anything we do. We sample paradigms, we sample people, we usually never have a full population under our study. Don’t we want to model that variation?</p>
+<ul>
+<li><p>Notice how the intercept is the same in each of these models. Even the CIs. Conceptually they are different though. The intercept is directly modeled in the standard regression. In the MLM it is better thought of as the map of the distribution of random effects.</p></li>
+<li><p>The population is larger than what we have. This is true for almost anything we do. We sample paradigms, we sample people, we usually never have a full population under our study. Don’t we want to model that variation?</p></li>
+</ul>
 </section>
 <section class="slide level2">
 
-<p><span class="math display">\[\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)\]</span> <span class="math display">\[\mu_i  = \beta_{0[j]}\]</span> This line indicates we have varying intercepts that vary over individual j. Each parameter estimated needs a prior. <span class="math display">\[\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)\]</span> <span class="math display">\[{\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}\]</span> <span class="math display">\[\sigma_0 \sim {\operatorname{Exponential}(1)}\]</span> <span class="math display">\[\sigma \sim {\operatorname{Exponential}(1)}\]</span></p>
+<p><span class="math display">\[\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)\]</span> <span class="math display">\[\mu_i  = \beta_{0[j]}\]</span> This parenthesis indicates we have varying intercepts that vary over individual j. Each parameter estimated needs a prior. <span class="math display">\[\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)\]</span> <span class="math display">\[{\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}\]</span> <span class="math display">\[\sigma_0 \sim {\operatorname{Exponential}(1)}\]</span> <span class="math display">\[\sigma \sim {\operatorname{Exponential}(1)}\]</span></p>
 </section>
 <section id="parameters-that-depend-on-parameters-1" class="slide level2">
 <h2>Parameters that depend on parameters</h2>
@@ -1518,7 +1529,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 
 <p>Think back to {lme4} and <code>ranef</code> <code>coef</code> and <code>fixef</code> functions.</p>
 <p>What do each of these describe?</p>
-<p>What scale is our random effects (typically) in?</p>
+<p>What scale is our random effect (typically) in?</p>
 </section>
 <section class="slide level2">
 
@@ -1669,7 +1680,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb46-8"><a href="#cb46-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> CON), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb46-9"><a href="#cb46-9"></a>  <span class="fu">labs</span>(<span class="at">title =</span>  </span>
 <span id="cb46-10"><a href="#cb46-10"></a>  <span class="st">"complete pooling"</span>) <span class="sc">+</span></span>
-<span id="cb46-11"><a href="#cb46-11"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.1849846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb46-11"><a href="#cb46-11"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="fl">0.189846</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -2028,12 +2039,17 @@ lp__                 2.304329e+02 11.002378103  2.078374e+02  2.510074e+02</code
 </div>
 </div>
 </section>
+<section id="introducing-random-slopes" class="slide level2">
+<h2>Introducing random slopes</h2>
+<ul>
+<li><p>MLMs “learn” from other units as we saw with random effects</p></li>
+<li><p>MLMs can also “learn” about one parameter from another parameter</p></li>
+<li><p>We do this through correlated features or parameters. We create this correlated features through introducing random slopes, which pools information across groups</p></li>
+<li><p>This is another advantage of “keep it maximal.” Better estimates of intercepts rather than just fitting an intercept only model</p></li>
+</ul>
+</section>
 <section id="random-slopes" class="slide level2">
 <h2>Random slopes</h2>
-<ol type="1">
-<li><p>Modeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution</p></li>
-<li><p>Involves lots of interactions</p></li>
-</ol>
 <p>Level 1: <span class="math display">\[{Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}\]</span> Level 2: <span class="math display">\[{\beta}_{0j} = \gamma_{00} + \gamma_{01}G_{j} +   U_{0j}\]</span><br>
 <span class="math display">\[{\beta}_{1j} = \gamma_{10} + \gamma_{11}G_{j} + U_{1j}\]</span></p>
 <p><span class="math display">\[\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix}
@@ -2041,6 +2057,14 @@ lp__                 2.304329e+02 11.002378103  2.078374e+02  2.510074e+02</code
   0,      \tau_{00}^{2} &amp; \tau_{01}\\
   0,  \tau_{01} &amp; \tau_{10}^{2}
 \end{pmatrix}\]</span></p>
+</section>
+<section id="correlated-features" class="slide level2">
+<h2>correlated features</h2>
+<ul>
+<li><p>Modeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution</p></li>
+<li><p>Rather than a 1 dimension prior we will be putting on a two dimension prior.</p></li>
+<li><p>Can scale into &gt; 2d depending on how many random effects you have</p></li>
+</ul>
 </section>
 <section id="random-slopes-1" class="slide level2">
 <h2>Random slopes</h2>
@@ -2093,6 +2117,21 @@ lp__                 2.304329e+02 11.002378103  2.078374e+02  2.510074e+02</code
 
 </div>
 <img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-46-1.png" width="960" class="r-stretch"></section>
+<section id="multivariate-distributions" class="slide level2">
+<h2>Multivariate distributions</h2>
+<p>r = 0. Knowing about 1 parameter doesn’t tell you anything about the other.</p>
+
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-47-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<p>r = .5</p>
+
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-48-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<p>r = .8</p>
+
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-49-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
@@ -2124,6 +2163,15 @@ lp__                 2.304329e+02 11.002378103  2.078374e+02  2.510074e+02</code
       default</code></pre>
 </div>
 </div>
+</section>
+<section class="slide level2">
+
+<p>Information needed to learn about parameters can be ranked:</p>
+<ol type="1">
+<li>Means are easy</li>
+<li>SDs are medium</li>
+<li>Correlations are hard</li>
+</ol>
 </section>
 <section class="slide level2">
 
@@ -2205,7 +2253,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-50-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-53-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
@@ -2256,7 +2304,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-51-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-54-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
@@ -2430,7 +2478,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-55-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-58-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>coef = fixef + raneff</p>
@@ -3099,7 +3147,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-68-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-71-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
@@ -3115,7 +3163,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-69-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-72-1.png" width="960" class="r-stretch"></section>
 <section id="making-predictions" class="slide level2">
 <h2>Making predictions</h2>
 <p>We often want to make predictions for different groups or individuals. The previous slide is one example. We made these predictions using/borrowing information from other individuals, through partial pooling. This improves our predictions.</p>
@@ -3268,7 +3316,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-75-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-78-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>Census data we will use to make predictions. We will make predictions for every combination of variable we are interested in (state, age, decade married, edu)</p>
@@ -3356,17 +3404,17 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre><code># A tibble: 11 × 7
    age_group kept_name_predict .lower .upper .width .point .interval
    &lt;chr&gt;                 &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
- 1 25                    0.175 0.0919  0.276   0.95 mean   qi       
- 2 30                    0.181 0.115   0.263   0.95 mean   qi       
- 3 35                    0.218 0.149   0.298   0.95 mean   qi       
- 4 40                    0.246 0.175   0.334   0.95 mean   qi       
- 5 45                    0.279 0.201   0.363   0.95 mean   qi       
- 6 50                    0.301 0.219   0.394   0.95 mean   qi       
- 7 55                    0.323 0.231   0.429   0.95 mean   qi       
- 8 60                    0.438 0.328   0.558   0.95 mean   qi       
- 9 65                    0.562 0.419   0.706   0.95 mean   qi       
-10 70                    0.514 0.300   0.749   0.95 mean   qi       
-11 75                    0.226 0.0442  0.521   0.95 mean   qi       </code></pre>
+ 1 25                    0.175 0.0932  0.277   0.95 mean   qi       
+ 2 30                    0.182 0.116   0.261   0.95 mean   qi       
+ 3 35                    0.219 0.149   0.300   0.95 mean   qi       
+ 4 40                    0.244 0.174   0.325   0.95 mean   qi       
+ 5 45                    0.279 0.199   0.368   0.95 mean   qi       
+ 6 50                    0.301 0.220   0.399   0.95 mean   qi       
+ 7 55                    0.324 0.234   0.423   0.95 mean   qi       
+ 8 60                    0.438 0.326   0.557   0.95 mean   qi       
+ 9 65                    0.561 0.419   0.703   0.95 mean   qi       
+10 70                    0.515 0.298   0.745   0.95 mean   qi       
+11 75                    0.227 0.0455  0.521   0.95 mean   qi       </code></pre>
 </div>
 </div>
 </section>
@@ -3425,7 +3473,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-79-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-82-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>The general idea is that we can create predictions based on what we want to do with the predictions. Previously when we wanted to plot prediction lines we made predictions across the levels of X. When we want to see observational level variability we incorporate sigma in the predictions rather than focus on expected predictions. If we wanted the CI around a specific value rather than a band then we calculate predictions around that X value. All involve feeding in data.</p>

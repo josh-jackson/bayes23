@@ -2118,7 +2118,7 @@
     "href": "mlm-8.html#random-slopes",
     "title": "mlm",
     "section": "Random slopes",
-    "text": "Random slopes\n\nModeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution\nInvolves lots of interactions\n\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2: \\[{\\beta}_{0j} = \\gamma_{00} + \\gamma_{01}G_{j} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + \\gamma_{11}G_{j} + U_{1j}\\]\n\\[\\begin{pmatrix} {U}_{0j} \\\\ {U}_{1j} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]"
+    "text": "Random slopes\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2: \\[{\\beta}_{0j} = \\gamma_{00} + \\gamma_{01}G_{j} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + \\gamma_{11}G_{j} + U_{1j}\\]\n\\[\\begin{pmatrix} {U}_{0j} \\\\ {U}_{1j} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]"
   },
   {
     "objectID": "mlm-8.html#random-slopes-1",
@@ -2189,5 +2189,33 @@
     "title": "mlm",
     "section": "Partial pooling aka shrinkage aka regularization",
     "text": "Partial pooling aka shrinkage aka regularization\n\n\nCode\nlibrary(viridis)\nggplot(mlm, aes(x = week, y = SMN7, group = ID, colour = ID)) + stat_smooth(method = \"lm\", se = FALSE, alpha = .5) +scale_color_viridis()+  ylab(\"test score\") + xlab(\"study amount\") + geom_point()"
+  },
+  {
+    "objectID": "mlm-8.html#introducing-random-slopes",
+    "href": "mlm-8.html#introducing-random-slopes",
+    "title": "mlm",
+    "section": "Introducing random slopes",
+    "text": "Introducing random slopes\n\nMLMs “learn” from other units as we saw with random effects\nMLMs can also “learn” about one parameter from another parameter\nWe do this through correlated features or parameters. We create this correlated features through introducing random slopes, which pools information across groups\nThis is another advantage of “keep it maximal.” Better estimates of intercepts rather than just fitting an intercept only model"
+  },
+  {
+    "objectID": "mlm-8.html#correlated-features",
+    "href": "mlm-8.html#correlated-features",
+    "title": "mlm",
+    "section": "correlated features",
+    "text": "correlated features\n\nModeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution\nRather than a 1 dimension prior we will be putting on a two dimension prior.\nCan scale into &gt; 2d depending on how many random effects you have"
+  },
+  {
+    "objectID": "mlm-8.html#multivariate-prior",
+    "href": "mlm-8.html#multivariate-prior",
+    "title": "mlm",
+    "section": "Multivariate prior",
+    "text": "Multivariate prior"
+  },
+  {
+    "objectID": "mlm-8.html#multivariate-distributions",
+    "href": "mlm-8.html#multivariate-distributions",
+    "title": "mlm",
+    "section": "Multivariate distributions",
+    "text": "Multivariate distributions\nr = 0. Knowing about 1 parameter doesn’t tell you anything about the other."
   }
 ]

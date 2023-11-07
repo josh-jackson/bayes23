@@ -744,6 +744,19 @@ layout <- c(
 
 ------------------------------------------------------------------------
 
+If we are estimating a mean, we can divide that up into two priors: 
+
+1. A distribution of our best guess at the mean e.g., N(3,.5) means I am very confident in my guess vs N(3,50). This is all about the mean.
+
+2. A distribution that represents the spread around that mean e.g., N(0,1) suggests small spread vs (0,100) suggest people may differ a lot (Even though the distribution has the same mean). 
+
+Fixed effect describes #1 whereas random effects describe #2
+
+
+
+
+-------
+
 ```{r}
 library(brms)
 mlm.1 <- 
@@ -800,13 +813,13 @@ loo_compare(mlm.1, mlm.2, criterion = "loo")
 
 ------------------------------------------------------------------------
 
-Notice how the intercept is the same in each of these models. Even the CIs. Conceptually they are different though. The intercept is directly modeled in the standard regression. In the MLM it is better thought of as the map of the distribution of random effects.
+- Notice how the intercept is the same in each of these models. Even the CIs. Conceptually they are different though. The intercept is directly modeled in the standard regression. In the MLM it is better thought of as the map of the distribution of random effects.
 
-The population is larger than what we have. This is true for almost anything we do. We sample paradigms, we sample people, we usually never have a full population under our study. Don't we want to model that variation?
+- The population is larger than what we have. This is true for almost anything we do. We sample paradigms, we sample people, we usually never have a full population under our study. Don't we want to model that variation?
 
 ------------------------------------------------------------------------
 
-$$\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)$$ $$\mu_i  = \beta_{0[j]}$$ This line indicates we have varying intercepts that vary over individual j. Each parameter estimated needs a prior. $$\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)$$ $${\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}$$ $$\sigma_0 \sim {\operatorname{Exponential}(1)}$$ $$\sigma \sim {\operatorname{Exponential}(1)}$$
+$$\text{y}_{ij}  \sim \operatorname{Normal}(\mu_i, \sigma)$$ $$\mu_i  = \beta_{0[j]}$$ This parenthesis indicates we have varying intercepts that vary over individual j. Each parameter estimated needs a prior. $$\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)$$ $${\bar \mu}  \sim {\operatorname{Normal}(0, 1.5)}$$ $$\sigma_0 \sim {\operatorname{Exponential}(1)}$$ $$\sigma \sim {\operatorname{Exponential}(1)}$$
 
 ## Parameters that depend on parameters
 
@@ -1219,7 +1232,7 @@ Think back to {lme4} and `ranef` `coef` and `fixef` functions.
 
 What do each of these describe?
 
-What scale is our random effects (typically) in?
+What scale is our random effect (typically) in?
 
 ------------------------------------------------------------------------
 
@@ -1305,7 +1318,7 @@ ggplot(aes(x = ID)) +
   geom_point(aes(y = CON), shape = 1) +
   labs(title =  
   "complete pooling") +
-  geom_hline(yintercept =0.1849846)
+  geom_hline(yintercept =0.189846)
 
 ```
 
@@ -1406,13 +1419,21 @@ summary(mlm.3)
 posterior_summary(mlm.3)
 ```
 
+
+## Introducing random slopes
+
+- MLMs "learn" from other units as we saw with random effects
+
+- MLMs can also "learn" about one parameter from another parameter
+
+- We do this through correlated features or parameters. We create this correlated features through introducing random slopes, which pools information across groups
+
+- This is another advantage of "keep it maximal." Better estimates of intercepts rather than just fitting an intercept only model
+
 ## Random slopes
 
-1.  Modeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution
-
-2.  Involves lots of interactions
-
-Level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ Level 2: $${\beta}_{0j} = \gamma_{00} + \gamma_{01}G_{j} +   U_{0j}$$\
+Level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ 
+Level 2: $${\beta}_{0j} = \gamma_{00} + \gamma_{01}G_{j} +   U_{0j}$$\
 $${\beta}_{1j} = \gamma_{10} + \gamma_{11}G_{j} + U_{1j}$$
 
 $$\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix}
@@ -1420,6 +1441,15 @@ $$\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix}
   0,      \tau_{00}^{2} & \tau_{01}\\ 
   0,  \tau_{01} & \tau_{10}^{2}
 \end{pmatrix}$$
+
+
+## correlated features
+
+- Modeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution
+
+- Rather than a 1 dimension prior we will be putting on a two dimension prior. 
+
+- Can scale into > 2d depending on how many random effects you have
 
 ## Random slopes
 
@@ -1477,6 +1507,104 @@ expand.grid(
 
 ```
 
+
+
+## Multivariate distributions
+r = 0. Knowing about 1 parameter doesn't tell you anything about the other. 
+
+```{r, echo = FALSE}
+
+samples = 5000
+r = 0
+
+library('MASS')
+cor.dat = mvrnorm(n=samples, mu=c(0, 0), Sigma=matrix(c(1, r, r, 1), nrow=2), empirical=TRUE)
+X = cor.dat[, 1]  # standard normal (mu=0, sd=1)
+Y = cor.dat[, 2]  # standard normal (mu=0, sd=1)
+
+cor <- tibble(X,Y)
+
+cor %>% 
+  ggplot(aes(x = X, y = Y, fill = stat(density))) +
+  stat_density_2d(geom = "raster", contour = F) +
+  scale_fill_viridis_c(option = "D") +
+  labs(x = expression(U[0]),
+       y = expression(U[1])) +
+  coord_equal() 
+
+
+detach(package:MASS, unload=TRUE)
+```
+
+
+
+
+
+
+
+
+----------
+
+r = .5 
+```{r, echo = FALSE}
+
+samples = 1000
+r = 0.5
+
+library('MASS')
+cor.dat = mvrnorm(n=samples, mu=c(0, 0), Sigma=matrix(c(1, r, r, 1), nrow=2), empirical=TRUE)
+X = cor.dat[, 1]  # standard normal (mu=0, sd=1)
+Y = cor.dat[, 2]  # standard normal (mu=0, sd=1)
+
+cor <- tibble(X,Y)
+
+cor %>% 
+  ggplot(aes(x = X, y = Y, fill = stat(density))) +
+  stat_density_2d(geom = "raster", contour = F) +
+  scale_fill_viridis_c(option = "D") +
+  labs(x = expression(U[0]),
+       y = expression(U[1])) +
+  coord_equal() 
+
+
+detach(package:MASS, unload=TRUE)
+```
+
+
+
+
+---------
+
+
+r = .8
+```{r, echo = FALSE}
+
+samples = 1000
+r = 0.8
+
+library('MASS')
+cor.dat = mvrnorm(n=samples, mu=c(0, 0), Sigma=matrix(c(1, r, r, 1), nrow=2), empirical=TRUE)
+X = cor.dat[, 1]  # standard normal (mu=0, sd=1)
+Y = cor.dat[, 2]  # standard normal (mu=0, sd=1)
+
+cor <- tibble(X,Y)
+
+cor %>% 
+  ggplot(aes(x = X, y = Y, fill = stat(density))) +
+  stat_density_2d(geom = "raster", contour = F) +
+  scale_fill_viridis_c(option = "D") +
+  labs(x = expression(U[0]),
+       y = expression(U[1])) +
+  coord_equal() 
+
+
+detach(package:MASS, unload=TRUE)
+```
+
+
+
+
+
 ------------------------------------------------------------------------
 
 ```{r}
@@ -1486,6 +1614,17 @@ get_prior(family = gaussian,
 ```
 
 ------------------------------------------------------------------------
+
+Information needed to learn about parameters can be ranked: 
+
+1. Means are easy
+2. SDs are medium
+3. Correlations are hard
+
+
+
+----------
+
 
 ```{r}
 
