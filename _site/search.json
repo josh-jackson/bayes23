@@ -2160,7 +2160,7 @@
     "href": "mlm-8.html#mr.p-not-limited-to-surveys",
     "title": "mlm",
     "section": "Mr.P Not limited to surveys",
-    "text": "Mr.P Not limited to surveys\nExample (using brms) with experimental data – can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf"
+    "text": "Mr.P Not limited to surveys\nExample (using brms) with experimental data – can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf\nMore info: https://marginaleffects.com/articles/mrp.html"
   },
   {
     "objectID": "HW-3.html",
@@ -2238,5 +2238,19 @@
     "title": "mlm",
     "section": "whats in our posterior?",
     "text": "whats in our posterior?\n\nget_variables(mlm.3)\n\n  [1] \"b_Intercept\"         \"b_time\"              \"sd_ID__Intercept\"   \n  [4] \"sigma\"               \"r_ID[6,Intercept]\"   \"r_ID[29,Intercept]\" \n  [7] \"r_ID[34,Intercept]\"  \"r_ID[36,Intercept]\"  \"r_ID[37,Intercept]\" \n [10] \"r_ID[48,Intercept]\"  \"r_ID[53,Intercept]\"  \"r_ID[54,Intercept]\" \n [13] \"r_ID[58,Intercept]\"  \"r_ID[61,Intercept]\"  \"r_ID[66,Intercept]\" \n [16] \"r_ID[67,Intercept]\"  \"r_ID[69,Intercept]\"  \"r_ID[71,Intercept]\" \n [19] \"r_ID[74,Intercept]\"  \"r_ID[75,Intercept]\"  \"r_ID[76,Intercept]\" \n [22] \"r_ID[78,Intercept]\"  \"r_ID[79,Intercept]\"  \"r_ID[80,Intercept]\" \n [25] \"r_ID[81,Intercept]\"  \"r_ID[82,Intercept]\"  \"r_ID[85,Intercept]\" \n [28] \"r_ID[86,Intercept]\"  \"r_ID[87,Intercept]\"  \"r_ID[89,Intercept]\" \n [31] \"r_ID[91,Intercept]\"  \"r_ID[92,Intercept]\"  \"r_ID[93,Intercept]\" \n [34] \"r_ID[94,Intercept]\"  \"r_ID[96,Intercept]\"  \"r_ID[97,Intercept]\" \n [37] \"r_ID[98,Intercept]\"  \"r_ID[99,Intercept]\"  \"r_ID[101,Intercept]\"\n [40] \"r_ID[102,Intercept]\" \"r_ID[103,Intercept]\" \"r_ID[104,Intercept]\"\n [43] \"r_ID[105,Intercept]\" \"r_ID[106,Intercept]\" \"r_ID[110,Intercept]\"\n [46] \"r_ID[112,Intercept]\" \"r_ID[114,Intercept]\" \"r_ID[115,Intercept]\"\n [49] \"r_ID[116,Intercept]\" \"r_ID[120,Intercept]\" \"r_ID[122,Intercept]\"\n [52] \"r_ID[125,Intercept]\" \"r_ID[127,Intercept]\" \"r_ID[129,Intercept]\"\n [55] \"r_ID[135,Intercept]\" \"r_ID[136,Intercept]\" \"r_ID[137,Intercept]\"\n [58] \"r_ID[140,Intercept]\" \"r_ID[141,Intercept]\" \"r_ID[142,Intercept]\"\n [61] \"r_ID[143,Intercept]\" \"r_ID[144,Intercept]\" \"r_ID[146,Intercept]\"\n [64] \"r_ID[149,Intercept]\" \"r_ID[150,Intercept]\" \"r_ID[152,Intercept]\"\n [67] \"r_ID[153,Intercept]\" \"r_ID[155,Intercept]\" \"r_ID[156,Intercept]\"\n [70] \"r_ID[159,Intercept]\" \"r_ID[160,Intercept]\" \"r_ID[162,Intercept]\"\n [73] \"r_ID[163,Intercept]\" \"r_ID[165,Intercept]\" \"r_ID[167,Intercept]\"\n [76] \"r_ID[169,Intercept]\" \"r_ID[171,Intercept]\" \"r_ID[174,Intercept]\"\n [79] \"r_ID[182,Intercept]\" \"r_ID[187,Intercept]\" \"r_ID[189,Intercept]\"\n [82] \"r_ID[190,Intercept]\" \"r_ID[193,Intercept]\" \"r_ID[194,Intercept]\"\n [85] \"r_ID[201,Intercept]\" \"r_ID[204,Intercept]\" \"r_ID[205,Intercept]\"\n [88] \"r_ID[208,Intercept]\" \"r_ID[209,Intercept]\" \"r_ID[211,Intercept]\"\n [91] \"r_ID[214,Intercept]\" \"r_ID[219,Intercept]\" \"r_ID[222,Intercept]\"\n [94] \"r_ID[223,Intercept]\" \"r_ID[229,Intercept]\" \"prior_Intercept\"    \n [97] \"prior_b\"             \"prior_sigma\"         \"prior_sd_ID\"        \n[100] \"lprior\"              \"lp__\"                \"accept_stat__\"      \n[103] \"treedepth__\"         \"stepsize__\"          \"divergent__\"        \n[106] \"n_leapfrog__\"        \"energy__\""
+  },
+  {
+    "objectID": "mlm-8.html#mr.p",
+    "href": "mlm-8.html#mr.p",
+    "title": "mlm",
+    "section": "Mr.P",
+    "text": "Mr.P\nMr = Multi-level regression aka MLM P = poststratification, with post for posterior and stratification for stratify.\nYou take your posterior and make predictions based on different strata\nWeighted average of predicted values, where weights are the population shares of each category"
+  },
+  {
+    "objectID": "mlm-8.html#recent-example",
+    "href": "mlm-8.html#recent-example",
+    "title": "mlm",
+    "section": "recent example",
+    "text": "recent example\nhttps://osf.io/preprints/psyarxiv/fcm3n/"
   }
 ]

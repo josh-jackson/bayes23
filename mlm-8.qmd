@@ -1849,7 +1849,8 @@ un_pooled_params <-
   select(ID, term, estimate) %>% 
   pivot_wider(names_from = term, values_from = estimate) %>% 
   mutate(Intercept = `(Intercept)`) %>% 
-  select(-`(Intercept)`) %>% 
+  select(-`(Intercept)`) %>%
+  #select(-`Intercept`) %>% 
   mutate(ID = as.character(ID))
 
 params <-
@@ -1863,9 +1864,7 @@ p2 <-
   geom_point(aes(group = ID, color = pooled)) +
   geom_line(aes(group = ID), size = 1/4) +
   scale_color_manual("Pooled?",
-                     values = c("#80A0C7", "#A65141")) +
-  coord_cartesian(xlim = range(params$W.other),
-                  ylim = range(params$Intercept))
+                     values = c("#80A0C7", "#A65141")) + xlim(0,1) 
 p2
 ```
 
@@ -1940,6 +1939,7 @@ un_pooled_params2 <-
   pivot_wider(names_from = term, values_from = estimate) %>% 
   mutate(Intercept = `(Intercept)`) %>% 
   select(-`(Intercept)`) %>% 
+  #select(-`Intercept`) %>% 
   mutate(ID = as.character(ID))
 
 params2 <-
@@ -1949,13 +1949,13 @@ params2 <-
   mutate(pooled = rep(c("partially", "not"), each = nrow(.)/2)) 
 
 p3 <-
-  ggplot(data = params2, aes(x = W.other.pc, y = Intercept)) +
+  ggplot(data = params2, aes(x = W.other.pc, y = Intercept, group = pooled)) +
   geom_point(aes(group = ID, color = pooled)) +
   geom_line(aes(group = ID), size = 1/4) +
   scale_color_manual("Pooled?",
                      values = c("#80A0C7", "#A65141")) +
-  coord_cartesian(xlim = range(params$W.other.pc),
-                  ylim = range(params$Intercept))
+  xlim(0,1) + ylim(1,5)
+
 p3
 ```
 
@@ -1984,6 +1984,16 @@ Improving predictions by incorporating outside (of the model) information. MRP =
 
 One of the biggest problems with psych data is that it is unrepresentative. (Do you trust undergrads or adults off the street wanting to help science?) Often survey weights are used. But if we know the distribution of the broader population, we can reweight (post-stratify) our results to get more accurate estimates. Instead of making assumptions about how the observed sample was produced from the population, we make assumptions about how the observed sample can be used to reconstruct the rest of the population
 
+## Mr.P
+
+Mr = Multi-level regression aka MLM
+P = poststratification, with post for posterior and stratification for stratify. 
+
+You take your posterior and make predictions based on different strata
+
+Weighted average of predicted values, where weights are the population shares of each category 
+
+
 ## Weighting vs postratifying
 
 Weighting is done all the time with data. It gives more or less "weight" to observations that are over or under sampled. Some people "count" more than others in the service of getting data that represents some population.
@@ -1996,11 +2006,15 @@ Why is this preferred? A few reasons, but mainly one can make generalization to 
 
 What do we need? A reliable data source (such as a census) that gives us the population weights. Data can be re-weighted based on many different categories, not just one: for example, we could post-stratify based on age, education, state of residence, etc.
 
+Don’t need to even attempt a random sample. All we need is a sample that is large and diverse enough + population data (e.g., from the census).
+
 ------------------------------------------------------------------------
 
 Estimating the proportion of heterosexual women who kept their maiden name after marriage.
 
 https://www.monicaalexander.com/posts/2019-08-07-mrp/ https://bookdown.org/content/4857/models-with-memory.html#summary-bonus-post-stratification-in-an-example
+
+
 
 ------------------------------------------------------------------------
 
@@ -2041,6 +2055,13 @@ summary(mlm.mrp)
 ```
 
 ------------------------------------------------------------------------
+
+```{r}
+get_variables(mlm.mrp)
+```
+
+
+-----
 
 ```{r}
 #| code-fold: true
@@ -2167,10 +2188,33 @@ p3 <-
 
 ------------------------------------------------------------------------
 
+Can also be done simply in {marginaleffects}
+```{r, eval = FALSE}
+p <- predictions(  # Compute predictions,
+    model = mod, # using the mlm model `mod`, 
+    newdata = stratification, # for each row of the `stratification` table.
+    by = "age", #select which grouping variable
+    wts = "proportion") #weight them
+```
+
+---------
+
 The general idea is that we can create predictions based on what we want to do with the predictions. Previously when we wanted to plot prediction lines we made predictions across the levels of X. When we want to see observational level variability we incorporate sigma in the predictions rather than focus on expected predictions. If we wanted the CI around a specific value rather than a band then we calculate predictions around that X value. All involve feeding in data.
 
 Here we are doing the same thing, feeding in values to predict but choosing them to be "weighted" however we want.
 
+
+
+
 ## Mr.P Not limited to surveys
 
 Example (using brms) with experimental data -- can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf
+
+More info: 
+https://marginaleffects.com/articles/mrp.html
+
+## recent example
+
+https://osf.io/preprints/psyarxiv/fcm3n/
+
+![](mrp.png)

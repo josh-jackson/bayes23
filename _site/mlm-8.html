@@ -3044,24 +3044,23 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb85-13"><a href="#cb85-13"></a>  <span class="fu">select</span>(ID, term, estimate) <span class="sc">%&gt;%</span> </span>
 <span id="cb85-14"><a href="#cb85-14"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> term, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span> </span>
 <span id="cb85-15"><a href="#cb85-15"></a>  <span class="fu">mutate</span>(<span class="at">Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb85-16"><a href="#cb85-16"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb85-17"><a href="#cb85-17"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">as.character</span>(ID))</span>
-<span id="cb85-18"><a href="#cb85-18"></a></span>
-<span id="cb85-19"><a href="#cb85-19"></a>params <span class="ot">&lt;-</span></span>
-<span id="cb85-20"><a href="#cb85-20"></a>  <span class="co"># `bind_rows()` will stack the second tibble below the first</span></span>
-<span id="cb85-21"><a href="#cb85-21"></a>  <span class="fu">bind_rows</span>(partially_pooled_params2, un_pooled_params) <span class="sc">%&gt;%</span></span>
-<span id="cb85-22"><a href="#cb85-22"></a>  <span class="co"># index whether the estimates are pooled</span></span>
-<span id="cb85-23"><a href="#cb85-23"></a>  <span class="fu">mutate</span>(<span class="at">pooled =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"partially"</span>, <span class="st">"not"</span>), <span class="at">each =</span> <span class="fu">nrow</span>(.)<span class="sc">/</span><span class="dv">2</span>)) </span>
-<span id="cb85-24"><a href="#cb85-24"></a></span>
-<span id="cb85-25"><a href="#cb85-25"></a>p2 <span class="ot">&lt;-</span></span>
-<span id="cb85-26"><a href="#cb85-26"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> params, <span class="fu">aes</span>(<span class="at">x =</span> W.other, <span class="at">y =</span> Intercept)) <span class="sc">+</span></span>
-<span id="cb85-27"><a href="#cb85-27"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID, <span class="at">color =</span> pooled)) <span class="sc">+</span></span>
-<span id="cb85-28"><a href="#cb85-28"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID), <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb85-29"><a href="#cb85-29"></a>  <span class="fu">scale_color_manual</span>(<span class="st">"Pooled?"</span>,</span>
-<span id="cb85-30"><a href="#cb85-30"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#80A0C7"</span>, <span class="st">"#A65141"</span>)) <span class="sc">+</span></span>
-<span id="cb85-31"><a href="#cb85-31"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(params<span class="sc">$</span>W.other),</span>
-<span id="cb85-32"><a href="#cb85-32"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(params<span class="sc">$</span>Intercept))</span>
-<span id="cb85-33"><a href="#cb85-33"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb85-16"><a href="#cb85-16"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb85-17"><a href="#cb85-17"></a>  <span class="co">#select(-`Intercept`) %&gt;% </span></span>
+<span id="cb85-18"><a href="#cb85-18"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">as.character</span>(ID))</span>
+<span id="cb85-19"><a href="#cb85-19"></a></span>
+<span id="cb85-20"><a href="#cb85-20"></a>params <span class="ot">&lt;-</span></span>
+<span id="cb85-21"><a href="#cb85-21"></a>  <span class="co"># `bind_rows()` will stack the second tibble below the first</span></span>
+<span id="cb85-22"><a href="#cb85-22"></a>  <span class="fu">bind_rows</span>(partially_pooled_params2, un_pooled_params) <span class="sc">%&gt;%</span></span>
+<span id="cb85-23"><a href="#cb85-23"></a>  <span class="co"># index whether the estimates are pooled</span></span>
+<span id="cb85-24"><a href="#cb85-24"></a>  <span class="fu">mutate</span>(<span class="at">pooled =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"partially"</span>, <span class="st">"not"</span>), <span class="at">each =</span> <span class="fu">nrow</span>(.)<span class="sc">/</span><span class="dv">2</span>)) </span>
+<span id="cb85-25"><a href="#cb85-25"></a></span>
+<span id="cb85-26"><a href="#cb85-26"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb85-27"><a href="#cb85-27"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> params, <span class="fu">aes</span>(<span class="at">x =</span> W.other, <span class="at">y =</span> Intercept)) <span class="sc">+</span></span>
+<span id="cb85-28"><a href="#cb85-28"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID, <span class="at">color =</span> pooled)) <span class="sc">+</span></span>
+<span id="cb85-29"><a href="#cb85-29"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID), <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb85-30"><a href="#cb85-30"></a>  <span class="fu">scale_color_manual</span>(<span class="st">"Pooled?"</span>,</span>
+<span id="cb85-31"><a href="#cb85-31"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#80A0C7"</span>, <span class="st">"#A65141"</span>)) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">1</span>) </span>
+<span id="cb85-32"><a href="#cb85-32"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -3172,23 +3171,24 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb91-14"><a href="#cb91-14"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> term, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span> </span>
 <span id="cb91-15"><a href="#cb91-15"></a>  <span class="fu">mutate</span>(<span class="at">Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb91-16"><a href="#cb91-16"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb91-17"><a href="#cb91-17"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">as.character</span>(ID))</span>
-<span id="cb91-18"><a href="#cb91-18"></a></span>
-<span id="cb91-19"><a href="#cb91-19"></a>params2 <span class="ot">&lt;-</span></span>
-<span id="cb91-20"><a href="#cb91-20"></a>  <span class="co"># `bind_rows()` will stack the second tibble below the first</span></span>
-<span id="cb91-21"><a href="#cb91-21"></a>  <span class="fu">bind_rows</span>(partially_pooled_params3, un_pooled_params2) <span class="sc">%&gt;%</span></span>
-<span id="cb91-22"><a href="#cb91-22"></a>  <span class="co"># index whether the estimates are pooled</span></span>
-<span id="cb91-23"><a href="#cb91-23"></a>  <span class="fu">mutate</span>(<span class="at">pooled =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"partially"</span>, <span class="st">"not"</span>), <span class="at">each =</span> <span class="fu">nrow</span>(.)<span class="sc">/</span><span class="dv">2</span>)) </span>
-<span id="cb91-24"><a href="#cb91-24"></a></span>
-<span id="cb91-25"><a href="#cb91-25"></a>p3 <span class="ot">&lt;-</span></span>
-<span id="cb91-26"><a href="#cb91-26"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> params2, <span class="fu">aes</span>(<span class="at">x =</span> W.other.pc, <span class="at">y =</span> Intercept)) <span class="sc">+</span></span>
-<span id="cb91-27"><a href="#cb91-27"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID, <span class="at">color =</span> pooled)) <span class="sc">+</span></span>
-<span id="cb91-28"><a href="#cb91-28"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID), <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb91-29"><a href="#cb91-29"></a>  <span class="fu">scale_color_manual</span>(<span class="st">"Pooled?"</span>,</span>
-<span id="cb91-30"><a href="#cb91-30"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#80A0C7"</span>, <span class="st">"#A65141"</span>)) <span class="sc">+</span></span>
-<span id="cb91-31"><a href="#cb91-31"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(params<span class="sc">$</span>W.other.pc),</span>
-<span id="cb91-32"><a href="#cb91-32"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(params<span class="sc">$</span>Intercept))</span>
-<span id="cb91-33"><a href="#cb91-33"></a>p3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb91-17"><a href="#cb91-17"></a>  <span class="co">#select(-`Intercept`) %&gt;% </span></span>
+<span id="cb91-18"><a href="#cb91-18"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">as.character</span>(ID))</span>
+<span id="cb91-19"><a href="#cb91-19"></a></span>
+<span id="cb91-20"><a href="#cb91-20"></a>params2 <span class="ot">&lt;-</span></span>
+<span id="cb91-21"><a href="#cb91-21"></a>  <span class="co"># `bind_rows()` will stack the second tibble below the first</span></span>
+<span id="cb91-22"><a href="#cb91-22"></a>  <span class="fu">bind_rows</span>(partially_pooled_params3, un_pooled_params2) <span class="sc">%&gt;%</span></span>
+<span id="cb91-23"><a href="#cb91-23"></a>  <span class="co"># index whether the estimates are pooled</span></span>
+<span id="cb91-24"><a href="#cb91-24"></a>  <span class="fu">mutate</span>(<span class="at">pooled =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"partially"</span>, <span class="st">"not"</span>), <span class="at">each =</span> <span class="fu">nrow</span>(.)<span class="sc">/</span><span class="dv">2</span>)) </span>
+<span id="cb91-25"><a href="#cb91-25"></a></span>
+<span id="cb91-26"><a href="#cb91-26"></a>p3 <span class="ot">&lt;-</span></span>
+<span id="cb91-27"><a href="#cb91-27"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> params2, <span class="fu">aes</span>(<span class="at">x =</span> W.other.pc, <span class="at">y =</span> Intercept, <span class="at">group =</span> pooled)) <span class="sc">+</span></span>
+<span id="cb91-28"><a href="#cb91-28"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID, <span class="at">color =</span> pooled)) <span class="sc">+</span></span>
+<span id="cb91-29"><a href="#cb91-29"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID), <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb91-30"><a href="#cb91-30"></a>  <span class="fu">scale_color_manual</span>(<span class="st">"Pooled?"</span>,</span>
+<span id="cb91-31"><a href="#cb91-31"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#80A0C7"</span>, <span class="st">"#A65141"</span>)) <span class="sc">+</span></span>
+<span id="cb91-32"><a href="#cb91-32"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">1</span>,<span class="dv">5</span>)</span>
+<span id="cb91-33"><a href="#cb91-33"></a></span>
+<span id="cb91-34"><a href="#cb91-34"></a>p3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -3219,6 +3219,12 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>Improving predictions by incorporating outside (of the model) information. MRP = multilevel regression with poststratification</p>
 <p>One of the biggest problems with psych data is that it is unrepresentative. (Do you trust undergrads or adults off the street wanting to help science?) Often survey weights are used. But if we know the distribution of the broader population, we can reweight (post-stratify) our results to get more accurate estimates. Instead of making assumptions about how the observed sample was produced from the population, we make assumptions about how the observed sample can be used to reconstruct the rest of the population</p>
 </section>
+<section id="mr.p" class="slide level2">
+<h2>Mr.P</h2>
+<p>Mr = Multi-level regression aka MLM P = poststratification, with post for posterior and stratification for stratify.</p>
+<p>You take your posterior and make predictions based on different strata</p>
+<p>Weighted average of predicted values, where weights are the population shares of each category</p>
+</section>
 <section id="weighting-vs-postratifying" class="slide level2">
 <h2>Weighting vs postratifying</h2>
 <p>Weighting is done all the time with data. It gives more or less “weight” to observations that are over or under sampled. Some people “count” more than others in the service of getting data that represents some population.</p>
@@ -3228,6 +3234,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <p>What do we need? A reliable data source (such as a census) that gives us the population weights. Data can be re-weighted based on many different categories, not just one: for example, we could post-stratify based on age, education, state of residence, etc.</p>
+<p>Don’t need to even attempt a random sample. All we need is a sample that is large and diverse enough + population data (e.g., from the census).</p>
 </section>
 <section class="slide level2">
 
@@ -3342,39 +3349,132 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1"></a><span class="fu">get_variables</span>(mlm.mrp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "b_Intercept"                                 
+ [2] "sd_age_group__Intercept"                     
+ [3] "sd_decade_married__Intercept"                
+ [4] "sd_educ_group__Intercept"                    
+ [5] "sd_state_name__Intercept"                    
+ [6] "r_age_group[25,Intercept]"                   
+ [7] "r_age_group[30,Intercept]"                   
+ [8] "r_age_group[35,Intercept]"                   
+ [9] "r_age_group[40,Intercept]"                   
+[10] "r_age_group[45,Intercept]"                   
+[11] "r_age_group[50,Intercept]"                   
+[12] "r_age_group[55,Intercept]"                   
+[13] "r_age_group[60,Intercept]"                   
+[14] "r_age_group[65,Intercept]"                   
+[15] "r_age_group[70,Intercept]"                   
+[16] "r_age_group[75,Intercept]"                   
+[17] "r_decade_married[1979,Intercept]"            
+[18] "r_decade_married[1989,Intercept]"            
+[19] "r_decade_married[1999,Intercept]"            
+[20] "r_decade_married[2009,Intercept]"            
+[21] "r_decade_married[2019,Intercept]"            
+[22] "r_educ_group[&lt;BA,Intercept]"                 
+[23] "r_educ_group[&gt;BA,Intercept]"                 
+[24] "r_educ_group[BA,Intercept]"                  
+[25] "r_educ_group[NA,Intercept]"                  
+[26] "r_state_name[alabama,Intercept]"             
+[27] "r_state_name[alaska,Intercept]"              
+[28] "r_state_name[arizona,Intercept]"             
+[29] "r_state_name[arkansas,Intercept]"            
+[30] "r_state_name[california,Intercept]"          
+[31] "r_state_name[colorado,Intercept]"            
+[32] "r_state_name[connecticut,Intercept]"         
+[33] "r_state_name[delaware,Intercept]"            
+[34] "r_state_name[district.of.columbia,Intercept]"
+[35] "r_state_name[florida,Intercept]"             
+[36] "r_state_name[georgia,Intercept]"             
+[37] "r_state_name[hawaii,Intercept]"              
+[38] "r_state_name[idaho,Intercept]"               
+[39] "r_state_name[illinois,Intercept]"            
+[40] "r_state_name[indiana,Intercept]"             
+[41] "r_state_name[iowa,Intercept]"                
+[42] "r_state_name[kansas,Intercept]"              
+[43] "r_state_name[kentucky,Intercept]"            
+[44] "r_state_name[louisiana,Intercept]"           
+[45] "r_state_name[maine,Intercept]"               
+[46] "r_state_name[maryland,Intercept]"            
+[47] "r_state_name[massachusetts,Intercept]"       
+[48] "r_state_name[michigan,Intercept]"            
+[49] "r_state_name[minnesota,Intercept]"           
+[50] "r_state_name[mississippi,Intercept]"         
+[51] "r_state_name[missouri,Intercept]"            
+[52] "r_state_name[montana,Intercept]"             
+[53] "r_state_name[nebraska,Intercept]"            
+[54] "r_state_name[nevada,Intercept]"              
+[55] "r_state_name[new.hampshire,Intercept]"       
+[56] "r_state_name[new.jersey,Intercept]"          
+[57] "r_state_name[new.mexico,Intercept]"          
+[58] "r_state_name[new.york,Intercept]"            
+[59] "r_state_name[north.carolina,Intercept]"      
+[60] "r_state_name[north.dakota,Intercept]"        
+[61] "r_state_name[ohio,Intercept]"                
+[62] "r_state_name[oklahoma,Intercept]"            
+[63] "r_state_name[oregon,Intercept]"              
+[64] "r_state_name[pennsylvania,Intercept]"        
+[65] "r_state_name[puerto.rico,Intercept]"         
+[66] "r_state_name[rhode.island,Intercept]"        
+[67] "r_state_name[south.carolina,Intercept]"      
+[68] "r_state_name[south.dakota,Intercept]"        
+[69] "r_state_name[tennessee,Intercept]"           
+[70] "r_state_name[texas,Intercept]"               
+[71] "r_state_name[utah,Intercept]"                
+[72] "r_state_name[vermont,Intercept]"             
+[73] "r_state_name[virginia,Intercept]"            
+[74] "r_state_name[washington,Intercept]"          
+[75] "r_state_name[west.virginia,Intercept]"       
+[76] "r_state_name[wisconsin,Intercept]"           
+[77] "r_state_name[wyoming,Intercept]"             
+[78] "lprior"                                      
+[79] "lp__"                                        
+[80] "accept_stat__"                               
+[81] "treedepth__"                                 
+[82] "stepsize__"                                  
+[83] "divergent__"                                 
+[84] "n_leapfrog__"                                
+[85] "energy__"                                    </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1"></a><span class="fu">posterior_samples</span>(mlm.mrp) <span class="sc">%&gt;%</span> </span>
-<span id="cb102-2"><a href="#cb102-2"></a>  <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"sd_"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb102-3"><a href="#cb102-3"></a>  <span class="fu">set_names</span>(<span class="fu">str_c</span>(<span class="st">"sigma["</span>, <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"decade~married"</span>, <span class="st">"education"</span>, <span class="st">"state"</span>), <span class="st">"]"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb102-4"><a href="#cb102-4"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb102-5"><a href="#cb102-5"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span></span>
-<span id="cb102-6"><a href="#cb102-6"></a>  <span class="fu">median_qi</span>(<span class="at">.width =</span> <span class="fu">seq</span>(<span class="at">from =</span> .<span class="dv">70</span>, <span class="at">to =</span> .<span class="dv">95</span>, <span class="at">by =</span> .<span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb102-7"><a href="#cb102-7"></a>  </span>
-<span id="cb102-8"><a href="#cb102-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">y =</span> <span class="fu">reorder</span>(name, value))) <span class="sc">+</span></span>
-<span id="cb102-9"><a href="#cb102-9"></a>  <span class="fu">geom_interval</span>(<span class="fu">aes</span>(<span class="at">alpha =</span> .width), <span class="at">color =</span> <span class="st">"orange3"</span>) <span class="sc">+</span></span>
-<span id="cb102-10"><a href="#cb102-10"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> ggplot2<span class="sc">:::</span>parse_safe) <span class="sc">+</span></span>
-<span id="cb102-11"><a href="#cb102-11"></a>  <span class="fu">scale_alpha_continuous</span>(<span class="st">"CI width"</span>, <span class="at">range =</span> <span class="fu">c</span>(.<span class="dv">7</span>, .<span class="dv">15</span>)) <span class="sc">+</span></span>
-<span id="cb102-12"><a href="#cb102-12"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb102-13"><a href="#cb102-13"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>),</span>
-<span id="cb102-14"><a href="#cb102-14"></a>        <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1"></a><span class="fu">posterior_samples</span>(mlm.mrp) <span class="sc">%&gt;%</span> </span>
+<span id="cb104-2"><a href="#cb104-2"></a>  <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"sd_"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb104-3"><a href="#cb104-3"></a>  <span class="fu">set_names</span>(<span class="fu">str_c</span>(<span class="st">"sigma["</span>, <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"decade~married"</span>, <span class="st">"education"</span>, <span class="st">"state"</span>), <span class="st">"]"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb104-4"><a href="#cb104-4"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb104-5"><a href="#cb104-5"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span></span>
+<span id="cb104-6"><a href="#cb104-6"></a>  <span class="fu">median_qi</span>(<span class="at">.width =</span> <span class="fu">seq</span>(<span class="at">from =</span> .<span class="dv">70</span>, <span class="at">to =</span> .<span class="dv">95</span>, <span class="at">by =</span> .<span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb104-7"><a href="#cb104-7"></a>  </span>
+<span id="cb104-8"><a href="#cb104-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">y =</span> <span class="fu">reorder</span>(name, value))) <span class="sc">+</span></span>
+<span id="cb104-9"><a href="#cb104-9"></a>  <span class="fu">geom_interval</span>(<span class="fu">aes</span>(<span class="at">alpha =</span> .width), <span class="at">color =</span> <span class="st">"orange3"</span>) <span class="sc">+</span></span>
+<span id="cb104-10"><a href="#cb104-10"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> ggplot2<span class="sc">:::</span>parse_safe) <span class="sc">+</span></span>
+<span id="cb104-11"><a href="#cb104-11"></a>  <span class="fu">scale_alpha_continuous</span>(<span class="st">"CI width"</span>, <span class="at">range =</span> <span class="fu">c</span>(.<span class="dv">7</span>, .<span class="dv">15</span>)) <span class="sc">+</span></span>
+<span id="cb104-12"><a href="#cb104-12"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb104-13"><a href="#cb104-13"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="cb104-14"><a href="#cb104-14"></a>        <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-77-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-78-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>Census data we will use to make predictions. We will make predictions for every combination of variable we are interested in (state, age, decade married, edu)</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a>age_prop <span class="ot">&lt;-</span> </span>
-<span id="cb103-2"><a href="#cb103-2"></a>  cell_counts <span class="sc">%&gt;%</span> </span>
-<span id="cb103-3"><a href="#cb103-3"></a>  <span class="fu">group_by</span>(age_group) <span class="sc">%&gt;%</span> </span>
-<span id="cb103-4"><a href="#cb103-4"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span> </span>
-<span id="cb103-5"><a href="#cb103-5"></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb103-6"><a href="#cb103-6"></a></span>
-<span id="cb103-7"><a href="#cb103-7"></a>age_prop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a>age_prop <span class="ot">&lt;-</span> </span>
+<span id="cb105-2"><a href="#cb105-2"></a>  cell_counts <span class="sc">%&gt;%</span> </span>
+<span id="cb105-3"><a href="#cb105-3"></a>  <span class="fu">group_by</span>(age_group) <span class="sc">%&gt;%</span> </span>
+<span id="cb105-4"><a href="#cb105-4"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb105-5"><a href="#cb105-5"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb105-6"><a href="#cb105-6"></a></span>
+<span id="cb105-7"><a href="#cb105-7"></a>age_prop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6,058 × 6
@@ -3397,13 +3497,13 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a>p <span class="ot">&lt;-</span> mlm.mrp <span class="sc">%&gt;%</span> </span>
-<span id="cb105-2"><a href="#cb105-2"></a>  <span class="fu">add_predicted_draws</span>(<span class="at">newdata =</span> age_prop <span class="sc">%&gt;%</span> </span>
-<span id="cb105-3"><a href="#cb105-3"></a>                        <span class="fu">filter</span>(age_group <span class="sc">&gt;</span> <span class="dv">20</span>, </span>
-<span id="cb105-4"><a href="#cb105-4"></a>                               age_group <span class="sc">&lt;</span> <span class="dv">80</span>, </span>
-<span id="cb105-5"><a href="#cb105-5"></a>                               decade_married <span class="sc">&gt;</span> <span class="dv">1969</span>),</span>
-<span id="cb105-6"><a href="#cb105-6"></a>                      <span class="at">allow_new_levels =</span> T)</span>
-<span id="cb105-7"><a href="#cb105-7"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a>p <span class="ot">&lt;-</span> mlm.mrp <span class="sc">%&gt;%</span> </span>
+<span id="cb107-2"><a href="#cb107-2"></a>  <span class="fu">add_predicted_draws</span>(<span class="at">newdata =</span> age_prop <span class="sc">%&gt;%</span> </span>
+<span id="cb107-3"><a href="#cb107-3"></a>                        <span class="fu">filter</span>(age_group <span class="sc">&gt;</span> <span class="dv">20</span>, </span>
+<span id="cb107-4"><a href="#cb107-4"></a>                               age_group <span class="sc">&lt;</span> <span class="dv">80</span>, </span>
+<span id="cb107-5"><a href="#cb107-5"></a>                               decade_married <span class="sc">&gt;</span> <span class="dv">1969</span>),</span>
+<span id="cb107-6"><a href="#cb107-6"></a>                      <span class="at">allow_new_levels =</span> T)</span>
+<span id="cb107-7"><a href="#cb107-7"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 24,232,000 × 11
 # Groups:   state_name, age_group, decade_married, educ_group, n, prop, .row
@@ -3436,14 +3536,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a>pp <span class="ot">&lt;-</span></span>
-<span id="cb107-2"><a href="#cb107-2"></a>  p <span class="sc">%&gt;%</span> </span>
-<span id="cb107-3"><a href="#cb107-3"></a>  <span class="fu">group_by</span>(age_group, .draw) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-4"><a href="#cb107-4"></a>  <span class="fu">summarise</span>(<span class="at">kept_name_predict =</span> <span class="fu">sum</span>(.prediction <span class="sc">*</span> prop)) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-5"><a href="#cb107-5"></a>  <span class="fu">group_by</span>(age_group) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-6"><a href="#cb107-6"></a>  <span class="fu">mean_qi</span>(kept_name_predict)</span>
-<span id="cb107-7"><a href="#cb107-7"></a></span>
-<span id="cb107-8"><a href="#cb107-8"></a>pp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>pp <span class="ot">&lt;-</span></span>
+<span id="cb109-2"><a href="#cb109-2"></a>  p <span class="sc">%&gt;%</span> </span>
+<span id="cb109-3"><a href="#cb109-3"></a>  <span class="fu">group_by</span>(age_group, .draw) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-4"><a href="#cb109-4"></a>  <span class="fu">summarise</span>(<span class="at">kept_name_predict =</span> <span class="fu">sum</span>(.prediction <span class="sc">*</span> prop)) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-5"><a href="#cb109-5"></a>  <span class="fu">group_by</span>(age_group) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-6"><a href="#cb109-6"></a>  <span class="fu">mean_qi</span>(kept_name_predict)</span>
+<span id="cb109-7"><a href="#cb109-7"></a></span>
+<span id="cb109-8"><a href="#cb109-8"></a>pp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 11 × 7
@@ -3468,57 +3568,68 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"raw data"</span>, <span class="st">"multilevel"</span>, <span class="st">"MRP"</span>)</span>
-<span id="cb109-2"><a href="#cb109-2"></a></span>
-<span id="cb109-3"><a href="#cb109-3"></a>p1 <span class="ot">&lt;-</span></span>
-<span id="cb109-4"><a href="#cb109-4"></a>  <span class="co"># compute the proportions from the data</span></span>
-<span id="cb109-5"><a href="#cb109-5"></a>  d <span class="sc">%&gt;%</span> </span>
-<span id="cb109-6"><a href="#cb109-6"></a>  <span class="fu">group_by</span>(age_group, kept_name) <span class="sc">%&gt;%</span></span>
-<span id="cb109-7"><a href="#cb109-7"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb109-8"><a href="#cb109-8"></a>  <span class="fu">group_by</span>(age_group) <span class="sc">%&gt;%</span> </span>
-<span id="cb109-9"><a href="#cb109-9"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n<span class="sc">/</span><span class="fu">sum</span>(n),</span>
-<span id="cb109-10"><a href="#cb109-10"></a>         <span class="at">type =</span> <span class="fu">factor</span>(<span class="st">"raw data"</span>, <span class="at">levels =</span> levels)) <span class="sc">%&gt;%</span> </span>
-<span id="cb109-11"><a href="#cb109-11"></a>  <span class="fu">filter</span>(kept_name <span class="sc">==</span> <span class="dv">1</span>, age_group <span class="sc">&lt;</span> <span class="dv">80</span>, age_group <span class="sc">&gt;</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb109-12"><a href="#cb109-12"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> prop, <span class="at">y =</span> age_group)) <span class="sc">+</span> </span>
-<span id="cb109-13"><a href="#cb109-13"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb109-14"><a href="#cb109-14"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb109-15"><a href="#cb109-15"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>type)</span>
-<span id="cb109-16"><a href="#cb109-16"></a></span>
-<span id="cb109-17"><a href="#cb109-17"></a></span>
-<span id="cb109-18"><a href="#cb109-18"></a>nd <span class="ot">&lt;-</span> <span class="fu">distinct</span>(d, age_group) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(age_group)</span>
-<span id="cb109-19"><a href="#cb109-19"></a></span>
-<span id="cb109-20"><a href="#cb109-20"></a>p2 <span class="ot">&lt;-</span></span>
-<span id="cb109-21"><a href="#cb109-21"></a>  <span class="fu">fitted</span>(mlm.mrp,</span>
-<span id="cb109-22"><a href="#cb109-22"></a>         <span class="at">re_formula =</span> <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> age_group),</span>
-<span id="cb109-23"><a href="#cb109-23"></a>         <span class="at">newdata =</span> nd) <span class="sc">%&gt;%</span> </span>
-<span id="cb109-24"><a href="#cb109-24"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb109-25"><a href="#cb109-25"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span> </span>
-<span id="cb109-26"><a href="#cb109-26"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> Estimate,</span>
-<span id="cb109-27"><a href="#cb109-27"></a>         <span class="at">type =</span> <span class="fu">factor</span>(<span class="st">"multilevel"</span>, <span class="at">levels =</span> levels)) <span class="sc">%&gt;%</span> </span>
-<span id="cb109-28"><a href="#cb109-28"></a>  </span>
-<span id="cb109-29"><a href="#cb109-29"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> prop, <span class="at">xmin =</span> Q2<span class="fl">.5</span>, <span class="at">xmax =</span> Q97<span class="fl">.5</span>, <span class="at">y =</span> age_group)) <span class="sc">+</span> </span>
-<span id="cb109-30"><a href="#cb109-30"></a>  <span class="fu">geom_pointrange</span>(<span class="at">color =</span> <span class="st">"blue2"</span>, <span class="at">size =</span> <span class="fl">0.8</span>, <span class="at">fatten =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb109-31"><a href="#cb109-31"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb109-32"><a href="#cb109-32"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb109-33"><a href="#cb109-33"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>type)</span>
-<span id="cb109-34"><a href="#cb109-34"></a></span>
-<span id="cb109-35"><a href="#cb109-35"></a></span>
-<span id="cb109-36"><a href="#cb109-36"></a>p3 <span class="ot">&lt;-</span></span>
-<span id="cb109-37"><a href="#cb109-37"></a>  pp <span class="sc">%&gt;%</span></span>
-<span id="cb109-38"><a href="#cb109-38"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">factor</span>(<span class="st">"MRP"</span>, <span class="at">levels =</span> levels)) <span class="sc">%&gt;%</span> </span>
-<span id="cb109-39"><a href="#cb109-39"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> kept_name_predict, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">y =</span> age_group)) <span class="sc">+</span> </span>
-<span id="cb109-40"><a href="#cb109-40"></a>  <span class="fu">geom_pointrange</span>(<span class="at">color =</span> <span class="st">"orange2"</span>, <span class="at">size =</span> <span class="fl">0.8</span>, <span class="at">fatten =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb109-41"><a href="#cb109-41"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb109-42"><a href="#cb109-42"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb109-43"><a href="#cb109-43"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>type)</span>
-<span id="cb109-44"><a href="#cb109-44"></a></span>
-<span id="cb109-45"><a href="#cb109-45"></a><span class="co"># combine!</span></span>
-<span id="cb109-46"><a href="#cb109-46"></a>(p1 <span class="sc">|</span> p2 <span class="sc">|</span> p3) <span class="sc">+</span></span>
-<span id="cb109-47"><a href="#cb109-47"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"Proportion of women keeping name after marriage, by age"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1"></a>levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"raw data"</span>, <span class="st">"multilevel"</span>, <span class="st">"MRP"</span>)</span>
+<span id="cb111-2"><a href="#cb111-2"></a></span>
+<span id="cb111-3"><a href="#cb111-3"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb111-4"><a href="#cb111-4"></a>  <span class="co"># compute the proportions from the data</span></span>
+<span id="cb111-5"><a href="#cb111-5"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb111-6"><a href="#cb111-6"></a>  <span class="fu">group_by</span>(age_group, kept_name) <span class="sc">%&gt;%</span></span>
+<span id="cb111-7"><a href="#cb111-7"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-8"><a href="#cb111-8"></a>  <span class="fu">group_by</span>(age_group) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-9"><a href="#cb111-9"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n<span class="sc">/</span><span class="fu">sum</span>(n),</span>
+<span id="cb111-10"><a href="#cb111-10"></a>         <span class="at">type =</span> <span class="fu">factor</span>(<span class="st">"raw data"</span>, <span class="at">levels =</span> levels)) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-11"><a href="#cb111-11"></a>  <span class="fu">filter</span>(kept_name <span class="sc">==</span> <span class="dv">1</span>, age_group <span class="sc">&lt;</span> <span class="dv">80</span>, age_group <span class="sc">&gt;</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb111-12"><a href="#cb111-12"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> prop, <span class="at">y =</span> age_group)) <span class="sc">+</span> </span>
+<span id="cb111-13"><a href="#cb111-13"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb111-14"><a href="#cb111-14"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb111-15"><a href="#cb111-15"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>type)</span>
+<span id="cb111-16"><a href="#cb111-16"></a></span>
+<span id="cb111-17"><a href="#cb111-17"></a></span>
+<span id="cb111-18"><a href="#cb111-18"></a>nd <span class="ot">&lt;-</span> <span class="fu">distinct</span>(d, age_group) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(age_group)</span>
+<span id="cb111-19"><a href="#cb111-19"></a></span>
+<span id="cb111-20"><a href="#cb111-20"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb111-21"><a href="#cb111-21"></a>  <span class="fu">fitted</span>(mlm.mrp,</span>
+<span id="cb111-22"><a href="#cb111-22"></a>         <span class="at">re_formula =</span> <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> age_group),</span>
+<span id="cb111-23"><a href="#cb111-23"></a>         <span class="at">newdata =</span> nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-24"><a href="#cb111-24"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb111-25"><a href="#cb111-25"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-26"><a href="#cb111-26"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> Estimate,</span>
+<span id="cb111-27"><a href="#cb111-27"></a>         <span class="at">type =</span> <span class="fu">factor</span>(<span class="st">"multilevel"</span>, <span class="at">levels =</span> levels)) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-28"><a href="#cb111-28"></a>  </span>
+<span id="cb111-29"><a href="#cb111-29"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> prop, <span class="at">xmin =</span> Q2<span class="fl">.5</span>, <span class="at">xmax =</span> Q97<span class="fl">.5</span>, <span class="at">y =</span> age_group)) <span class="sc">+</span> </span>
+<span id="cb111-30"><a href="#cb111-30"></a>  <span class="fu">geom_pointrange</span>(<span class="at">color =</span> <span class="st">"blue2"</span>, <span class="at">size =</span> <span class="fl">0.8</span>, <span class="at">fatten =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb111-31"><a href="#cb111-31"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb111-32"><a href="#cb111-32"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb111-33"><a href="#cb111-33"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>type)</span>
+<span id="cb111-34"><a href="#cb111-34"></a></span>
+<span id="cb111-35"><a href="#cb111-35"></a></span>
+<span id="cb111-36"><a href="#cb111-36"></a>p3 <span class="ot">&lt;-</span></span>
+<span id="cb111-37"><a href="#cb111-37"></a>  pp <span class="sc">%&gt;%</span></span>
+<span id="cb111-38"><a href="#cb111-38"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">factor</span>(<span class="st">"MRP"</span>, <span class="at">levels =</span> levels)) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-39"><a href="#cb111-39"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> kept_name_predict, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">y =</span> age_group)) <span class="sc">+</span> </span>
+<span id="cb111-40"><a href="#cb111-40"></a>  <span class="fu">geom_pointrange</span>(<span class="at">color =</span> <span class="st">"orange2"</span>, <span class="at">size =</span> <span class="fl">0.8</span>, <span class="at">fatten =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb111-41"><a href="#cb111-41"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb111-42"><a href="#cb111-42"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb111-43"><a href="#cb111-43"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>type)</span>
+<span id="cb111-44"><a href="#cb111-44"></a></span>
+<span id="cb111-45"><a href="#cb111-45"></a><span class="co"># combine!</span></span>
+<span id="cb111-46"><a href="#cb111-46"></a>(p1 <span class="sc">|</span> p2 <span class="sc">|</span> p3) <span class="sc">+</span></span>
+<span id="cb111-47"><a href="#cb111-47"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"Proportion of women keeping name after marriage, by age"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-81-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-8_files/figure-revealjs/unnamed-chunk-82-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<p>Can also be done simply in {marginaleffects}</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1"></a>p <span class="ot">&lt;-</span> <span class="fu">predictions</span>(  <span class="co"># Compute predictions,</span></span>
+<span id="cb112-2"><a href="#cb112-2"></a>    <span class="at">model =</span> mod, <span class="co"># using the mlm model `mod`, </span></span>
+<span id="cb112-3"><a href="#cb112-3"></a>    <span class="at">newdata =</span> stratification, <span class="co"># for each row of the `stratification` table.</span></span>
+<span id="cb112-4"><a href="#cb112-4"></a>    <span class="at">by =</span> <span class="st">"age"</span>, <span class="co">#select which grouping variable</span></span>
+<span id="cb112-5"><a href="#cb112-5"></a>    <span class="at">wts =</span> <span class="st">"proportion"</span>) <span class="co">#weight them</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section class="slide level2">
 
 <p>The general idea is that we can create predictions based on what we want to do with the predictions. Previously when we wanted to plot prediction lines we made predictions across the levels of X. When we want to see observational level variability we incorporate sigma in the predictions rather than focus on expected predictions. If we wanted the CI around a specific value rather than a band then we calculate predictions around that X value. All involve feeding in data.</p>
@@ -3527,8 +3638,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="mr.p-not-limited-to-surveys" class="slide level2">
 <h2>Mr.P Not limited to surveys</h2>
 <p>Example (using brms) with experimental data – can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf</p>
+<p>More info: https://marginaleffects.com/articles/mrp.html</p>
+</section>
+<section id="recent-example" class="slide level2">
+<h2>recent example</h2>
+<p>https://osf.io/preprints/psyarxiv/fcm3n/</p>
 
-<div class="footer footer-default">
+
+<img data-src="mrp.png" class="r-stretch"><div class="footer footer-default">
 
 </div>
 </section>
