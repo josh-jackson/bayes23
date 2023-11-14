@@ -1,0 +1,1678 @@
+---
+title: advanced MLM
+format: revealjs
+editor: visual
+execute: 
+  echo: true
+html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+
+
+## This time
+
+1. SEM
+2. Mediation
+3. Distributional models
+4. Missing data
+5. Meta analysis
+6. IRT/Cog models
+
+
+## Multivariate models
+
+Any model that has more than 1 DV. While common within SEM frameworks, multivariate models are not often used within standard linear modeling (outside of MANOVA), mostly because of computational difficulties. 
+
+When do you want to use multivariate models? All the time! Mediation, path models, distributional models, IRT models, parallel process MLMs, etc etc. 
+What are advantages? Fewer models than doing separate, additional parameters, novel Qs. 
+
+
+
+## multivariate MLMs
+
+```{r}
+library(brms)
+library(tidyverse)
+library(tidybayes)
+library(modelr)
+
+data <- "https://raw.githubusercontent.com/josh-jackson/bayes/master/mlm.csv"
+mlm <- read.csv(data) 
+```
+
+
+```{r}
+mv.1 <- 
+  brm(family = gaussian,
+      mvbind(CON, DAN) ~ 1 + time + (1 + time | ID),
+      prior = c(prior(normal(0, 1.5), class = Intercept),
+                prior(normal(0, 1.5), class = b),
+                prior(lkj(2), class = cor),
+                prior(lkj(2), class = rescor)),
+      iter = 4000, warmup = 1000, chains = 4, cores = 4,
+      file = "mv.1",
+      backend = "cmdstanr",
+      data = mlm)
+
+
+```
+
+
+---
+
+```{r}
+summary(mv.1)
+```
+
+
+---
+
+```{r}
+fixef(mv.1)
+```
+
+```{r}
+mv.1 %>% 
+  gather_draws(sd_ID__CON_Intercept, sd_ID__CON_time, sd_ID__DAN_Intercept, sd_ID__DAN_time, cor_ID__CON_Intercept__CON_time, cor_ID__DAN_Intercept__DAN_time, rescor__CON__DAN) %>% 
+   median_qi()
+```
+
+---
+
+```{r}
+#| code-fold: true
+mv.1 %>% 
+  spread_draws(rescor__CON__DAN) %>% 
+  ggplot(aes( x = rescor__CON__DAN))+
+  stat_halfeye()
+```
+
+
+## Everything is SEM
+
+Structural equation modeling (SEM) is the most popular way to handle multiple DVs. SEM is also known as covariance structure analysis, which really means unstandardized correlations. We can fit some simple SEM models using brms! 
+
+Also, SEM is really regression but a broader form. Also SEM can be equivalent to MLM in many respects.  
+
+
+
+## correlations (as multivariate models)
+
+
+```{r}
+
+mv.1c <- 
+  brm(family = gaussian,
+      bf(mvbind(CON, DAN) ~ 1) +
+      set_rescor(TRUE),
+      prior = c(prior(normal(0, 1.5), class = Intercept, resp = CON),
+                prior(normal(0, 1.5), class = Intercept, resp = DAN),
+                prior(normal(0, 1.5), class = sigma, resp = CON),
+                prior(normal(0, 1.5), class = sigma, resp = DAN),
+                prior(lkj(2), class = rescor)),
+      iter = 4000, warmup = 1000, chains = 4, cores = 4,
+      file = "mv.1c",
+      backend = "cmdstanr",
+      data = mlm)
+
+
+```
+
+
+---
+
+```{r}
+summary(mv.1c)
+```
+
+
+---
+
+```{r}
+mv.1c %>% 
+  spread_draws(rescor__CON__DAN) %>% 
+  mean_qi()
+```
+
+```{r}
+cor(mlm$CON, mlm$DAN)
+```
+
+
+---
+
+Make it robust
+
+```{r}
+
+mv.1cr <- 
+  brm(family = student,
+      bf(mvbind(CON, DAN) ~ 1) +
+      set_rescor(TRUE),
+      prior = c(prior(gamma(2, .1), class = nu),
+                prior(normal(0, 1.5), class = Intercept, resp = CON),
+                prior(normal(0, 1.5), class = Intercept, resp = DAN),
+                prior(normal(0, 1.5), class = sigma, resp = CON),
+                prior(normal(0, 1.5), class = sigma, resp = DAN),
+                prior(lkj(2), class = rescor)),
+      iter = 4000, warmup = 1000, chains = 4, cores = 4,
+      file = "mv.1cr",
+      backend = "cmdstanr",
+      data = mlm)
+
+```
+
+
+---
+
+```{r}
+summary(mv.1cr)
+```
+
+---
+
+```{r}
+#| code-fold: true
+library(patchwork)
+g1 <- mv.1c %>% 
+  spread_draws(rescor__CON__DAN) %>% 
+   ggplot(aes( x = rescor__CON__DAN))+
+    stat_pointinterval() +xlim(.1,.4)
+
+g2 <- mv.1cr %>% 
+  spread_draws(rescor__CON__DAN) %>% 
+   ggplot(aes( x = rescor__CON__DAN))+
+    stat_pointinterval()+xlim(.1,.4)
+
+(g1 / g2)  
+```
+
+
+---
+
+Residual correlations are useful because they can be conceptualized as what is left over in the DV after accounting for your predictors. Or it is a measure of your DV controlling/adjusting for the predictors. 
+
+What can we do with this outside of looking at correlations?
+
+
+
+## Simple mediation
+
+$$M  = i_M + a X + e_M$$
+$$Y  = i_Y + c' X + b M + e_Y$$
+
+
+
+
+```{r}
+#| code-fold: true
+
+library(ggdag)
+
+dag_coords <-
+  tibble(name = c("X", "M", "Y"),
+         x    = c(1, 2, 3),
+         y    = c(2, 1, 2))
+
+p1 <-
+  dagify(M ~ X,
+       Y ~ X + M,
+       coords = dag_coords) %>%
+  
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_point(color = "black", alpha = 1/4, size = 10) +
+  geom_dag_text(color = "black") +
+  geom_dag_edges(edge_color = "black") +
+  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())+
+  ggtitle("direct + indirect effect")
+
+p2 <-
+  dagify(Y ~ X,
+       coords = dag_coords) %>%
+  
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_point(color = "black", alpha = 1/4, size = 10) +
+  geom_dag_text(color = "black") +
+  geom_dag_edges(edge_color = "black") +
+  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())+
+  ggtitle("Total effect")
+
+library(patchwork)
+
+p2 | p1
+
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+#| 
+X <- rnorm(100)
+M <- 0.5*X + rnorm(100)
+Y <- 0.7*M + rnorm(100)
+Data <- data.frame(X = X, Y = Y, M = M)
+
+# describe your equations
+y_model <- bf(Y ~ 1 + X + M)
+m_model <- bf(M ~ 1 + X)
+
+# simultaneously estimate
+med.1 <-
+  brm(family = gaussian,
+      y_model + m_model + set_rescor(FALSE),
+      data = Data,
+      cores = 4,
+      backend = "cmdstanr",
+      file = "med.1")
+
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+summary(med.1)
+```
+
+
+
+
+## Indirect effects
+
+```{r}
+#| code-fold: true
+library(tidybayes)
+get_variables(med.1)
+```
+
+```{r}
+#| code-fold: true
+med.1 %>% 
+  spread_draws(b_Y_M, b_M_X,b_Y_X) 
+
+```
+
+
+
+## calculate indirect effects
+
+```{r}
+#| code-fold: true
+med.1 %>% 
+  spread_draws(b_Y_M, b_M_X, b_Y_X) %>% 
+  mutate(indirect = b_Y_M * b_M_X) %>% 
+  mutate(direct = b_Y_X) %>% 
+  mutate(total = indirect + direct ) %>% 
+  median_qi(indirect, direct,total)
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+med.1 %>% 
+  spread_draws(b_Y_M, b_M_X, b_Y_X) %>% 
+  mutate(indirect = b_Y_M * b_M_X) %>% 
+  mutate(direct = b_Y_X) %>% 
+  mutate(total = indirect + direct ) %>% 
+  select(indirect, direct, total) %>% 
+  gather() %>% 
+  ggplot(aes(y = key, x = value)) +
+  stat_dotsinterval()
+```
+
+
+
+## priors for mediation
+
+7 parameters to estimate
+
+```{r}
+#| code-fold: true
+med.2 <-
+  brm(family = gaussian,
+      y_model + m_model + set_rescor(FALSE),
+       prior = c(prior(normal(0, 1), class = Intercept, resp = M),
+                 prior(normal(0, 1), class = Intercept, resp = Y),
+                prior(normal(0, 2), class = b, coef = X, resp = M),
+                prior(normal(0, 2), class = b, coef = M, resp = Y),
+                prior(normal(0, 2), class = b, coef = X, resp = Y),
+                prior(exponential(1), class = sigma, resp = M),
+                prior(exponential(1), class = sigma, resp = Y)),
+      data = Data,
+      cores = 4,
+      backend = "cmdstanr",
+      file = "med.2")
+```
+
+---
+
+```{r}
+summary(med.2)
+```
+
+---
+
+```{r}
+#| code-fold: true
+med.2 %>% 
+  spread_draws(b_Y_M, b_M_X) %>% 
+  mutate(indirect = b_Y_M * b_M_X) %>% 
+  median_qi(indirect)
+```
+
+
+```{r}
+#| code-fold: true
+med.1 %>% 
+  spread_draws(b_Y_M, b_M_X) %>% 
+  mutate(indirect = b_Y_M * b_M_X) %>% 
+  median_qi(indirect)
+```
+
+
+
+## Multiple Predictors, mediators and outcomes
+
+
+```{r}
+#| code-fold: true
+n <- 1e3
+set.seed(4.5)
+mult.X <-
+  tibble(X1 = rnorm(n, mean = 0, sd = 1),
+         X2 = rnorm(n, mean = 0, sd = 1),
+         X3 = rnorm(n, mean = 0, sd = 1)) %>% 
+  mutate(med = rnorm(n, mean = 0 + X1 * -1 + X2 * 0 + X3 * 1, sd = 1),
+         dv  = rnorm(n, mean = 0 + X1 * 0 + X2 * .5 + X3 * 1 + M * .5, sd = 1))
+
+```
+
+
+
+```{r}
+#| code-fold: true
+#| 
+MultX_coords <-
+  tibble(name = c("X1","X2","X3",  "M", "Y"),
+         x    = c(1,1,1, 2, 3),
+         y    = c(2,1,3, 1, 2))
+
+X1 <-
+  dagify(M ~ X1 + X2 + X3,
+       Y ~ X1 + X2 + X3 + M,
+       coords = MultX_coords) %>%
+  
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_point(color = "black", alpha = 1/4, size = 10) +
+  geom_dag_text(color = "black") +
+  geom_dag_edges(edge_color = "black") +
+  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())+
+  ggtitle("direct + indirect effect")
+X1
+```
+
+
+---
+
+```{r}
+med.3 <-
+  brm(family = gaussian,
+      bf(dv ~ 1 + X1 + X2 + X3 + med) + 
+        bf(med ~ 1 + X1 + X2 + X3) + 
+        set_rescor(FALSE),
+      data = mult.X, 
+      file = "med.3", 
+      backend = "cmdstanr",
+      cores = 4)
+```
+
+---
+
+```{r}
+summary(med.3)
+```
+
+
+
+## Multiple Outcomes
+
+```{r}
+#| code-fold: true
+n <- 1e3
+
+set.seed(4.5)
+Ys <-
+  tibble(X  = rnorm(n, mean = 0, sd = 1)) %>% 
+  mutate(M = rnorm(n, mean = 0 + X * .5, sd = 1)) %>% 
+  mutate(Y1 = rnorm(n, mean = 0 + X * -1 + M * 0,  sd = 1),
+         Y2 = rnorm(n, mean = 0 + X * 0  + M * .5, sd = 1),
+         Y3 = rnorm(n, mean = 0 + X * 1  + M * 1,  sd = 1))
+
+```
+
+```{r}
+#| code-fold: true
+MultY_coords <-
+  tibble(name = c("X","M","Y1",  "Y2", "Y3"),
+         x    = c(1,2,3, 3, 3),
+         y    = c(2,2.25,1, 2, 3))
+
+Y1 <-
+  dagify(M ~ X,
+       Y1 ~ X +  M,
+       Y2 ~ X +  M,
+       Y3 ~ X +  M,
+       coords = MultY_coords) %>%
+  
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_point(color = "black", alpha = 1/4, size = 10) +
+  geom_dag_text(color = "black") +
+  geom_dag_edges(edge_color = "black") +
+  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())+
+  ggtitle("direct + indirect effect")
+Y1
+
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+mult.Ys <-
+  brm(family = gaussian,
+      bf(Y1 ~ 1 + X + M) + 
+        bf(Y2 ~ 1 + X + M) + 
+        bf(Y3 ~ 1 + X + M) + 
+        bf(M ~ 1 + X) + 
+        set_rescor(FALSE),
+      data = Ys,
+      backend = "cmdstanr",
+      cores = 4,
+      fit = "med.4")
+```
+
+---
+
+```{r}
+#| code-fold: true
+summary(mult.Ys)
+```
+
+
+
+## Multiple Mediators
+
+Note we can compute individual and total indirect effects
+
+```{r}
+#| code-fold: true
+parallel <-
+  tibble(name = c("X","M1","M2",  "Y"),
+         x    = c(1,2,2,3),
+         y    = c(2,2.25,1.75, 2))
+
+
+ X2<- dagify(M1 ~ X,
+       M2 ~ X ,
+       Y ~ X +  M1,
+       Y ~ X +  M2,
+       coords = parallel) %>%
+  
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_point(color = "black", alpha = 1/4, size = 10) +
+  geom_dag_text(color = "black") +
+  geom_dag_edges(edge_color = "black") +
+  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())+
+  ggtitle("parallel")
+ 
+ 
+ serial <-
+  tibble(name = c("X","M1","M2",  "Y"),
+         x    = c(1,1.5,2.5,3),
+         y    = c(2,2.25,2.25, 2))
+ 
+  X3<- dagify(M1 ~ X,
+       M2 ~ M1 ,
+        M2 ~ X ,
+       Y ~ M1,
+       Y ~ X +  M2,
+       coords = serial)  %>%
+  
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_point(color = "black", alpha = 1/4, size = 10) +
+  geom_dag_text(color = "black") +
+  geom_dag_edges(edge_color = "black") +
+  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())+
+  ggtitle("serial")
+
+X2 | X3
+```
+
+
+## parallel
+
+```{r, eval = FALSE}
+#| code-fold: true
+m1_model <- bf(M1 ~ 1 + X)
+m2_model <- bf(M2  ~ 1 + X)
+y_model  <- bf(Y ~ 1 + X + M1 + M2)
+
+par <-
+  brm(family = gaussian,
+      y_model + m1_model + m2_model + set_rescor(FALSE),
+      backend = "cmdstanr",
+      data = d)
+```
+
+3 indirect effects can be calculated
+
+
+## serial
+
+```{r, eval = FALSE}
+#| code-fold: true
+ser <-
+  brm(family = gaussian,
+        bf(M1 ~ 1 + X) + 
+        bf(M2 ~ 1 + X + M1) + 
+        bf(Y ~ 1 + X + M1 + M2) + 
+        set_rescor(FALSE),
+      backend = "cmdstanr",
+        data=d)
+
+```
+
+4 indirect effects can be calculated
+
+
+## moderated mediation? 
+
+```{r, eval = FALSE}
+#| code-fold: true
+#| 
+y_model <- bf(Y ~ 1 + X + M)
+m_model <- bf(M ~ 1 + X*moderator)
+
+med.5 <-
+  brm(family = gaussian,
+      y_model + m_model + set_rescor(FALSE),
+      data = Data,
+      cores = 4,
+      backend = "cmdstanr",
+      file = "med.5")
+```
+
+
+
+
+
+## Distributional Models
+
+In basic regression with a Gaussian DV, we predict the mean, $\mu$ through some linear model. The second parameter of the normal distribution – the residual standard deviation $\sigma$ – is assumed to be constant across observations. We estimate it but do not try to predict it.
+
+This extends beyond Gaussian DVs, as most response distributions have a "location" parameter and one or more "scale" or "shape" parameters. Instead of only predicting the location parameters, we can also predict the scale parameters
+
+When to use? You've seen this with Welch's t-test, and if you've ever done SEM you can model variance differences through constraints or  group models
+
+---
+
+$$y_{ik} \sim t(\mu_{ik}, \sigma_{ik})$$
+$$\mu_{ik} = \beta_0 + \beta_1 Group_{ik}$$
+$$\sigma_{ik} = \gamma_0 + \gamma_1 Group_{ik}$$
+
+---
+
+```{r}
+#| code-fold: true
+d.1a <- 
+  brm(family = student,
+     bf( CON ~ 0 + group,
+         sigma ~ 0 + group),
+                file = "d.1a",
+                backend = "cmdstanr",
+                data = mlm)
+
+```
+
+---
+
+```{r}
+#| code-fold: true
+summary(d.1a)
+```
+
+---
+
+```{r}
+d.1b <- 
+  brm(family = gaussian,
+     bf( CON ~ 1 + group,
+         sigma ~ 1 + group),
+                file = "d.1b",
+                backend = "cmdstanr",
+                data = mlm)
+```
+
+---
+
+```{r}
+summary(d.1b)
+```
+
+
+---
+
+```{r}
+d.2 <- 
+  brm(family = gaussian,
+     bf( CON ~ 1 + group,
+         sigma ~ 1 + group*Education),
+                file = "d.2",
+                 backend = "cmdstanr",
+                data = mlm)
+```
+
+
+---
+
+```{r}
+summary(d.2)
+```
+
+---
+
+```{r}
+#| code-fold: true
+d.1a %>% 
+  gather_draws(b_sigma_groupCTRL, b_sigma_groupPD) %>% 
+  ggplot(aes(x = .value, group = .variable,  fill = .variable)) +
+  stat_halfeye(alpha = .7)
+```
+
+---
+
+```{r}
+#| code-fold: true
+d.1a %>% 
+  gather_draws(b_sigma_groupCTRL, b_sigma_groupPD) %>% 
+  mutate(value = exp(.value)) %>% 
+  ggplot(aes(x = value, group = .variable,  fill = .variable)) +
+  stat_halfeye(alpha = .7)
+```
+
+
+```{r}
+#| code-fold: true
+d.1a %>% 
+  gather_draws(b_sigma_groupCTRL, b_sigma_groupPD) %>% 
+  mutate(value = exp(.value)) %>% 
+  ggplot(aes(x = value, group = .variable,  fill = .variable)) +
+  stat_halfeye(alpha = .7)
+```
+
+
+
+
+---
+
+But these are estimates of the parameter, not variances per se. Can we have a plot that includes variances and means? 
+
+
+---
+
+
+```{r}
+mlm %>% 
+  data_grid(group = group) %>% 
+  add_predicted_draws(d.1a) %>% 
+  ggplot(aes(x = .prediction, group =  fct_rev(group), fill = fct_rev(group))) +
+  stat_halfeye(alpha = .6)
+```
+
+
+
+---
+
+
+Mixed effects location scale model 
+```{r}
+#| code-fold: true
+melsm <- read.csv("~/Library/CloudStorage/Box-Box/Bayesian Statistics/bayes22/static/Lectures/melsm.csv")
+
+melsm <- melsm %>% 
+  mutate(day01 = (day - 2) / max((day - 2)))
+```
+
+
+
+
+```{r}
+#| code-fold: true
+melsm %>% 
+distinct(record_id) %>% 
+  count()
+```
+
+
+---
+
+Participants filled out daily affective measures and physical activity
+
+```{r}
+#| code-fold: true
+melsm %>% 
+    count(record_id) %>% 
+  ggplot(aes(x = n)) +
+  geom_bar() +
+  scale_x_continuous("number of days", limits = c(0, NA))
+```
+
+
+
+
+
+
+---
+
+Participant level
+
+
+```{r}
+#| code-fold: true
+set.seed(16)
+melsm %>% 
+  ungroup() %>% 
+  nest(data = !record_id) %>% 
+  slice_sample(n = 12) %>% 
+  unnest(data) %>% 
+  ggplot(aes(x = day, y = N_A.lag)) +
+  geom_line(color = "black") +
+  geom_point(color = "black", size = 1/2) +
+  ylab("negative affect (standardized)") +
+  facet_wrap(~record_id)
+```
+
+
+## Standard MLM treatment
+
+```{r}
+#| code-fold: true
+melsm.1 <-
+  brm(family = gaussian,
+      N_A.std ~ 1 + day01 + (1 + day01 | record_id),
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(exponential(1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.1")
+```
+
+
+---
+
+```{r}
+summary(melsm.1)
+```
+
+---
+
+We have to be careful with plotting MLMs
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), .model= melsm) 
+```
+
+---
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), .model= melsm) %>% 
+  add_epred_draws(melsm.1 )
+```
+
+---
+
+If we do not care about random effects, specify re_formula = NA
+```{r}
+#| code-fold: true
+fixed.slope<- melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20)) %>% 
+  add_epred_draws(melsm.1, re_formula = NA )
+  fixed.slope
+```
+
+---
+
+If we want random effects we need to specify the variable to get ALL levels. 
+```{r}
+
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) 
+```
+193 people * 20 = 3860
+
+---
+
+Then we need to state re_forumla = NULL (which is the default)
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL )
+```
+
+---
+
+re_formula formula helps us focus on either the average trajectory (gammas) or the group specific (person Us). If NULL (default), include all group-level effects; if NA, include no group-level effects.
+
+ 160,000 = 20 (different values of X we chose) x 8000 iterations (2k x 4 chains)
+ 30,880,000 = 20* 8000 iterations * 193 people in our dataset
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NA) %>% 
+  ggplot()+
+  aes(x = day01, y = .epred) +
+  stat_lineribbon(.width = 0.95, alpha = .5)
+fixed.slope 
+```
+
+---
+
+```{r}
+#| code-fold: true
+## https://www.tjmahr.com/sample-n-groups/
+sample_n_of <- function(data, size, ...) {
+  dots <- quos(...)
+  group_ids <- data %>% 
+    group_by(!!! dots) %>% 
+    group_indices()
+  sampled_groups <- sample(unique(group_ids), size)
+  data %>% 
+    filter(group_ids %in% sampled_groups)
+}
+
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+    sample_n_of(5,record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL) %>% 
+  ggplot(aes(x = day01)) +
+  stat_lineribbon(aes(y = .epred, group = record_id))
+
+##Note that this below won't work
+  #geom_line(aes(y = .epred, group = levels(record_id)))
+
+```
+
+
+
+
+---
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+    sample_n_of(5,record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL) %>% 
+  ggplot(aes(x = day01)) +
+  stat_lineribbon(aes(y = .epred, group = record_id))
+
+```
+
+
+---
+
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+    sample_n_of(50,record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL) %>% 
+  ggplot(aes(x = day01)) +
+  stat_lineribbon(aes(y = .epred, group = record_id, color = record_id), .width = 0, show.legend = F, alpha = .4)
+
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+    sample_n_of(50,record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL) %>% 
+  ggplot(aes(x = day01)) +
+  stat_lineribbon(aes(y = .epred, group = record_id, color = record_id), .width = 0, show.legend = F, alpha = .4) + 
+  stat_lineribbon(data = fixed.slope, aes(x = day01, y = .epred), show.legend = F, alpha = .5)
+```
+
+
+---
+
+What about interactions? 
+
+```{r}
+melsm.1i <-
+  brm(family = gaussian,
+      N_A.std ~ 1 + day01+ P_A.std*steps.pm + (1 + day01 | record_id),
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(exponential(1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.1i")
+```
+
+---
+
+```{r}
+summary(melsm.1i)
+```
+
+
+---
+
+```{r}
+library(psych)
+describe(melsm$steps.pm)
+```
+
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm)
+```
+5 * 3 = 15 rows
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm) %>% 
+  add_epred_draws(melsm.1i, re_formula = NA) 
+```
+12 * 8000 samples = 120,000 rows
+
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm) %>% 
+  add_epred_draws(melsm.1i, re_formula = NA) %>% 
+  ggplot( aes(x = steps.pm, y = N_A.std)) +
+  stat_lineribbon(aes(y = .epred, group = P_A.std, color = P_A.std),  .width = 0, show.legend = F) 
+```
+
+
+
+## MLM assumptions
+
+
+Sigma, which captures the variation in NA not accounted for by the intercepts, time predictors, and the correlation. An assumption is that sigma does NOT vary across persons, occasions, or other variables. 
+
+Posterior predictive interval is the same (and fitted) even though it seem inappropriate from person to person
+
+
+
+```{r}
+#| code-fold: true
+newd <-
+  melsm %>% 
+  filter(record_id %in% c(30, 115)) %>% 
+  select(record_id, N_A.std, day01)
+
+fits <- newd %>%
+  add_epred_draws(melsm.1)
+
+preds <- newd %>%
+  add_predicted_draws(melsm.1)
+
+fits %>% 
+ggplot(aes(x = day01, y = N_A.std)) +
+  stat_lineribbon(aes(y = .epred),.width = c(.95), alpha = 1/4, color ="grey") +
+  stat_lineribbon(data = preds, aes(y = .prediction),.width = c(.90), alpha = 1/4, color ="blue") +
+  geom_point(data = newd) +
+  facet_wrap(~record_id)
+```
+
+
+
+
+---
+
+
+$$NA_{ij} \sim \operatorname{Normal}(\mu_{ij}, \sigma_{i})$$
+
+$$\mu_{ij}  = \beta_0 + \beta_1 time_{ij} + u_{0i} + u_{1i} time_{ij}$$
+$$\log(\sigma_i )  = \eta_0 + u_{2i}$$
+
+$$\begin{bmatrix} u_{0i} \\ u_{1i} \\ {u_{2i}} \end{bmatrix}  \sim \operatorname{MVNormal}\begin{pmatrix} \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}, \mathbf S \mathbf R \mathbf S \end{pmatrix}$$
+$$\mathbf S  = \begin{bmatrix} \sigma_0 & 0 & 0 \\ 0 & \sigma_1 & 0 \\ 0 & 0 & \sigma_2 \end{bmatrix}$$
+$$\mathbf R = \begin{bmatrix} 1 & \rho_{12} & \rho_{13} \\ \rho_{21} & 1 & \rho_{23} \\ \rho_{31} & \rho_{32} & 1 \end{bmatrix}$$
+$$\beta_0  \sim \operatorname{Normal}(0, 0.2)$$
+$$\beta_1 \text{and } \eta_0  \sim \operatorname{Normal}(0, 1) $$
+$$ \sigma_0,\dots, \sigma_2 \sim \operatorname{Exponential}(1) $$
+$$\mathbf R  \sim \operatorname{LKJ}(2)$$
+
+
+---
+
+note: 1) brms default is to use log-link when modeling sigma
+2) |i| syntax within the parentheses allow for correlated random effects. Without this, the random intercept and slope would not be correlated with the random sigma term, effectively setting the correlation equal to zero 
+
+```{r}
+#| code-fold: true
+melsm.2 <-
+  brm(family = gaussian,
+      bf(N_A.std ~ 1 + day01 + (1 + day01 |i| record_id),
+         sigma ~ 1 + (1 |i| record_id)),
+                prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(normal(0, 1), class = Intercept, dpar = sigma),
+                prior(exponential(1), class = sd, dpar = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.2")
+```
+
+---
+ 
+
+
+```{r}
+#| code-fold: true
+summary(melsm.2)
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+melsm.2 %>% 
+  spread_draws(b_sigma_Intercept) %>% 
+  exp() %>% 
+  median_qi()
+```
+
+```{r}
+#| code-fold: true
+melsm.2 %>% 
+  spread_draws(b_day01) %>% 
+  median_qi()
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+melsm.2 %>% 
+spread_draws(b_sigma_Intercept,r_record_id__sigma[ID, term]) 
+```
+
+8000 samples * 193 participants = 1544000 
+
+---
+
+
+```{r}
+#| code-fold: true
+melsm.2 %>% 
+spread_draws(b_sigma_Intercept,r_record_id__sigma[ID, term]) %>% 
+  mutate(b_sigma_Intercept = exp(b_sigma_Intercept)) %>% 
+  mutate(r_record_id__sigma = exp(r_record_id__sigma)) %>% 
+   median_qi(estimate = b_sigma_Intercept + r_record_id__sigma) %>% 
+  ggplot(aes(x = reorder(ID, estimate), y = estimate, ymin = .lower, ymax = .upper)) +
+   geom_pointinterval(point_colour = "black", interval_color = "grey", point_alpha = .25) + scale_x_discrete("Participants ranked by posterior SD", breaks = NULL) + ylab("sigma estimate") + theme_light()
+```
+
+
+---
+
+
+```{r}
+
+fits2 <- newd %>%
+  add_epred_draws(melsm.2)
+
+preds2 <- newd %>%
+  add_predicted_draws(melsm.2)
+
+fits2 %>% 
+ggplot(aes(x = day01, y = N_A.std)) +
+  stat_lineribbon(aes(y = .epred),.width = c(.95), alpha = 1/4, color ="grey") +
+  stat_lineribbon(data = preds2, aes(y = .prediction),.width = c(.90), alpha = 1/4, color ="blue") +
+  geom_point(data = newd) +
+  facet_wrap(~record_id)
+```
+
+
+
+
+
+## time as a predictor of sigma
+
+```{r}
+#| code-fold: true
+melsm.3 <-
+  brm(family = gaussian,
+      bf(N_A.std ~ 1 + day01 + (1 + day01 |i| record_id),
+         sigma ~ 1 + day01 + (1 + day01 |i| record_id)),
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(normal(0, 1), class = Intercept, dpar = sigma),
+                prior(normal(0, 1), class = b, dpar = sigma),
+                prior(exponential(1), class = sd, dpar = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      backend = "cmdstanr",
+      data = melsm,
+      file = "melsm.3")
+```
+
+
+---
+
+
+
+
+```{r}
+#| code-fold: true
+summary(melsm.3)
+```
+
+
+
+---
+
+```{r}
+#| code-fold: true
+melsm.3 %>% 
+  gather_draws(b_sigma_Intercept, b_sigma_day01) %>% 
+  median_qi()
+```
+
+---
+
+```{r}
+#| code-fold: true
+melsm.3 %>% 
+  spread_draws(b_sigma_Intercept) %>% 
+  mutate(sigma_day0 = exp(b_sigma_Intercept)) %>% 
+  select(sigma_day0) %>% 
+  median_qi()
+```
+
+```{r}
+#| code-fold: true
+melsm.3 %>% 
+  spread_draws(b_sigma_Intercept, b_sigma_day01) %>% 
+  mutate(sigma_day1 = exp(b_sigma_Intercept + b_sigma_day01)) %>% 
+  select(sigma_day1) %>% 
+  median_qi()
+```
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), .model = melsm) %>% 
+  add_epred_draws(melsm.3, re_formula = NA, dpar = T) %>% 
+  ungroup() %>% 
+  select(day01, .epred, sigma)
+```
+20 * 8000 = 160000
+
+---
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), .model = melsm) %>% 
+  add_epred_draws(melsm.3, re_formula = NA, dpar = T) %>% 
+  ungroup() %>% 
+  select(day01, .epred, sigma) %>% 
+  ggplot()+
+  aes(x = day01, y = sigma) +
+  stat_lineribbon(.width = 0.95, alpha = .5)
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+  add_linpred_draws(melsm.3, re_formula = NA, dpar = T) %>% 
+  ggplot()+
+  aes(x = day01, y = sigma) +
+  stat_lineribbon(.width = 0.95, alpha = .5)
+```
+
+
+---
+
+Lets look at random effects. Remember we fit a random effect for both the intercept and the slope (time)
+```{r}
+#| code-fold: true
+melsm.3 %>% 
+spread_draws(r_record_id__sigma[ID, term]) %>% 
+  mutate(r_record_id__sigma = exp(r_record_id__sigma)) 
+```
+193 * 8000 *2
+
+---
+
+```{r}
+#| code-fold: true
+melsm.3 %>% 
+spread_draws(r_record_id__sigma[ID, term]) %>% 
+  mutate(r_record_id__sigma = exp(r_record_id__sigma)) %>% 
+   median_qi(estimate = r_record_id__sigma) 
+```
+
+---
+
+
+```{r}
+melsm.3 %>% 
+spread_draws(r_record_id__sigma[ID, term]) %>% 
+  mutate(r_record_id__sigma = exp(r_record_id__sigma)) %>% 
+   median_qi(estimate = r_record_id__sigma) %>% 
+  filter(term == "Intercept") %>% 
+  ggplot(aes(x = reorder(ID, estimate), y = estimate, ymin = .lower, ymax = .upper)) +
+   geom_pointinterval(point_colour = "black", interval_color = "grey", point_alpha = .25) + scale_x_discrete("Participants ranked by posterior SD", breaks = NULL) + ylab("sigma estimate") + theme_light()
+```
+
+
+---
+
+
+```{r}
+#| code-fold: true
+melsm.3 %>% 
+spread_draws(r_record_id__sigma[ID, term]) %>% 
+  mutate(r_record_id__sigma = exp(r_record_id__sigma)) %>% 
+   median_qi(estimate = r_record_id__sigma) %>% 
+  filter(term == "day01") %>% 
+  ggplot(aes(x = reorder(ID, estimate), y = estimate, ymin = .lower, ymax = .upper)) +
+   geom_pointinterval(point_colour = "black", interval_color = "grey", point_alpha = .25) + scale_x_discrete("Participants ranked by posterior SD", breaks = NULL) + ylab("sigma estimate") + theme_light()
+```
+
+
+---
+
+When on the log scale you can more easily see some people are less than average where some are more than average in terms of sigma
+```{r}
+#| code-fold: true
+melsm.3 %>% 
+spread_draws(r_record_id__sigma[ID, term]) %>% 
+   median_qi(estimate = r_record_id__sigma) %>% 
+  filter(term == "day01") %>% 
+  ggplot(aes(x = reorder(ID, estimate), y = estimate, ymin = .lower, ymax = .upper)) +
+   geom_pointinterval(point_colour = "black", interval_color = "grey", point_alpha = .25) + scale_x_discrete("Participants ranked by posterior SD", breaks = NULL) + ylab("sigma estimate") + theme_light()
+```
+
+
+---
+
+
+```{r}
+#| code-fold: true
+fits3 <- newd %>%
+  add_epred_draws(melsm.3)
+
+preds3 <- newd %>%
+  add_predicted_draws(melsm.3)
+
+fits3 %>% 
+ggplot(aes(x = day01, y = N_A.std)) +
+  stat_lineribbon(aes(y = .epred),.width = c(.95), alpha = 1/4, color ="grey") +
+  stat_lineribbon(data = preds3, aes(y = .prediction),.width = c(.90), alpha = 1/4, color ="blue") +
+  geom_point(data = newd) +
+  facet_wrap(~record_id)
+```
+
+
+
+---
+
+```{r, echo = FALSE}
+
+preds3 %>% 
+ggplot(aes(x = .prediction)) +
+  stat_halfeye(aes(x = .prediction)) +
+  facet_wrap(~record_id) + xlim(-4,4)
+
+```
+
+
+
+
+## Multivariate MELSM
+
+```{r}
+#| code-fold: true
+melsm.4 <-
+  brm(family = gaussian,
+      bf(mvbind(N_A.std, P_A.std) ~ 1 + day01 + (1 + day01 |i| record_id),
+         sigma ~ 1 + day01 + (1 + day01 |i| record_id)) + set_rescor(rescor = FALSE),
+      prior = c(prior(normal(0, 0.2), class = Intercept, resp = NAstd),
+                prior(normal(0, 1), class = b, resp = NAstd),
+                prior(exponential(1), class = sd, resp = NAstd),
+                prior(normal(0, 1), class = Intercept, dpar = sigma, resp = NAstd),
+                prior(normal(0, 1), class = b, dpar = sigma, resp = NAstd),
+                prior(exponential(1), class = sd, dpar = sigma, resp = NAstd),
+                prior(normal(0, 0.2), class = Intercept, resp = PAstd),
+                prior(normal(0, 1), class = b, resp = PAstd),
+                prior(exponential(1), class = sd, resp = PAstd),
+                prior(normal(0, 1), class = Intercept, dpar = sigma, resp = PAstd),
+                prior(normal(0, 1), class = b, dpar = sigma, resp = PAstd),
+                prior(exponential(1), class = sd, dpar = sigma, resp = PAstd),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.4")
+```
+
+---
+
+
+
+```{r}
+#| code-fold: true
+summary(melsm.4)
+```
+
+
+
+---
+
+1595 parameters estimated
+```{r}
+get_variables(melsm.4)
+```
+
+---
+
+```{r}
+#| code-fold: true
+levels <- c("beta[0]^'NA'", "beta[1]^'NA'", "sigma[0]^'NA'", "sigma[1]^'NA'",
+            "beta[0]^'PA'", "beta[1]^'PA'", "sigma[0]^'PA'", "sigma[1]^'PA'")
+
+# two different options for ordering the parameters
+# levels <- c("beta[0]^'NA'", "beta[1]^'NA'", "beta[0]^'PA'", "beta[1]^'PA'", "eta[0]^'NA'", "eta[1]^'NA'", "eta[0]^'PA'", "eta[1]^'PA'")
+# levels <- c("beta[0]^'NA'", "beta[0]^'PA'", "beta[1]^'NA'", "beta[1]^'PA'","eta[0]^'NA'", "eta[0]^'PA'", "eta[1]^'NA'", "eta[1]^'PA'")
+
+rho <-
+  posterior_summary(melsm.4) %>% 
+  data.frame() %>% 
+  rownames_to_column("param") %>% 
+  filter(str_detect(param, "cor_")) %>% 
+  mutate(param = str_remove(param, "cor_record_id__")) %>% 
+  separate(param, into = c("left", "right"), sep = "__") %>% 
+  mutate(
+    left = case_when(
+      left == "NAstd_Intercept"       ~ "beta[0]^'NA'",
+      left == "NAstd_day01"           ~ "beta[1]^'NA'",
+      left == "sigma_NAstd_Intercept" ~ "sigma[0]^'NA'",
+      left == "sigma_NAstd_day01"     ~ "sigma[1]^'NA'",
+      left == "PAstd_Intercept"       ~ "beta[0]^'PA'",
+      left == "PAstd_day01"           ~ "beta[1]^'PA'",
+      left == "sigma_PAstd_Intercept" ~ "sigma[0]^'PA'",
+      left == "sigma_PAstd_day01"     ~ "sigma[1]^'PA'"
+      ),
+    right = case_when(
+      right == "NAstd_Intercept"       ~ "beta[0]^'NA'",
+      right == "NAstd_day01"           ~ "beta[1]^'NA'",
+      right == "sigma_NAstd_Intercept" ~ "sigma[0]^'NA'",
+      right == "sigma_NAstd_day01"     ~ "sigma[1]^'NA'",
+      right == "PAstd_Intercept"       ~ "beta[0]^'PA'",
+      right == "PAstd_day01"           ~ "beta[1]^'PA'",
+      right == "sigma_PAstd_Intercept" ~ "sigma[0]^'PA'",
+      right == "sigma_PAstd_day01"     ~ "sigma[1]^'PA'"
+    )
+  ) %>% 
+  mutate(label = formatC(Estimate, digits = 2, format = "f") %>% str_replace(., "0.", ".")) %>% 
+  mutate(left  = factor(left, levels = levels),
+         right = factor(right, levels = levels)) %>% 
+  mutate(right = fct_rev(right))
+
+rho %>% 
+  full_join(rename(rho, right = left, left = right),
+            by = c("left", "right", "Estimate", "Est.Error", "Q2.5", "Q97.5", "label")) %>%
+  ggplot(aes(x = left, y = right)) +
+  geom_tile(aes(fill = Estimate)) +
+  geom_hline(yintercept = 4.5, color = "#100F14") +
+  geom_vline(xintercept = 4.5, color = "#100F14") +
+  geom_text(aes(label = label),
+            family = "Courier", size = 3) +
+  scale_fill_gradient2(expression(rho),
+                       low = "#59708b", mid = "#FCF9F0", high = "#A65141", midpoint = 0,
+                       labels = c(-1, "", 0, "", 1), limits = c(-1, 1)) +
+  scale_x_discrete(NULL, expand = c(0, 0), labels = ggplot2:::parse_safe, position = "top") +
+  scale_y_discrete(NULL, expand = c(0, 0), labels = ggplot2:::parse_safe) +
+  theme(axis.text = element_text(size = 12),
+        axis.ticks = element_blank(),
+        legend.text = element_text(hjust = 1))
+
+```
+
+
+
+## Missing data
+
+How to solve? 
+1. Listwise
+2. Estimation algorithm eg FIML
+3. Multiple Imputation (before you run the model)
+4. Bayesian (while you run the model)
+
+
+## brms and multiple imputation
+
+Each missing value is not imputed N times leading to a total of N fully imputed data sets. The model is fitted to each data sets separately and results are pooled across models.
+
+```{r}
+#| code-fold: true
+
+library(mice)
+#multivariate imputation by chained equations
+```
+
+---
+
+National Health and Nutrition Examination Survey
+```{r}
+
+data("nhanes")
+nhanes
+```
+
+---
+
+```{r}
+nhanes.imp <- mice(nhanes, m = 10)
+```
+
+---
+
+```{r}
+nhanes.imp
+```
+mids = multiple impudated data set
+ppm = predictive mean matching.  Uses a datapoint from the original, nonmissing data which has a predicted value close to the predicted value of the missing sample
+
+---
+
+One you have the 10 datasets you run the model seperate in each of them. 
+
+Then you need to pool your estimates. 
+
+Common issue is how to pool?
+Some options: 
+mice::pool() combines them Rubin's rules.
+broom.mixed (another other packages) automatically incorporates the mids and does it for you
+
+
+
+## brm_multiple
+
+works well with mice objects, but brm_multiple also takes any list of dataframes. Helpful if you use amelia or mi. 
+```{r}
+imp.1 <- brm_multiple(family = gaussian,
+                      bmi ~ age*chl, 
+                      data = nhanes.imp,
+                      cores = 4, 
+                      backend = "cmdstanr",
+                      file = "imp.1")
+```
+
+
+---
+
+Pooling across models is trivial in a Bayesian framework but not in frequentist. 
+40 Chains! 40k samples! (10 datasets + default 4 chains and 1k samples)
+```{r}
+summary(imp.1)
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+plot(imp.1)
+```
+
+
+## Revisting bayesian updating 
+
+Remember the posterior can be thought of as a new prior for your next data aquisition. You could do this one datapoint at a time (remember globe tossing model in SR?), or a dataset at the time.  
+
+
+## Bayesian imputation within brms
+
+1) Which variables contain missingness? 2) Which variables should predict missingness 3) what imputed variables are used as predictors
+
+Taking care of this in brms ends up creating a multivariate model
+```{r}
+bform <- bf(bmi | mi() ~ age * mi(chl)) +
+  bf(chl | mi() ~ age) + set_rescor(FALSE)
+imp.2 <- brm(bform, data = nhanes, backend = "cmdstanr", file = "imp.2")
+```
+
+
+---
+
+```{r}
+summary(imp.2)
+```
+
+
+## pro v con
+
+Pros: Can use multilevel structure and complex non-linear relationships for the imputation of missing values, which is not achieved as easily in standard multiple imputation software
+
+Cons: cannot impute discrete values within brms/Stan
+
+---
+
+```{r}
+posterior_summary(imp.2)
+```
+
+---
+
+```{r}
+#| code-fold: true
+imp.2 %>% 
+  spread_draws(Ymi_chl[ID]) 
+```
+
+4000* * 10 (missing for chl) = 40,000
+
+---
+
+
+```{r}
+#| code-fold: true
+imp.2 %>% 
+  spread_draws(Ymi_chl[ID]) %>% 
+  ggplot(aes(x = Ymi_chl, 
+             y = reorder(ID, Ymi_chl))) +
+  stat_slab(fill = "black", alpha = 3/4, height = 1.6, slab_color = "black", slab_size = 1/4) +
+  labs(x = "Chl imputed values", y = "IDs") +
+  theme_ggdist()
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+imp.2 %>% 
+  spread_draws(Ymi_bmi[ID]) %>% 
+  ggplot(aes(x = Ymi_bmi, 
+             y = reorder(ID, Ymi_bmi))) +
+  stat_slab(fill = "black", alpha = 3/4, height = 1.6, slab_color = "black", slab_size = 1/4) +
+  labs(x = "BMI imputed values", y = "IDs") +
+  theme_ggdist()
+```
+
+
+

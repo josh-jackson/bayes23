@@ -403,7 +403,7 @@ Where does $U_{0i}$ come from? If we calculated each by hand, through taking the
 
 ## Complete pooling
 
-Ignores any dependency. Doesn't learn from others, assumes everyone is the same. Underfits the model. 
+Ignores any dependency. Doesn't learn from others, assumes everyone is the same. Underfits the model.
 
 ```{r}
 #| code-fold: true
@@ -744,18 +744,15 @@ layout <- c(
 
 ------------------------------------------------------------------------
 
-If we are estimating a mean, we can divide that up into two priors: 
+If we are estimating a mean, we can divide that up into two priors:
 
-1. A distribution of our best guess at the mean e.g., N(3,.5) means I am very confident in my guess vs N(3,50). This is all about the mean.
+1.  A distribution of our best guess at the mean e.g., N(3,.5) means I am very confident in my guess vs N(3,50). This is all about the mean.
 
-2. A distribution that represents the spread around that mean e.g., N(0,1) suggests small spread vs (0,100) suggest people may differ a lot (Even though the distribution has the same mean). 
+2.  A distribution that represents the spread around that mean e.g., N(0,1) suggests small spread vs (0,100) suggest people may differ a lot (Even though the distribution has the same mean).
 
 Fixed effect describes #1 whereas random effects describe #2
 
-
-
-
--------
+------------------------------------------------------------------------
 
 ```{r}
 library(brms)
@@ -813,9 +810,9 @@ loo_compare(mlm.1, mlm.2, criterion = "loo")
 
 ------------------------------------------------------------------------
 
-- Notice how the intercept is the same in each of these models. Even the CIs. Conceptually they are different though. The intercept is directly modeled in the standard regression. In the MLM it is better thought of as the map of the distribution of random effects.
+-   Notice how the intercept is the same in each of these models. Even the CIs. Conceptually they are different though. The intercept is directly modeled in the standard regression. In the MLM it is better thought of as the map of the distribution of random effects.
 
-- The population is larger than what we have. This is true for almost anything we do. We sample paradigms, we sample people, we usually never have a full population under our study. Don't we want to model that variation?
+-   The population is larger than what we have. This is true for almost anything we do. We sample paradigms, we sample people, we usually never have a full population under our study. Don't we want to model that variation?
 
 ------------------------------------------------------------------------
 
@@ -1145,12 +1142,11 @@ posterior_samples(mlm.id) %>%
   summarise(mean=mean(value), sd=sd(value))
 ```
 
-
 ## Partial pooling/Shrinkage
 
-$\sigma_0$ (our random effect) can turn on/off/adjust shrinkage. 
+$\sigma_0$ (our random effect) can turn on/off/adjust shrinkage.
 
-Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling. 
+Setting SD to zero says everyone is the same. Infinite SD says all groups are unrelated (no pooling). In the middle gives you partial pooling.
 
 We use our prior of $\sigma_0$ plus our data to get an estimate of $\beta_{0[j]}$. This is how we accurately partial pool.
 
@@ -1165,7 +1161,6 @@ $$\beta_{0[j]} \sim \operatorname{Normal}({\bar \mu},  \sigma_0)$$ $${\bar \mu} 
 $$\sigma_0 \sim {\operatorname{Normal}(0, 1.5)}$$
 
 $$\sigma \sim {\operatorname{Exponential}(1)}$$
-
 
 ## working with mlm posterior
 
@@ -1348,15 +1343,13 @@ ggplot(aes(x = ID)) +
 
 ```
 
+------------------------------------------------------------------------
 
-----------
+MLM will automatically create the best fitting model -- balancing between over and under fitting. It identifies the value of sigma of the random effect that is ideal.
 
-MLM will automatically create the best fitting model -- balancing between over and under fitting. It identifies the value of sigma of the random effect that is ideal. 
+This "knob" can be manually turned to different values and we can look at the fit of the model via loo or wais. But we dont need to!
 
-This "knob" can be manually turned to different values and we can look at the fit of the model via loo or wais. But we dont need to! 
-
-
------
+------------------------------------------------------------------------
 
 ```{r}
 mlm.id <- add_criterion(mlm.id, "loo")
@@ -1364,8 +1357,6 @@ mlm.1p <- add_criterion(mlm.1p, "loo")
 mlm.1 <- add_criterion(mlm.1, "loo")
 loo_compare(mlm.id, mlm.1p, mlm.1)
 ```
-
-
 
 ## level 1 predictors
 
@@ -1414,29 +1405,25 @@ summary(mlm.3)
 posterior_summary(mlm.3)
 ```
 
-## whats in our posterior? 
+## whats in our posterior?
 
 ```{r}
 get_variables(mlm.3)
 ```
 
-
-
-
 ## Introducing random slopes
 
-- MLMs "learn" from other units as we saw with random effects
+-   MLMs "learn" from other units as we saw with random effects
 
-- MLMs can also "learn" about one parameter from another parameter
+-   MLMs can also "learn" about one parameter from another parameter
 
-- We do this through correlated features or parameters. We create this correlated features through introducing random slopes, which pools information across groups
+-   We do this through correlated features or parameters. We create this correlated features through introducing random slopes, which pools information across groups
 
-- This is another advantage of "keep it maximal." Better estimates of intercepts rather than just fitting an intercept only model
+-   This is another advantage of "keep it maximal." Better estimates of intercepts rather than just fitting an intercept only model
 
 ## Random slopes
 
-Level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ 
-Level 2: $${\beta}_{0j} = \gamma_{00} + \gamma_{01}G_{j} +   U_{0j}$$\
+Level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ Level 2: $${\beta}_{0j} = \gamma_{00} + \gamma_{01}G_{j} +   U_{0j}$$\
 $${\beta}_{1j} = \gamma_{10} + \gamma_{11}G_{j} + U_{1j}$$
 
 $$\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix}
@@ -1445,14 +1432,13 @@ $$\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix}
   0,  \tau_{01} & \tau_{10}^{2}
 \end{pmatrix}$$
 
-
 ## correlated features
 
-- Modeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution
+-   Modeling the joint population of intercepts and slopes, which means by modeling their covariance. We will use joint multivariate Gaussian distribution b/c it is max entropy distribution
 
-- Rather than a 1 dimension prior we will be putting on a two dimension prior. 
+-   Rather than a 1 dimension prior we will be putting on a two dimension prior.
 
-- Can scale into > 2d depending on how many random effects you have
+-   Can scale into \> 2d depending on how many random effects you have
 
 ## Random slopes
 
@@ -1484,7 +1470,6 @@ and R is the correlation matrix R = $\begin{bmatrix} 1 & \rho \\ \rho & 1 \end{b
 
 With more random effects, this matrix expands.
 
-
 ## lkj 1 parameter correlation prior
 
 ```{r}
@@ -1510,10 +1495,9 @@ expand.grid(
 
 ```
 
-
-
 ## Multivariate distributions
-r = 0. Knowing about 1 parameter doesn't tell you anything about the other. 
+
+r = 0. Knowing about 1 parameter doesn't tell you anything about the other.
 
 ```{r, echo = FALSE}
 
@@ -1539,16 +1523,10 @@ cor %>%
 detach(package:MASS, unload=TRUE)
 ```
 
+------------------------------------------------------------------------
 
+r = .5
 
-
-
-
-
-
-----------
-
-r = .5 
 ```{r, echo = FALSE}
 
 samples = 1000
@@ -1573,13 +1551,10 @@ cor %>%
 detach(package:MASS, unload=TRUE)
 ```
 
-
-
-
----------
-
+------------------------------------------------------------------------
 
 r = .8
+
 ```{r, echo = FALSE}
 
 samples = 1000
@@ -1604,10 +1579,6 @@ cor %>%
 detach(package:MASS, unload=TRUE)
 ```
 
-
-
-
-
 ------------------------------------------------------------------------
 
 ```{r}
@@ -1618,16 +1589,13 @@ get_prior(family = gaussian,
 
 ------------------------------------------------------------------------
 
-Information needed to learn about parameters can be ranked: 
+Information needed to learn about parameters can be ranked:
 
-1. Means are easy
-2. SDs are medium
-3. Correlations are hard
+1.  Means are easy
+2.  SDs are medium
+3.  Correlations are hard
 
-
-
-----------
-
+------------------------------------------------------------------------
 
 ```{r}
 
@@ -1762,16 +1730,13 @@ mlm.4 %>%
   geom_pointinterval() + xlab("est") + ylab("ID")
 ```
 
-
-
--------
+------------------------------------------------------------------------
 
 ```{r}
 mlm.3 <- add_criterion(mlm.1, "loo")
 mlm.4 <- add_criterion(mlm.2, "loo")
 loo_compare(mlm.1, mlm.2, criterion = "loo")
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -1986,13 +1951,11 @@ One of the biggest problems with psych data is that it is unrepresentative. (Do 
 
 ## Mr.P
 
-Mr = Multi-level regression aka MLM
-P = poststratification, with post for posterior and stratification for stratify. 
+Mr = Multi-level regression aka MLM P = poststratification, with post for posterior and stratification for stratify.
 
 You take your posterior and make predictions based on different strata
 
-Weighted average of predicted values, where weights are the population shares of each category 
-
+Weighted average of predicted values, where weights are the population shares of each category
 
 ## Weighting vs postratifying
 
@@ -2006,15 +1969,13 @@ Why is this preferred? A few reasons, but mainly one can make generalization to 
 
 What do we need? A reliable data source (such as a census) that gives us the population weights. Data can be re-weighted based on many different categories, not just one: for example, we could post-stratify based on age, education, state of residence, etc.
 
-Don’t need to even attempt a random sample. All we need is a sample that is large and diverse enough + population data (e.g., from the census).
+Don't need to even attempt a random sample. All we need is a sample that is large and diverse enough + population data (e.g., from the census).
 
 ------------------------------------------------------------------------
 
 Estimating the proportion of heterosexual women who kept their maiden name after marriage.
 
 https://www.monicaalexander.com/posts/2019-08-07-mrp/ https://bookdown.org/content/4857/models-with-memory.html#summary-bonus-post-stratification-in-an-example
-
-
 
 ------------------------------------------------------------------------
 
@@ -2060,8 +2021,7 @@ summary(mlm.mrp)
 get_variables(mlm.mrp)
 ```
 
-
------
+------------------------------------------------------------------------
 
 ```{r}
 #| code-fold: true
@@ -2189,6 +2149,7 @@ p3 <-
 ------------------------------------------------------------------------
 
 Can also be done simply in {marginaleffects}
+
 ```{r, eval = FALSE}
 p <- predictions(  # Compute predictions,
     model = mod, # using the mlm model `mod`, 
@@ -2197,21 +2158,17 @@ p <- predictions(  # Compute predictions,
     wts = "proportion") #weight them
 ```
 
----------
+------------------------------------------------------------------------
 
 The general idea is that we can create predictions based on what we want to do with the predictions. Previously when we wanted to plot prediction lines we made predictions across the levels of X. When we want to see observational level variability we incorporate sigma in the predictions rather than focus on expected predictions. If we wanted the CI around a specific value rather than a band then we calculate predictions around that X value. All involve feeding in data.
 
 Here we are doing the same thing, feeding in values to predict but choosing them to be "weighted" however we want.
 
-
-
-
 ## Mr.P Not limited to surveys
 
 Example (using brms) with experimental data -- can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf
 
-More info: 
-https://marginaleffects.com/articles/mrp.html
+More info: https://marginaleffects.com/articles/mrp.html
 
 ## recent example
 

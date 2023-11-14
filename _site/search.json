@@ -2252,5 +2252,187 @@
     "title": "mlm",
     "section": "recent example",
     "text": "recent example\nhttps://osf.io/preprints/psyarxiv/fcm3n/"
+  },
+  {
+    "objectID": "adv-9.html#this-time",
+    "href": "adv-9.html#this-time",
+    "title": "advanced MLM",
+    "section": "This time",
+    "text": "This time\n\nSEM\nMediation\nDistributional models\nMissing data\nMeta analysis\nIRT/Cog models"
+  },
+  {
+    "objectID": "adv-9.html#multivariate-models",
+    "href": "adv-9.html#multivariate-models",
+    "title": "advanced MLM",
+    "section": "Multivariate models",
+    "text": "Multivariate models\nAny model that has more than 1 DV. While common within SEM frameworks, multivariate models are not often used within standard linear modeling (outside of MANOVA), mostly because of computational difficulties.\nWhen do you want to use multivariate models? All the time! Mediation, path models, distributional models, IRT models, parallel process MLMs, etc etc. What are advantages? Fewer models than doing separate, additional parameters, novel Qs."
+  },
+  {
+    "objectID": "adv-9.html#multivariate-mlms",
+    "href": "adv-9.html#multivariate-mlms",
+    "title": "advanced MLM",
+    "section": "multivariate MLMs",
+    "text": "multivariate MLMs\n\nlibrary(brms)\nlibrary(tidyverse)\nlibrary(tidybayes)\nlibrary(modelr)\n\ndata &lt;- \"https://raw.githubusercontent.com/josh-jackson/bayes/master/mlm.csv\"\nmlm &lt;- read.csv(data) \n\n\nmv.1 &lt;- \n  brm(family = gaussian,\n      mvbind(CON, DAN) ~ 1 + time + (1 + time | ID),\n      prior = c(prior(normal(0, 1.5), class = Intercept),\n                prior(normal(0, 1.5), class = b),\n                prior(lkj(2), class = cor),\n                prior(lkj(2), class = rescor)),\n      iter = 4000, warmup = 1000, chains = 4, cores = 4,\n      file = \"mv.1\",\n      backend = \"cmdstanr\",\n      data = mlm)"
+  },
+  {
+    "objectID": "adv-9.html#everything-is-sem",
+    "href": "adv-9.html#everything-is-sem",
+    "title": "advanced MLM",
+    "section": "Everything is SEM",
+    "text": "Everything is SEM\nStructural equation modeling (SEM) is the most popular way to handle multiple DVs. SEM is also known as covariance structure analysis, which really means unstandardized correlations. We can fit some simple SEM models using brms!\nAlso, SEM is really regression but a broader form. Also SEM can be equivalent to MLM in many respects."
+  },
+  {
+    "objectID": "adv-9.html#correlations-as-multivariate-models",
+    "href": "adv-9.html#correlations-as-multivariate-models",
+    "title": "advanced MLM",
+    "section": "correlations (as multivariate models)",
+    "text": "correlations (as multivariate models)\n\nmv.1c &lt;- \n  brm(family = gaussian,\n      bf(mvbind(CON, DAN) ~ 1) +\n      set_rescor(TRUE),\n      prior = c(prior(normal(0, 1.5), class = Intercept, resp = CON),\n                prior(normal(0, 1.5), class = Intercept, resp = DAN),\n                prior(normal(0, 1.5), class = sigma, resp = CON),\n                prior(normal(0, 1.5), class = sigma, resp = DAN),\n                prior(lkj(2), class = rescor)),\n      iter = 4000, warmup = 1000, chains = 4, cores = 4,\n      file = \"mv.1c\",\n      backend = \"cmdstanr\",\n      data = mlm)"
+  },
+  {
+    "objectID": "adv-9.html#simple-mediation",
+    "href": "adv-9.html#simple-mediation",
+    "title": "advanced MLM",
+    "section": "Simple mediation",
+    "text": "Simple mediation\n\\[M  = i_M + a X + e_M\\] \\[Y  = i_Y + c' X + b M + e_Y\\]\n\n\nCode\nlibrary(ggdag)\n\ndag_coords &lt;-\n  tibble(name = c(\"X\", \"M\", \"Y\"),\n         x    = c(1, 2, 3),\n         y    = c(2, 1, 2))\n\np1 &lt;-\n  dagify(M ~ X,\n       Y ~ X + M,\n       coords = dag_coords) %&gt;%\n  \n  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +\n  geom_dag_point(color = \"black\", alpha = 1/4, size = 10) +\n  geom_dag_text(color = \"black\") +\n  geom_dag_edges(edge_color = \"black\") +\n  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  theme_bw() +\n  theme(panel.grid = element_blank())+\n  ggtitle(\"direct + indirect effect\")\n\np2 &lt;-\n  dagify(Y ~ X,\n       coords = dag_coords) %&gt;%\n  \n  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +\n  geom_dag_point(color = \"black\", alpha = 1/4, size = 10) +\n  geom_dag_text(color = \"black\") +\n  geom_dag_edges(edge_color = \"black\") +\n  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  theme_bw() +\n  theme(panel.grid = element_blank())+\n  ggtitle(\"Total effect\")\n\nlibrary(patchwork)\n\np2 | p1"
+  },
+  {
+    "objectID": "adv-9.html#indirect-effects",
+    "href": "adv-9.html#indirect-effects",
+    "title": "advanced MLM",
+    "section": "Indirect effects",
+    "text": "Indirect effects\n\n\nCode\nlibrary(tidybayes)\nget_variables(med.1)\n\n\n [1] \"b_Y_Intercept\" \"b_M_Intercept\" \"b_Y_X\"         \"b_Y_M\"        \n [5] \"b_M_X\"         \"sigma_Y\"       \"sigma_M\"       \"lprior\"       \n [9] \"lp__\"          \"accept_stat__\" \"treedepth__\"   \"stepsize__\"   \n[13] \"divergent__\"   \"n_leapfrog__\"  \"energy__\"     \n\n\n\n\nCode\nmed.1 %&gt;% \n  spread_draws(b_Y_M, b_M_X,b_Y_X) \n\n\n# A tibble: 4,000 × 6\n   .chain .iteration .draw b_Y_M b_M_X b_Y_X\n    &lt;int&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;\n 1      1          1     1 0.723 0.321 0.361\n 2      1          2     2 0.823 0.195 0.254\n 3      1          3     3 0.697 0.314 0.312\n 4      1          4     4 0.787 0.133 0.242\n 5      1          5     5 0.675 0.362 0.281\n 6      1          6     6 0.847 0.247 0.223\n 7      1          7     7 0.304 0.359 0.186\n 8      1          8     8 0.695 0.318 0.248\n 9      1          9     9 0.706 0.165 0.420\n10      1         10    10 0.736 0.298 0.156\n# ℹ 3,990 more rows"
+  },
+  {
+    "objectID": "adv-9.html#calculate-indirect-effects",
+    "href": "adv-9.html#calculate-indirect-effects",
+    "title": "advanced MLM",
+    "section": "calculate indirect effects",
+    "text": "calculate indirect effects\n\n\nCode\nmed.1 %&gt;% \n  spread_draws(b_Y_M, b_M_X, b_Y_X) %&gt;% \n  mutate(indirect = b_Y_M * b_M_X) %&gt;% \n  mutate(direct = b_Y_X) %&gt;% \n  mutate(total = indirect + direct ) %&gt;% \n  median_qi(indirect, direct,total)\n\n\n# A tibble: 1 × 12\n  indirect indirect.lower indirect.upper direct direct.lower direct.upper total\n     &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;  &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt; &lt;dbl&gt;\n1    0.184         0.0256          0.371  0.273       0.0804        0.467 0.460\n# ℹ 5 more variables: total.lower &lt;dbl&gt;, total.upper &lt;dbl&gt;, .width &lt;dbl&gt;,\n#   .point &lt;chr&gt;, .interval &lt;chr&gt;"
+  },
+  {
+    "objectID": "adv-9.html#priors-for-mediation",
+    "href": "adv-9.html#priors-for-mediation",
+    "title": "advanced MLM",
+    "section": "priors for mediation",
+    "text": "priors for mediation\n7 parameters to estimate\n\n\nCode\nmed.2 &lt;-\n  brm(family = gaussian,\n      y_model + m_model + set_rescor(FALSE),\n       prior = c(prior(normal(0, 1), class = Intercept, resp = M),\n                 prior(normal(0, 1), class = Intercept, resp = Y),\n                prior(normal(0, 2), class = b, coef = X, resp = M),\n                prior(normal(0, 2), class = b, coef = M, resp = Y),\n                prior(normal(0, 2), class = b, coef = X, resp = Y),\n                prior(exponential(1), class = sigma, resp = M),\n                prior(exponential(1), class = sigma, resp = Y)),\n      data = Data,\n      cores = 4,\n      backend = \"cmdstanr\",\n      file = \"med.2\")"
+  },
+  {
+    "objectID": "adv-9.html#multiple-predictors-mediators-and-outcomes",
+    "href": "adv-9.html#multiple-predictors-mediators-and-outcomes",
+    "title": "advanced MLM",
+    "section": "Multiple Predictors, mediators and outcomes",
+    "text": "Multiple Predictors, mediators and outcomes\n\n\nCode\nn &lt;- 1e3\nset.seed(4.5)\nmult.X &lt;-\n  tibble(X1 = rnorm(n, mean = 0, sd = 1),\n         X2 = rnorm(n, mean = 0, sd = 1),\n         X3 = rnorm(n, mean = 0, sd = 1)) %&gt;% \n  mutate(med = rnorm(n, mean = 0 + X1 * -1 + X2 * 0 + X3 * 1, sd = 1),\n         dv  = rnorm(n, mean = 0 + X1 * 0 + X2 * .5 + X3 * 1 + M * .5, sd = 1))\n\n\n\n\nCode\nMultX_coords &lt;-\n  tibble(name = c(\"X1\",\"X2\",\"X3\",  \"M\", \"Y\"),\n         x    = c(1,1,1, 2, 3),\n         y    = c(2,1,3, 1, 2))\n\nX1 &lt;-\n  dagify(M ~ X1 + X2 + X3,\n       Y ~ X1 + X2 + X3 + M,\n       coords = MultX_coords) %&gt;%\n  \n  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +\n  geom_dag_point(color = \"black\", alpha = 1/4, size = 10) +\n  geom_dag_text(color = \"black\") +\n  geom_dag_edges(edge_color = \"black\") +\n  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  theme_bw() +\n  theme(panel.grid = element_blank())+\n  ggtitle(\"direct + indirect effect\")\nX1"
+  },
+  {
+    "objectID": "adv-9.html#multiple-outcomes",
+    "href": "adv-9.html#multiple-outcomes",
+    "title": "advanced MLM",
+    "section": "Multiple Outcomes",
+    "text": "Multiple Outcomes\n\n\nCode\nn &lt;- 1e3\n\nset.seed(4.5)\nYs &lt;-\n  tibble(X  = rnorm(n, mean = 0, sd = 1)) %&gt;% \n  mutate(M = rnorm(n, mean = 0 + X * .5, sd = 1)) %&gt;% \n  mutate(Y1 = rnorm(n, mean = 0 + X * -1 + M * 0,  sd = 1),\n         Y2 = rnorm(n, mean = 0 + X * 0  + M * .5, sd = 1),\n         Y3 = rnorm(n, mean = 0 + X * 1  + M * 1,  sd = 1))\n\n\n\n\nCode\nMultY_coords &lt;-\n  tibble(name = c(\"X\",\"M\",\"Y1\",  \"Y2\", \"Y3\"),\n         x    = c(1,2,3, 3, 3),\n         y    = c(2,2.25,1, 2, 3))\n\nY1 &lt;-\n  dagify(M ~ X,\n       Y1 ~ X +  M,\n       Y2 ~ X +  M,\n       Y3 ~ X +  M,\n       coords = MultY_coords) %&gt;%\n  \n  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +\n  geom_dag_point(color = \"black\", alpha = 1/4, size = 10) +\n  geom_dag_text(color = \"black\") +\n  geom_dag_edges(edge_color = \"black\") +\n  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  theme_bw() +\n  theme(panel.grid = element_blank())+\n  ggtitle(\"direct + indirect effect\")\nY1"
+  },
+  {
+    "objectID": "adv-9.html#multiple-mediators",
+    "href": "adv-9.html#multiple-mediators",
+    "title": "advanced MLM",
+    "section": "Multiple Mediators",
+    "text": "Multiple Mediators\nNote we can compute individual and total indirect effects\n\n\nCode\nparallel &lt;-\n  tibble(name = c(\"X\",\"M1\",\"M2\",  \"Y\"),\n         x    = c(1,2,2,3),\n         y    = c(2,2.25,1.75, 2))\n\n\n X2&lt;- dagify(M1 ~ X,\n       M2 ~ X ,\n       Y ~ X +  M1,\n       Y ~ X +  M2,\n       coords = parallel) %&gt;%\n  \n  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +\n  geom_dag_point(color = \"black\", alpha = 1/4, size = 10) +\n  geom_dag_text(color = \"black\") +\n  geom_dag_edges(edge_color = \"black\") +\n  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  theme_bw() +\n  theme(panel.grid = element_blank())+\n  ggtitle(\"parallel\")\n \n \n serial &lt;-\n  tibble(name = c(\"X\",\"M1\",\"M2\",  \"Y\"),\n         x    = c(1,1.5,2.5,3),\n         y    = c(2,2.25,2.25, 2))\n \n  X3&lt;- dagify(M1 ~ X,\n       M2 ~ M1 ,\n        M2 ~ X ,\n       Y ~ M1,\n       Y ~ X +  M2,\n       coords = serial)  %&gt;%\n  \n  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +\n  geom_dag_point(color = \"black\", alpha = 1/4, size = 10) +\n  geom_dag_text(color = \"black\") +\n  geom_dag_edges(edge_color = \"black\") +\n  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +\n  theme_bw() +\n  theme(panel.grid = element_blank())+\n  ggtitle(\"serial\")\n\nX2 | X3"
+  },
+  {
+    "objectID": "adv-9.html#parallel",
+    "href": "adv-9.html#parallel",
+    "title": "advanced MLM",
+    "section": "parallel",
+    "text": "parallel\n\n\nCode\nm1_model &lt;- bf(M1 ~ 1 + X)\nm2_model &lt;- bf(M2  ~ 1 + X)\ny_model  &lt;- bf(Y ~ 1 + X + M1 + M2)\n\npar &lt;-\n  brm(family = gaussian,\n      y_model + m1_model + m2_model + set_rescor(FALSE),\n      backend = \"cmdstanr\",\n      data = d)\n\n\n3 indirect effects can be calculated"
+  },
+  {
+    "objectID": "adv-9.html#serial",
+    "href": "adv-9.html#serial",
+    "title": "advanced MLM",
+    "section": "serial",
+    "text": "serial\n\n\nCode\nser &lt;-\n  brm(family = gaussian,\n        bf(M1 ~ 1 + X) + \n        bf(M2 ~ 1 + X + M1) + \n        bf(Y ~ 1 + X + M1 + M2) + \n        set_rescor(FALSE),\n      backend = \"cmdstanr\",\n        data=d)\n\n\n4 indirect effects can be calculated"
+  },
+  {
+    "objectID": "adv-9.html#moderated-mediation",
+    "href": "adv-9.html#moderated-mediation",
+    "title": "advanced MLM",
+    "section": "moderated mediation?",
+    "text": "moderated mediation?\n\n\nCode\ny_model &lt;- bf(Y ~ 1 + X + M)\nm_model &lt;- bf(M ~ 1 + X*moderator)\n\nmed.5 &lt;-\n  brm(family = gaussian,\n      y_model + m_model + set_rescor(FALSE),\n      data = Data,\n      cores = 4,\n      backend = \"cmdstanr\",\n      file = \"med.5\")"
+  },
+  {
+    "objectID": "adv-9.html#distributional-models",
+    "href": "adv-9.html#distributional-models",
+    "title": "advanced MLM",
+    "section": "Distributional Models",
+    "text": "Distributional Models\nIn basic regression with a Gaussian DV, we predict the mean, \\(\\mu\\) through some linear model. The second parameter of the normal distribution – the residual standard deviation \\(\\sigma\\) – is assumed to be constant across observations. We estimate it but do not try to predict it.\nThis extends beyond Gaussian DVs, as most response distributions have a “location” parameter and one or more “scale” or “shape” parameters. Instead of only predicting the location parameters, we can also predict the scale parameters\nWhen to use? You’ve seen this with Welch’s t-test, and if you’ve ever done SEM you can model variance differences through constraints or group models"
+  },
+  {
+    "objectID": "adv-9.html#standard-mlm-treatment",
+    "href": "adv-9.html#standard-mlm-treatment",
+    "title": "advanced MLM",
+    "section": "Standard MLM treatment",
+    "text": "Standard MLM treatment\n\n\nCode\nmelsm.1 &lt;-\n  brm(family = gaussian,\n      N_A.std ~ 1 + day01 + (1 + day01 | record_id),\n      prior = c(prior(normal(0, 0.2), class = Intercept),\n                prior(normal(0, 1), class = b),\n                prior(exponential(1), class = sd),\n                prior(exponential(1), class = sigma),\n                prior(lkj(2), class = cor)),\n      iter = 3000, warmup = 1000, chains = 4, cores = 4,\n      data = melsm,\n      backend = \"cmdstanr\",\n      file = \"melsm.1\")"
+  },
+  {
+    "objectID": "adv-9.html#mlm-assumptions",
+    "href": "adv-9.html#mlm-assumptions",
+    "title": "advanced MLM",
+    "section": "MLM assumptions",
+    "text": "MLM assumptions\nSigma, which captures the variation in NA not accounted for by the intercepts, time predictors, and the correlation. An assumption is that sigma does NOT vary across persons, occasions, or other variables.\nPosterior predictive interval is the same (and fitted) even though it seem inappropriate from person to person\n\n\nCode\nnewd &lt;-\n  melsm %&gt;% \n  filter(record_id %in% c(30, 115)) %&gt;% \n  select(record_id, N_A.std, day01)\n\nfits &lt;- newd %&gt;%\n  add_epred_draws(melsm.1)\n\npreds &lt;- newd %&gt;%\n  add_predicted_draws(melsm.1)\n\nfits %&gt;% \nggplot(aes(x = day01, y = N_A.std)) +\n  stat_lineribbon(aes(y = .epred),.width = c(.95), alpha = 1/4, color =\"grey\") +\n  stat_lineribbon(data = preds, aes(y = .prediction),.width = c(.90), alpha = 1/4, color =\"blue\") +\n  geom_point(data = newd) +\n  facet_wrap(~record_id)"
+  },
+  {
+    "objectID": "adv-9.html#time-as-a-predictor-of-sigma",
+    "href": "adv-9.html#time-as-a-predictor-of-sigma",
+    "title": "advanced MLM",
+    "section": "time as a predictor of sigma",
+    "text": "time as a predictor of sigma\n\n\nCode\nmelsm.3 &lt;-\n  brm(family = gaussian,\n      bf(N_A.std ~ 1 + day01 + (1 + day01 |i| record_id),\n         sigma ~ 1 + day01 + (1 + day01 |i| record_id)),\n      prior = c(prior(normal(0, 0.2), class = Intercept),\n                prior(normal(0, 1), class = b),\n                prior(exponential(1), class = sd),\n                prior(normal(0, 1), class = Intercept, dpar = sigma),\n                prior(normal(0, 1), class = b, dpar = sigma),\n                prior(exponential(1), class = sd, dpar = sigma),\n                prior(lkj(2), class = cor)),\n      iter = 3000, warmup = 1000, chains = 4, cores = 4,\n      backend = \"cmdstanr\",\n      data = melsm,\n      file = \"melsm.3\")"
+  },
+  {
+    "objectID": "adv-9.html#multivariate-melsm",
+    "href": "adv-9.html#multivariate-melsm",
+    "title": "advanced MLM",
+    "section": "Multivariate MELSM",
+    "text": "Multivariate MELSM\n\n\nCode\nmelsm.4 &lt;-\n  brm(family = gaussian,\n      bf(mvbind(N_A.std, P_A.std) ~ 1 + day01 + (1 + day01 |i| record_id),\n         sigma ~ 1 + day01 + (1 + day01 |i| record_id)) + set_rescor(rescor = FALSE),\n      prior = c(prior(normal(0, 0.2), class = Intercept, resp = NAstd),\n                prior(normal(0, 1), class = b, resp = NAstd),\n                prior(exponential(1), class = sd, resp = NAstd),\n                prior(normal(0, 1), class = Intercept, dpar = sigma, resp = NAstd),\n                prior(normal(0, 1), class = b, dpar = sigma, resp = NAstd),\n                prior(exponential(1), class = sd, dpar = sigma, resp = NAstd),\n                prior(normal(0, 0.2), class = Intercept, resp = PAstd),\n                prior(normal(0, 1), class = b, resp = PAstd),\n                prior(exponential(1), class = sd, resp = PAstd),\n                prior(normal(0, 1), class = Intercept, dpar = sigma, resp = PAstd),\n                prior(normal(0, 1), class = b, dpar = sigma, resp = PAstd),\n                prior(exponential(1), class = sd, dpar = sigma, resp = PAstd),\n                prior(lkj(2), class = cor)),\n      iter = 3000, warmup = 1000, chains = 4, cores = 4,\n      data = melsm,\n      backend = \"cmdstanr\",\n      file = \"melsm.4\")"
+  },
+  {
+    "objectID": "adv-9.html#missing-data",
+    "href": "adv-9.html#missing-data",
+    "title": "advanced MLM",
+    "section": "Missing data",
+    "text": "Missing data\nHow to solve? 1. Listwise 2. Estimation algorithm eg FIML 3. Multiple Imputation (before you run the model) 4. Bayesian (while you run the model)"
+  },
+  {
+    "objectID": "adv-9.html#brms-and-multiple-imputation",
+    "href": "adv-9.html#brms-and-multiple-imputation",
+    "title": "advanced MLM",
+    "section": "brms and multiple imputation",
+    "text": "brms and multiple imputation\nEach missing value is not imputed N times leading to a total of N fully imputed data sets. The model is fitted to each data sets separately and results are pooled across models.\n\n\nCode\nlibrary(mice)\n#multivariate imputation by chained equations"
+  },
+  {
+    "objectID": "adv-9.html#brm_multiple",
+    "href": "adv-9.html#brm_multiple",
+    "title": "advanced MLM",
+    "section": "brm_multiple",
+    "text": "brm_multiple\nworks well with mice objects, but brm_multiple also takes any list of dataframes. Helpful if you use amelia or mi.\n\nimp.1 &lt;- brm_multiple(family = gaussian,\n                      bmi ~ age*chl, \n                      data = nhanes.imp,\n                      cores = 4, \n                      backend = \"cmdstanr\",\n                      file = \"imp.1\")"
+  },
+  {
+    "objectID": "adv-9.html#revisting-bayesian-updating",
+    "href": "adv-9.html#revisting-bayesian-updating",
+    "title": "advanced MLM",
+    "section": "Revisting bayesian updating",
+    "text": "Revisting bayesian updating\nRemember the posterior can be thought of as a new prior for your next data aquisition. You could do this one datapoint at a time (remember globe tossing model in SR?), or a dataset at the time."
+  },
+  {
+    "objectID": "adv-9.html#bayesian-imputation-within-brms",
+    "href": "adv-9.html#bayesian-imputation-within-brms",
+    "title": "advanced MLM",
+    "section": "Bayesian imputation within brms",
+    "text": "Bayesian imputation within brms\n\nWhich variables contain missingness? 2) Which variables should predict missingness 3) what imputed variables are used as predictors\n\nTaking care of this in brms ends up creating a multivariate model\n\nbform &lt;- bf(bmi | mi() ~ age * mi(chl)) +\n  bf(chl | mi() ~ age) + set_rescor(FALSE)\nimp.2 &lt;- brm(bform, data = nhanes, backend = \"cmdstanr\", file = \"imp.2\")"
+  },
+  {
+    "objectID": "adv-9.html#pro-v-con",
+    "href": "adv-9.html#pro-v-con",
+    "title": "advanced MLM",
+    "section": "pro v con",
+    "text": "pro v con\nPros: Can use multilevel structure and complex non-linear relationships for the imputation of missing values, which is not achieved as easily in standard multiple imputation software\nCons: cannot impute discrete values within brms/Stan"
   }
 ]
