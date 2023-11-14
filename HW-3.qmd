@@ -3,28 +3,35 @@ title: "HW-3"
 output: html_document
 ---
 
-We will continue to use the mortality dataset from the GLM class for our next homework. 
+Please turn in homework to: homewor.cbhmwok5m9jsz75g\@u.box.com
+
+We will continue to use the mortality dataset from the GLM class for our next homework.
 
 ```{r}
 "https://raw.githubusercontent.com/josh-jackson/bayes/master/static/Lectures/mortality.csv"
 ```
 
+1.  Run a logistic regression where premature mortality is predicted by risky behavior. Interpret the coefficients in terms of
 
-1. Run a logistic regression where premature mortality is predicted by risky behavior. Interpret the coefficients in terms of 
+```{=html}
+<!-- -->
+```
+a.  Logits
+b.  Logits converted to odds
+c.  NHST test using a confidence interval of your choosing
+d.  NHST test using Probability of Direction
+e.  NHST test using ROPE
+f.  NHST test using Bayes Factor
 
-a. Logits
-b. Logits converted to odds
-c. NHST test using a confidence interval of your choosing
-d. NHST test using Probability of Direction
-e. NHST test using ROPE
-f. NHST test using Bayes Factor
+```{=html}
+<!-- -->
+```
+2.  Create predicted values for different levels of risky behavior. What is my probability of premature mortality if I was 1 sd deviation below the mean of risky behavior? 2 SDs above? Make sure to include CIs around these estimates.
 
-2.  Create predicted values for different levels of risky behavior. What is my probability of premature mortality if I was 1 sd deviation below the mean of risky behavior? 2 SDs above? Make sure to include CIs around these estimates. 
+3.  Graph the predicted relationship between risky behavior and premature mortality with probability as the Y axis.
 
-3. Graph the predicted relationship between risky behavior and premature mortality with probability as the Y axis.
+4.  Run two new models with risky behavior AND IQ as predictors of premature mortality -- one where they are main effects and another where they interact. Calculate psis-loo and waic for these two models and use them to compare with the previous model from #1. Which model is a better model?
 
-4. Run two new models with risky behavior AND IQ as predictors of premature mortality -- one where they are main effects and another where they interact. Calculate psis-loo and waic for these two models and use them to compare with the previous model from #1. Which model is a better model? 
+5.  Graph the effect of IQ from the best fitting model in #4. Include both the expected value confidence band and the prediction confidence band.
 
-5. Graph the effect of IQ from the best fitting model in #4. Include both the expected value confidence band and the prediction confidence band.
-
-6. Create your own version of pp_check on the model in #5 to examine the posterior predictive distribution. Interpret. 
+6.  Create your own version of pp_check on the model in #5 to examine the posterior predictive distribution. Interpret.
