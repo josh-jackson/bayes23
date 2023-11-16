@@ -2434,5 +2434,61 @@
     "title": "advanced MLM",
     "section": "pro v con",
     "text": "pro v con\nPros: Can use multilevel structure and complex non-linear relationships for the imputation of missing values, which is not achieved as easily in standard multiple imputation software\nCons: cannot impute discrete values within brms/Stan"
+  },
+  {
+    "objectID": "adv-9.html#the-rest-of-the-semester",
+    "href": "adv-9.html#the-rest-of-the-semester",
+    "title": "advanced MLM",
+    "section": "The rest of the semester",
+    "text": "The rest of the semester\n\nPlots\nMr.P\nMultivariate models\nMediation\nDistributional models\nMissing data\nMeta analysis\nIRT/Cog models"
+  },
+  {
+    "objectID": "adv-9.html#mlm-plots",
+    "href": "adv-9.html#mlm-plots",
+    "title": "advanced MLM",
+    "section": "MLM plots",
+    "text": "MLM plots\n\n\nCode\nmelsm &lt;- read.csv(\"~/Library/CloudStorage/Box-Box/Bayesian Statistics/bayes22/static/Lectures/melsm.csv\")\n\nmelsm &lt;- melsm %&gt;% \n  mutate(day01 = (day - 2) / max((day - 2)))\n\n\n\n\nCode\nmelsm %&gt;% \ndistinct(record_id) %&gt;% \n  count()\n\n\n    n\n1 193"
+  },
+  {
+    "objectID": "adv-9.html#making-predictions",
+    "href": "adv-9.html#making-predictions",
+    "title": "advanced MLM",
+    "section": "Making predictions",
+    "text": "Making predictions\nWe often want to make predictions for different groups or individuals. We make predictions using/borrowing information from other individuals, through partial pooling. This improves our predictions.\nCan we improve it further? Do we stick with these standard MLM based predictions? What if we want to look at sub samples in our data, especially rarer ones (e.g., gay black republicans) or are worried some are over-represented (e.g., age and high education/SES)"
+  },
+  {
+    "objectID": "adv-9.html#mr.p",
+    "href": "adv-9.html#mr.p",
+    "title": "advanced MLM",
+    "section": "Mr.P",
+    "text": "Mr.P\nImproving predictions by incorporating outside (of the model) information. MRP = multilevel regression with poststratification\nOne of the biggest problems with psych data is that it is unrepresentative. (Do you trust undergrads or adults off the street wanting to help science?)\nIf we know the distribution of the broader population, we can reweight (post-stratify) our results to get more accurate estimates. We take the observed sample to reconstruct the rest of the population"
+  },
+  {
+    "objectID": "adv-9.html#mr.p-1",
+    "href": "adv-9.html#mr.p-1",
+    "title": "advanced MLM",
+    "section": "Mr.P",
+    "text": "Mr.P\nMr = Multi-level regression aka MLM P = poststratification, with post for posterior and stratification for stratify.\nYou take your posterior and make predictions based on different strata\nWeighted average of predicted values, where weights are the population shares of each category"
+  },
+  {
+    "objectID": "adv-9.html#weighting-vs-postratifying",
+    "href": "adv-9.html#weighting-vs-postratifying",
+    "title": "advanced MLM",
+    "section": "Weighting vs postratifying",
+    "text": "Weighting vs postratifying\nWeighting is done all the time with data. It gives more or less “weight” to observations that are over or under sampled. Some people “count” more than others in the service of getting data that represents some population.\nPoststratification is similar in that it weights the posterior samples rather than the observations.\nWhy is this preferred? A few reasons, but mainly one can make generalization to new groups or groups with little data. Rather than weighting those specific individuals, partial pooling from other information will help with learning"
+  },
+  {
+    "objectID": "adv-9.html#mr.p-not-limited-to-surveys",
+    "href": "adv-9.html#mr.p-not-limited-to-surveys",
+    "title": "advanced MLM",
+    "section": "Mr.P Not limited to surveys",
+    "text": "Mr.P Not limited to surveys\nExample (using brms) with experimental data – can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf\nMore info: https://marginaleffects.com/articles/mrp.html"
+  },
+  {
+    "objectID": "adv-9.html#recent-example",
+    "href": "adv-9.html#recent-example",
+    "title": "advanced MLM",
+    "section": "recent example",
+    "text": "recent example\nhttps://osf.io/preprints/psyarxiv/fcm3n/"
   }
 ]

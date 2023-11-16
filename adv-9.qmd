@@ -11,14 +11,542 @@ html:
 
 
 
-## This time
+## The rest of the semester
 
-1. SEM
-2. Mediation
-3. Distributional models
-4. Missing data
-5. Meta analysis
-6. IRT/Cog models
+1. Plots
+2. Mr.P
+3. Multivariate models
+4. Mediation
+5. Distributional models
+6. Missing data
+7. Meta analysis
+8. IRT/Cog models
+
+
+```{r, echo = FALSE}
+library(tidyverse)
+library(tidybayes)
+library(brms)
+library(modelr)
+```
+
+
+## MLM plots
+
+```{r}
+#| code-fold: true
+melsm <- read.csv("~/Library/CloudStorage/Box-Box/Bayesian Statistics/bayes22/static/Lectures/melsm.csv")
+
+melsm <- melsm %>% 
+  mutate(day01 = (day - 2) / max((day - 2)))
+```
+
+
+```{r}
+#| code-fold: true
+melsm %>% 
+distinct(record_id) %>% 
+  count()
+```
+
+
+---
+
+Participants filled out daily affective measures and physical activity
+
+```{r}
+#| code-fold: true
+melsm %>% 
+    count(record_id) %>% 
+  ggplot(aes(x = n)) +
+  geom_bar() +
+  scale_x_continuous("number of days", limits = c(0, NA))
+```
+
+
+
+
+
+
+---
+
+Participant level
+
+
+```{r}
+#| code-fold: true
+set.seed(16)
+melsm %>% 
+  ungroup() %>% 
+  nest(data = !record_id) %>% 
+  slice_sample(n = 12) %>% 
+  unnest(data) %>% 
+  ggplot(aes(x = day, y = N_A.lag)) +
+  geom_line(color = "black") +
+  geom_point(color = "black", size = 1/2) +
+  ylab("negative affect (standardized)") +
+  facet_wrap(~record_id)
+```
+
+
+----------------
+
+day01 is coded such that it is a percentage of the 100 total possible days. 
+
+```{r}
+#| code-fold: true
+melsm.1 <-
+  brm(family = gaussian,
+      N_A.std ~ 1 + day01 + (1 + day01 | record_id),
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(exponential(1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.1")
+```
+
+
+---
+
+```{r}
+summary(melsm.1)
+```
+
+---
+
+We have to be careful with plotting MLMs
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), .model= melsm) 
+```
+
+---
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), .model= melsm) %>% 
+  add_epred_draws(melsm.1 )
+```
+
+---
+
+If we do not care about random effects, specify re_formula = NA
+```{r}
+#| code-fold: true
+fixed.slope<- melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20)) %>% 
+  add_epred_draws(melsm.1, re_formula = NA )
+  fixed.slope
+```
+
+---
+
+If we want random effects we need to specify the variable to get ALL levels. 
+```{r}
+
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) 
+```
+193 people * 20 = 3860
+
+---
+
+Then we need to state re_forumla = NULL (which is the default)
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL )
+```
+
+---
+
+re_formula formula helps us focus on either the average trajectory (gammas) or the group specific (person Us). If NULL (default), include all group-level effects; if NA, include no group-level effects.
+
+ 160,000 = 20 (different values of X we chose) x 8000 iterations (2k x 4 chains)
+ 30,880,000 = 20* 8000 iterations * 193 people in our dataset
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NA) %>% 
+  ggplot()+
+  aes(x = day01, y = .epred) +
+  stat_lineribbon(.width = 0.95, alpha = .5)
+fixed.slope 
+```
+
+---
+
+```{r}
+#| code-fold: true
+## https://www.tjmahr.com/sample-n-groups/
+sample_n_of <- function(data, size, ...) {
+  dots <- quos(...)
+  group_ids <- data %>% 
+    group_by(!!! dots) %>% 
+    group_indices()
+  sampled_groups <- sample(unique(group_ids), size)
+  data %>% 
+    filter(group_ids %in% sampled_groups)
+}
+
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+    sample_n_of(5,record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL) %>% 
+  ggplot(aes(x = day01)) +
+  stat_lineribbon(aes(y = .epred, group = record_id, alpha = .2))
+
+##Note that this below won't work
+  #geom_line(aes(y = .epred, group = levels(record_id)))
+
+```
+
+
+---
+
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+    sample_n_of(50,record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL) %>% 
+  ggplot(aes(x = day01)) +
+  stat_lineribbon(aes(y = .epred, group = record_id, color = record_id), .width = 0, show.legend = F, alpha = .4)
+
+```
+
+
+---
+
+```{r}
+#| code-fold: true
+melsm %>% 
+  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
+    sample_n_of(50,record_id) %>% 
+  add_epred_draws(melsm.1, re_formula = NULL) %>% 
+  ggplot(aes(x = day01)) +
+  stat_lineribbon(aes(y = .epred, group = record_id, color = record_id), .width = 0, show.legend = F, alpha = .4) + 
+  stat_lineribbon(data = fixed.slope, aes(x = day01, y = .epred), show.legend = F, alpha = .5)
+```
+
+
+---
+
+What about interactions? 
+
+```{r}
+melsm.1i <-
+  brm(family = gaussian,
+      N_A.std ~ 1 + day01+ P_A.std*steps.pm + (1 + day01 | record_id),
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(exponential(1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.1i")
+```
+
+---
+
+```{r}
+summary(melsm.1i)
+```
+
+
+---
+
+```{r}
+library(psych)
+describe(melsm$steps.pm)
+```
+
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm)
+```
+5 * 3 = 15 rows
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm) %>% 
+  add_epred_draws(melsm.1i, re_formula = NA) 
+```
+12 * 8000 samples = 120,000 rows
+
+
+---
+
+```{r}
+#| code-fold: true
+ melsm %>% 
+  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm) %>% 
+  add_epred_draws(melsm.1i, re_formula = NA) %>% 
+  ggplot( aes(x = steps.pm, y = N_A.std)) +
+  stat_lineribbon(aes(y = .epred, group = P_A.std, color = as.factor(P_A.std)),  .width = 0, show.legend = T) 
+```
+
+
+
+
+## Making predictions
+
+We often want to make predictions for different groups or individuals. We make predictions using/borrowing information from other individuals, through partial pooling. This improves our predictions.
+
+Can we improve it further? Do we stick with these standard MLM based predictions? What if we want to look at sub samples in our data, especially rarer ones (e.g., gay black republicans) or are worried some are over-represented (e.g., age and high education/SES)
+
+## Mr.P
+
+Improving predictions by incorporating outside (of the model) information. MRP = multilevel regression with poststratification
+
+One of the biggest problems with psych data is that it is unrepresentative. (Do you trust undergrads or adults off the street wanting to help science?) 
+
+If we know the distribution of the broader population, we can reweight (post-stratify) our results to get more accurate estimates. We take the observed sample to reconstruct the rest of the population
+
+## Mr.P
+
+Mr = Multi-level regression aka MLM P = poststratification, with post for posterior and stratification for stratify.
+
+You take your posterior and make predictions based on different strata
+
+Weighted average of predicted values, where weights are the population shares of each category
+
+## Weighting vs postratifying
+
+Weighting is done all the time with data. It gives more or less "weight" to observations that are over or under sampled. Some people "count" more than others in the service of getting data that represents some population.
+
+Poststratification is similar in that it weights the posterior samples rather than the observations.
+
+Why is this preferred? A few reasons, but mainly one can make generalization to new groups or groups with little data. Rather than weighting those specific individuals, partial pooling from other information will help with learning
+
+------------------------------------------------------------------------
+
+What do we need? A reliable data source (such as a census) that gives us the population weights. Data can be re-weighted based on many different categories, not just one: for example, we could post-stratify based on age, education, state of residence, etc.
+
+Don't need to even attempt a random sample. All we need is a sample that is large and diverse enough + population data (e.g., from the census).
+
+------------------------------------------------------------------------
+
+Estimating the proportion of heterosexual women who kept their maiden name after marriage.
+
+https://www.monicaalexander.com/posts/2019-08-07-mrp/ https://bookdown.org/content/4857/models-with-memory.html#summary-bonus-post-stratification-in-an-example
+
+------------------------------------------------------------------------
+
+```{r}
+
+mrp <-load("mrp.rds")
+mrp
+```
+
+```{r}
+d
+```
+
+------------------------------------------------------------------------
+
+```{r}
+cell_counts
+```
+
+------------------------------------------------------------------------
+
+```{r}
+mlm.mrp <-
+  brm(family = binomial,
+      kept_name | trials(1) ~ 1 + (1 | age_group) + (1 | decade_married) + (1 | educ_group) + (1 | state_name),
+      prior = c(prior(normal(-1, 1), class = Intercept),
+                prior(exponential(1), class = sd)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      control = list(adapt_delta = .98),
+      data = d,
+      backend = "cmdstanr",
+      file = "mlm.mrp")
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(mlm.mrp)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+get_variables(mlm.mrp)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+posterior_samples(mlm.mrp) %>% 
+  select(starts_with("sd_")) %>% 
+  set_names(str_c("sigma[", c("age", "decade~married", "education", "state"), "]")) %>% 
+  pivot_longer(everything()) %>% 
+  group_by(name) %>%
+  median_qi(.width = seq(from = .70, to = .95, by = .1)) %>%
+  
+  ggplot(aes(x = value, xmin = .lower, xmax = .upper, y = reorder(name, value))) +
+  geom_interval(aes(alpha = .width), color = "orange3") +
+  scale_y_discrete(labels = ggplot2:::parse_safe) +
+  scale_alpha_continuous("CI width", range = c(.7, .15)) +
+  xlim(0, NA) +
+  theme(axis.text.y = element_text(hjust = 0),
+        panel.grid.major.y = element_blank())
+```
+
+------------------------------------------------------------------------
+
+Census data we will use to make predictions. We will make predictions for every combination of variable we are interested in (state, age, decade married, edu)
+
+```{r}
+#| code-fold: true
+age_prop <- 
+  cell_counts %>% 
+  group_by(age_group) %>% 
+  mutate(prop = n / sum(n)) %>% 
+  ungroup()
+
+age_prop
+```
+
+------------------------------------------------------------------------
+
+```{r}
+p <- mlm.mrp %>% 
+  add_predicted_draws(newdata = age_prop %>% 
+                        filter(age_group > 20, 
+                               age_group < 80, 
+                               decade_married > 1969),
+                      allow_new_levels = T)
+p
+
+```
+
+6,058 census categories \* 4,000 samples = 24,232,000
+
+------------------------------------------------------------------------
+
+If we group the results by age_group and .draw, we can sum the product of the posterior predictions and the weights (prop), which will leave us with 4,000 stratified posterior draws for each of the 11 levels of age_group
+
+$$\frac{\sum_i N_i p_i}{\sum_i N_i}$$
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+pp <-
+  p %>% 
+  group_by(age_group, .draw) %>% 
+  summarise(kept_name_predict = sum(.prediction * prop)) %>% 
+  group_by(age_group) %>% 
+  mean_qi(kept_name_predict)
+
+pp
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+
+library(patchwork)
+levels <- c("raw data", "multilevel", "MRP")
+
+p1 <-
+  # compute the proportions from the data
+  d %>% 
+  group_by(age_group, kept_name) %>%
+  summarise(n = n()) %>% 
+  group_by(age_group) %>% 
+  mutate(prop = n/sum(n),
+         type = factor("raw data", levels = levels)) %>% 
+  filter(kept_name == 1, age_group < 80, age_group > 20) %>%
+  ggplot(aes(x = prop, y = age_group)) + 
+  geom_point() +
+  scale_x_continuous(breaks = c(0, .5, 1), limits = c(0, 1)) +
+  facet_wrap(~type)
+
+
+nd <- distinct(d, age_group) %>% arrange(age_group)
+
+p2 <-
+  fitted(mlm.mrp,
+         re_formula = ~ (1 | age_group),
+         newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  mutate(prop = Estimate,
+         type = factor("multilevel", levels = levels)) %>% 
+  
+  ggplot(aes(x = prop, xmin = Q2.5, xmax = Q97.5, y = age_group)) + 
+  geom_pointrange(color = "blue2", size = 0.8, fatten = 2) +
+  scale_x_continuous(breaks = c(0, .5, 1), limits = c(0, 1)) +
+  scale_y_discrete(labels = NULL) +
+  facet_wrap(~type)
+
+
+p3 <-
+  pp %>%
+  mutate(type = factor("MRP", levels = levels)) %>% 
+  ggplot(aes(x = kept_name_predict, xmin = .lower, xmax = .upper, y = age_group)) + 
+  geom_pointrange(color = "orange2", size = 0.8, fatten = 2) +
+  scale_x_continuous(breaks = c(0, .5, 1), limits = c(0, 1)) +
+  scale_y_discrete(labels = NULL) +
+  facet_wrap(~type)
+
+# combine!
+(p1 | p2 | p3) +
+  plot_annotation(title = "Proportion of women keeping name after marriage, by age")
+
+```
+
+------------------------------------------------------------------------
+
+Can also be done simply in {marginaleffects}
+
+```{r, eval = FALSE}
+p <- predictions(  # Compute predictions,
+    model = mod, # using the mlm model `mod`, 
+    newdata = stratification, # for each row of the `stratification` table.
+    by = "age", #select which grouping variable
+    wts = "proportion") #weight them
+```
+
+
+## Mr.P Not limited to surveys
+
+Example (using brms) with experimental data -- can you generalize from your sample of undergraduates to other undergraduates at your university, let alone undergraduates in general, let alone young adults, to say nothing about the population of humans. https://arxiv.org/pdf/1906.11323.pdf
+
+More info: https://marginaleffects.com/articles/mrp.html
+
+## recent example
+
+https://osf.io/preprints/psyarxiv/fcm3n/
+
+![](mrp.png)
+
 
 
 ## Multivariate models
@@ -757,297 +1285,6 @@ mlm %>%
 
 
 
----
-
-
-Mixed effects location scale model 
-```{r}
-#| code-fold: true
-melsm <- read.csv("~/Library/CloudStorage/Box-Box/Bayesian Statistics/bayes22/static/Lectures/melsm.csv")
-
-melsm <- melsm %>% 
-  mutate(day01 = (day - 2) / max((day - 2)))
-```
-
-
-
-
-```{r}
-#| code-fold: true
-melsm %>% 
-distinct(record_id) %>% 
-  count()
-```
-
-
----
-
-Participants filled out daily affective measures and physical activity
-
-```{r}
-#| code-fold: true
-melsm %>% 
-    count(record_id) %>% 
-  ggplot(aes(x = n)) +
-  geom_bar() +
-  scale_x_continuous("number of days", limits = c(0, NA))
-```
-
-
-
-
-
-
----
-
-Participant level
-
-
-```{r}
-#| code-fold: true
-set.seed(16)
-melsm %>% 
-  ungroup() %>% 
-  nest(data = !record_id) %>% 
-  slice_sample(n = 12) %>% 
-  unnest(data) %>% 
-  ggplot(aes(x = day, y = N_A.lag)) +
-  geom_line(color = "black") +
-  geom_point(color = "black", size = 1/2) +
-  ylab("negative affect (standardized)") +
-  facet_wrap(~record_id)
-```
-
-
-## Standard MLM treatment
-
-```{r}
-#| code-fold: true
-melsm.1 <-
-  brm(family = gaussian,
-      N_A.std ~ 1 + day01 + (1 + day01 | record_id),
-      prior = c(prior(normal(0, 0.2), class = Intercept),
-                prior(normal(0, 1), class = b),
-                prior(exponential(1), class = sd),
-                prior(exponential(1), class = sigma),
-                prior(lkj(2), class = cor)),
-      iter = 3000, warmup = 1000, chains = 4, cores = 4,
-      data = melsm,
-      backend = "cmdstanr",
-      file = "melsm.1")
-```
-
-
----
-
-```{r}
-summary(melsm.1)
-```
-
----
-
-We have to be careful with plotting MLMs
-```{r}
-#| code-fold: true
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), .model= melsm) 
-```
-
----
-
-```{r}
-#| code-fold: true
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), .model= melsm) %>% 
-  add_epred_draws(melsm.1 )
-```
-
----
-
-If we do not care about random effects, specify re_formula = NA
-```{r}
-#| code-fold: true
-fixed.slope<- melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20)) %>% 
-  add_epred_draws(melsm.1, re_formula = NA )
-  fixed.slope
-```
-
----
-
-If we want random effects we need to specify the variable to get ALL levels. 
-```{r}
-
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) 
-```
-193 people * 20 = 3860
-
----
-
-Then we need to state re_forumla = NULL (which is the default)
-```{r}
-#| code-fold: true
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
-  add_epred_draws(melsm.1, re_formula = NULL )
-```
-
----
-
-re_formula formula helps us focus on either the average trajectory (gammas) or the group specific (person Us). If NULL (default), include all group-level effects; if NA, include no group-level effects.
-
- 160,000 = 20 (different values of X we chose) x 8000 iterations (2k x 4 chains)
- 30,880,000 = 20* 8000 iterations * 193 people in our dataset
-
----
-
-```{r}
-#| code-fold: true
- melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
-  add_epred_draws(melsm.1, re_formula = NA) %>% 
-  ggplot()+
-  aes(x = day01, y = .epred) +
-  stat_lineribbon(.width = 0.95, alpha = .5)
-fixed.slope 
-```
-
----
-
-```{r}
-#| code-fold: true
-## https://www.tjmahr.com/sample-n-groups/
-sample_n_of <- function(data, size, ...) {
-  dots <- quos(...)
-  group_ids <- data %>% 
-    group_by(!!! dots) %>% 
-    group_indices()
-  sampled_groups <- sample(unique(group_ids), size)
-  data %>% 
-    filter(group_ids %in% sampled_groups)
-}
-
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
-    sample_n_of(5,record_id) %>% 
-  add_epred_draws(melsm.1, re_formula = NULL) %>% 
-  ggplot(aes(x = day01)) +
-  stat_lineribbon(aes(y = .epred, group = record_id))
-
-##Note that this below won't work
-  #geom_line(aes(y = .epred, group = levels(record_id)))
-
-```
-
-
-
-
----
-
-```{r}
-#| code-fold: true
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
-    sample_n_of(5,record_id) %>% 
-  add_epred_draws(melsm.1, re_formula = NULL) %>% 
-  ggplot(aes(x = day01)) +
-  stat_lineribbon(aes(y = .epred, group = record_id))
-
-```
-
-
----
-
-
-```{r}
-#| code-fold: true
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
-    sample_n_of(50,record_id) %>% 
-  add_epred_draws(melsm.1, re_formula = NULL) %>% 
-  ggplot(aes(x = day01)) +
-  stat_lineribbon(aes(y = .epred, group = record_id, color = record_id), .width = 0, show.legend = F, alpha = .4)
-
-```
-
-
----
-
-```{r}
-#| code-fold: true
-melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
-    sample_n_of(50,record_id) %>% 
-  add_epred_draws(melsm.1, re_formula = NULL) %>% 
-  ggplot(aes(x = day01)) +
-  stat_lineribbon(aes(y = .epred, group = record_id, color = record_id), .width = 0, show.legend = F, alpha = .4) + 
-  stat_lineribbon(data = fixed.slope, aes(x = day01, y = .epred), show.legend = F, alpha = .5)
-```
-
-
----
-
-What about interactions? 
-
-```{r}
-melsm.1i <-
-  brm(family = gaussian,
-      N_A.std ~ 1 + day01+ P_A.std*steps.pm + (1 + day01 | record_id),
-      prior = c(prior(normal(0, 0.2), class = Intercept),
-                prior(normal(0, 1), class = b),
-                prior(exponential(1), class = sd),
-                prior(exponential(1), class = sigma),
-                prior(lkj(2), class = cor)),
-      iter = 3000, warmup = 1000, chains = 4, cores = 4,
-      data = melsm,
-      backend = "cmdstanr",
-      file = "melsm.1i")
-```
-
----
-
-```{r}
-summary(melsm.1i)
-```
-
-
----
-
-```{r}
-library(psych)
-describe(melsm$steps.pm)
-```
-
-
-```{r}
-#| code-fold: true
- melsm %>% 
-  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm)
-```
-5 * 3 = 15 rows
-
----
-
-```{r}
-#| code-fold: true
- melsm %>% 
-  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm) %>% 
-  add_epred_draws(melsm.1i, re_formula = NA) 
-```
-12 * 8000 samples = 120,000 rows
-
-
----
-
-```{r}
-#| code-fold: true
- melsm %>% 
-  data_grid(steps.pm = seq_range(steps.pm, n = 5), P_A.std = c(-1,0,1), day01 = .5, .model = melsm) %>% 
-  add_epred_draws(melsm.1i, re_formula = NA) %>% 
-  ggplot( aes(x = steps.pm, y = N_A.std)) +
-  stat_lineribbon(aes(y = .epred, group = P_A.std, color = P_A.std),  .width = 0, show.legend = F) 
-```
 
 
 
