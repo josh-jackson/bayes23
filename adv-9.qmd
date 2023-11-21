@@ -21,6 +21,7 @@ html:
 6. Missing data
 7. Meta analysis
 8. IRT/Cog models
+9. gams! 
 
 
 ```{r, echo = FALSE}
@@ -169,8 +170,9 @@ melsm %>%
 
 re_formula formula helps us focus on either the average trajectory (gammas) or the group specific (person Us). If NULL (default), include all group-level effects; if NA, include no group-level effects.
 
- 160,000 = 20 (different values of X we chose) x 8000 iterations (2k x 4 chains)
- 30,880,000 = 20* 8000 iterations * 193 people in our dataset
+160,000 = 20 (different values of X we chose) x 8000 iterations (2k x 4 chains)
+ 
+30,880,000 = 20* 8000 iterations * 193 people in our dataset
 
 ---
 
@@ -182,7 +184,6 @@ re_formula formula helps us focus on either the average trajectory (gammas) or t
   ggplot()+
   aes(x = day01, y = .epred) +
   stat_lineribbon(.width = 0.95, alpha = .5)
-fixed.slope 
 ```
 
 ---
@@ -206,9 +207,6 @@ melsm %>%
   add_epred_draws(melsm.1, re_formula = NULL) %>% 
   ggplot(aes(x = day01)) +
   stat_lineribbon(aes(y = .epred, group = record_id, alpha = .2))
-
-##Note that this below won't work
-  #geom_line(aes(y = .epred, group = levels(record_id)))
 
 ```
 
@@ -556,6 +554,7 @@ Any model that has more than 1 DV. While common within SEM frameworks, multivari
 When do you want to use multivariate models? All the time! Mediation, path models, distributional models, IRT models, parallel process MLMs, etc etc. 
 What are advantages? Fewer models than doing separate, additional parameters, novel Qs. 
 
+We've already done one of these: the multinomial logistic
 
 
 ## multivariate MLMs
@@ -612,9 +611,34 @@ mv.1 %>%
 ```{r}
 #| code-fold: true
 mv.1 %>% 
-  spread_draws(rescor__CON__DAN) %>% 
-  ggplot(aes( x = rescor__CON__DAN))+
+  spread_draws(sd_ID__CON_time) %>% 
+  ggplot(aes( x = sd_ID__CON_time))+
   stat_halfeye()
+```
+
+
+## correlation between slopes
+
+```{r}
+#| code-fold: true
+library(correlation)
+
+CON_slope <- mv.1 %>% 
+spread_draws(r_ID__CON[ID,time]) %>% 
+  filter(time == "time") %>% 
+  group_by(ID) %>% 
+  median_qi(r_ID__CON) %>% 
+  select(ID, r_ID__CON)
+
+DAN_slope <- mv.1 %>% 
+spread_draws(r_ID__DAN[ID,time]) %>% 
+  filter(time == "time") %>% 
+  group_by(ID) %>% 
+  median_qi(r_ID__DAN) %>% 
+  select(ID, r_ID__DAN)
+
+slope_cor<- left_join(CON_slope,DAN_slope)
+plot(cor_test(slope_cor, "r_ID__CON", "r_ID__DAN"))
 ```
 
 
@@ -977,6 +1001,26 @@ summary(med.3)
 ```
 
 
+```{r}
+#| code-fold: true
+med.3 %>% 
+  spread_draws(b_dv_Intercept, b_med_Intercept, b_dv_X1, b_dv_X2, b_dv_X3, b_dv_med, b_med_X1, b_med_X2, b_med_X3) %>% 
+  mutate(indirect1 = b_dv_med * b_med_X1) %>% 
+  mutate(indirect2 = b_dv_med * b_med_X2) %>% 
+  mutate(indirect3 = b_dv_med * b_med_X3) %>% 
+  mutate(direct1 = b_dv_X1) %>% 
+  mutate(direct2 = b_dv_X2) %>% 
+  mutate(direct3 = b_dv_X3) %>% 
+  mutate(total1 = indirect1 + direct1 ) %>% 
+  mutate(total2 = indirect2 + direct2 ) %>% 
+  mutate(total3 = indirect3 + direct3 ) %>% 
+  select(.draw, indirect1:total3) %>% 
+  median_qi()
+```
+
+
+
+
 
 ## Multiple Outcomes
 
@@ -1036,7 +1080,7 @@ mult.Ys <-
       data = Ys,
       backend = "cmdstanr",
       cores = 4,
-      fit = "med.4")
+      file = "med.4")
 ```
 
 ---

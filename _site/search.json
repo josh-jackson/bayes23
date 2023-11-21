@@ -2265,7 +2265,7 @@
     "href": "adv-9.html#multivariate-models",
     "title": "advanced MLM",
     "section": "Multivariate models",
-    "text": "Multivariate models\nAny model that has more than 1 DV. While common within SEM frameworks, multivariate models are not often used within standard linear modeling (outside of MANOVA), mostly because of computational difficulties.\nWhen do you want to use multivariate models? All the time! Mediation, path models, distributional models, IRT models, parallel process MLMs, etc etc. What are advantages? Fewer models than doing separate, additional parameters, novel Qs."
+    "text": "Multivariate models\nAny model that has more than 1 DV. While common within SEM frameworks, multivariate models are not often used within standard linear modeling (outside of MANOVA), mostly because of computational difficulties.\nWhen do you want to use multivariate models? All the time! Mediation, path models, distributional models, IRT models, parallel process MLMs, etc etc. What are advantages? Fewer models than doing separate, additional parameters, novel Qs.\nWe’ve already done one of these: the multinomial logistic"
   },
   {
     "objectID": "adv-9.html#multivariate-mlms",
@@ -2440,7 +2440,7 @@
     "href": "adv-9.html#the-rest-of-the-semester",
     "title": "advanced MLM",
     "section": "The rest of the semester",
-    "text": "The rest of the semester\n\nPlots\nMr.P\nMultivariate models\nMediation\nDistributional models\nMissing data\nMeta analysis\nIRT/Cog models"
+    "text": "The rest of the semester\n\nPlots\nMr.P\nMultivariate models\nMediation\nDistributional models\nMissing data\nMeta analysis\nIRT/Cog models\ngams!"
   },
   {
     "objectID": "adv-9.html#mlm-plots",
@@ -2490,5 +2490,12 @@
     "title": "advanced MLM",
     "section": "recent example",
     "text": "recent example\nhttps://osf.io/preprints/psyarxiv/fcm3n/"
+  },
+  {
+    "objectID": "adv-9.html#correlation-between-slopes",
+    "href": "adv-9.html#correlation-between-slopes",
+    "title": "advanced MLM",
+    "section": "correlation between slopes",
+    "text": "correlation between slopes\n\n\nCode\nlibrary(correlation)\n\nCON_slope &lt;- mv.1 %&gt;% \nspread_draws(r_ID__CON[ID,time]) %&gt;% \n  filter(time == \"time\") %&gt;% \n  group_by(ID) %&gt;% \n  median_qi(r_ID__CON) %&gt;% \n  select(ID, r_ID__CON)\n\nDAN_slope &lt;- mv.1 %&gt;% \nspread_draws(r_ID__DAN[ID,time]) %&gt;% \n  filter(time == \"time\") %&gt;% \n  group_by(ID) %&gt;% \n  median_qi(r_ID__DAN) %&gt;% \n  select(ID, r_ID__DAN)\n\nslope_cor&lt;- left_join(CON_slope,DAN_slope)\nplot(cor_test(slope_cor, \"r_ID__CON\", \"r_ID__DAN\"))"
   }
 ]
