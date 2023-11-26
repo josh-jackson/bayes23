@@ -1,0 +1,112 @@
+﻿study,year,outcome,between,within,d,ll,ul
+Bean and Roberts (1981),1981,Immediate defiance,1,0,-0.74,-1.76,0.28
+Day and Roberts (1983),1983,Immediate defiance,1,0,0.36,-1.04,1.77
+"Minton, Kagan, and Levine (1971)",1971,Immediate defiance,0,1,0.34,-0.09,0.76
+Roberts (1988),1988,Immediate defiance,1,0,-0.08,-1.01,0.84
+Roberts and Powers (1990),1990,Immediate defiance,1,0,0.10,-0.82,1.03
+"Burton, Maccoby, and Allinsmith (1961)",1961,Low moral internalization,0,1,0.63,0.16,1.10
+Grinder (1962),1962,Low moral internalization,1,0,0.19,-0.14,0.53
+Kandel (1990),1990,Low moral internalization,0,1,0.47,0.20,0.74
+"Olson, Ceballo, and Park (2002)",2002,Low moral internalization,0,1,0.14,-0.42,0.70
+Oyserman et al. (2005),2005,Low moral internalization,0,1,-0.18,-0.49,0.13
+Power and Chapieski (1986),1986,Low moral internalization,1,0,1.18,0.15,2.22
+"Regev, Gueron-Sela, and Atzaba-Poria (2012)",2012,Low moral internalization,0,1,0.70,0.35,1.05
+"Zahn-Waxler, Radke-Yarrow, and King (1979)",1979,Low moral internalization,1,0,0.63,-0.45,1.71
+Berlin et al. (2009),2009,Child aggression,0,1,0.14,0.06,0.22
+Gershoff et al. (2010),2010,Child aggression,0,1,0.24,0.01,0.47
+Gunnoe and Mariner (1997),1997,Child aggression,0,1,0.30,0.18,0.42
+Kandel (1990),1990,Child aggression,0,1,0.84,0.55,1.12
+Pagani et al. (2004),2004,Child aggression,1,0,0.90,0.70,1.10
+Sears (1961),1961,Child aggression,0,1,-0.14,-0.45,0.17
+Westbrook et al. (2013),2013,Child aggression,0,1,0.28,-0.20,0.76
+"Boutwell, Franklin, Barnes, and Beaver (2011) ",2011,Child antisocial behavior,0,1,0.52,0.42,0.62
+ Flynn (1999),1999,Child antisocial behavior,1,0,0.29,0.04,0.54
+Gunnoe and Mariner (1997) ,1997,Child antisocial behavior,0,1,0.39,0.27,0.51
+"Jackson, Preston, and Franke (2010) ",2010,Child antisocial behavior,0,1,0.72,0.28,1.17
+Kahn and Fua (1995) ,1995,Child antisocial behavior,1,0,0.90,0.40,1.39
+Kohrt et al. (2004) ,2004,Child antisocial behavior,0,1,0.62,0.21,1.03
+Oyserman et al. (2005) ,2005,Child antisocial behavior,0,1,0.00,-0.31,0.31
+Slade and Wissow (2004)  ,2004,Child antisocial behavior,1,0,0.12,0.03,0.21
+"Straus, Sugarman, and Giles-Sims (1997) ",1997,Child antisocial behavior,0,1,0.41,0.31,0.50
+Bakoula et al. (2009),2009,Child externalizing behavior problems,1,0,0.49,0.34,0.63
+"Barnes, Boutwell, Beaver, and Gibson (2013)",2013,Child externalizing behavior problems,0,1,0.39,0.29,0.49
+"Choe, Olson, and Sameroff (2013)",2013,Child externalizing behavior problems,0,1,0.36,0.10,0.61
+"Eisenberg, Chang, Ma, and Huang (2009)",2009,Child externalizing behavior problems,0,1,0.20,0.04,0.36
+Gershoff et al. (2012),2012,Child externalizing behavior problems,0,1,0.30,0.27,0.34
+Hesketh et al. (2011),2011,Child externalizing behavior problems,0,1,0.20,0.12,0.29
+Lansford et al. (2012),2012,Child externalizing behavior problems,0,1,0.93,0.75,1.10
+"Maguire-Jack, Gromoske, and Berger (2012)",2012,Child externalizing behavior problems,0,1,0.19,0.13,0.25
+McKee et al. (2007),2007,Child externalizing behavior problems,0,1,0.40,0.32,0.48
+McLeod and Shanahan (1993),1993,Child externalizing behavior problems,0,1,0.56,0.46,0.66
+Mulvaney and Mebert (2007),2007,Child externalizing behavior problems,0,1,0.45,0.32,0.58
+"Olson, Ceballo, and Park (2002)",2002,Child externalizing behavior problems,0,1,0.68,0.08,1.27
+"Regev, Gueron-Sela, and Atzaba-Poria (2012)",2012,Child externalizing behavior problems,0,1,0.52,0.18,0.86
+Westbrook et al. (2013),2013,Child externalizing behavior problems,0,1,0.58,0.09,1.08
+Bakoula et al. (2009) ,2009,Child internalizing behavior problems ,1,0,0.34,0.19,0.48
+" Eisenberg, Chang, Ma, and Huang (2009) ",2009,Child internalizing behavior problems ,0,1,0.49,0.33,0.66
+Gershoff et al. (2010)  ,2010,Child internalizing behavior problems ,0,1,0.30,0.07,0.53
+Hesketh et al. (2011) ,2011,Child internalizing behavior problems ,0,1,-0.04,-0.12,0.04
+Lau et al. (2010) ,2010,Child internalizing behavior problems ,1,0,0.28,0.15,0.41
+" Maguire-Jack, Gromoske, and Berger (2012) ",2012,Child internalizing behavior problems ,0,1,0.11,0.05,0.18
+McKee et al. (2007),2007,Child internalizing behavior problems ,0,1,0.19,0.11,0.27
+McLeod and Shanahan (1993) ,1993,Child internalizing behavior problems ,0,1,0.32,0.23,0.42
+Buehler and Gerard (2002),2002,Child mental health problems,0,1,0.53,0.42,0.64
+"Bugental, Martorell, and Barraza (2003)",2003,Child mental health problems,0,1,1.23,0.53,1.93
+"Christie-Mizell, Pryor, and Grossman (2008)",2008,Child mental health problems,0,1,0.20,0.11,0.30
+Kandel (1990),1990,Child mental health problems,0,1,0.42,0.15,0.69
+Kohrt et al. (2004),2004,Child mental health problems,0,1,0.18,-0.22,0.58
+Lau et al. (2003),2003,Child mental health problems,1,0,0.42,-0.01,0.85
+Li et al. (2001),2001,Child mental health problems,1,0,0.14,0.02,0.26
+Lynam et al. (2009),2009,Child mental health problems,0,1,0.41,0.19,0.63
+"McLoyd, Kaplan, Hardaway, and Wood (2007)",2007,Child mental health problems,0,1,0.26,0.10,0.42
+Sears (1961),1961,Child mental health problems,0,1,0.23,-0.08,0.55
+Alati et al. (2010),2010,Child alcohol or substance abuse,1,0,-0.04,-0.12,0.05
+Lau et al. (2003),2003,Child alcohol or substance abuse,1,0,0.15,-0.28,0.58
+Lau et al. (2005),2005,Child alcohol or substance abuse,1,0,0.19,0.16,0.22
+"Coyl, Roggman, and Newland (2002) ",2002,Negative parent–child relationship ,0,1,0.58,0.25,0.92
+Joubert (1991) ,1991,Negative parent–child relationship ,0,1,0.42,0.07,0.76
+Kandel (1990) ,1990,Negative parent–child relationship ,0,1,0.46,0.19,0.73
+"Larzelere, Klein, Schumm, and Alibrando (1989) ",1989,Negative parent–child relationship ,0,1,0.40,0.08,0.72
+Palmer and Hollin (2001) ,2001,Negative parent–child relationship ,0,1,0.90,0.45,1.34
+Berlin et al. (2009),2009,Impaired cognitive ability,0,1,0.16,0.08,0.24
+"Gest, Freeman, Domitrovich, and Welsh (2004)",2004,Impaired cognitive ability,0,1,0.17,-0.28,0.62
+Lynam et al. (2009),2009,Impaired cognitive ability,0,1,0.14,-0.07,0.35
+"Maguire-Jack, Gromoske, and Berger (2012)",2012,Impaired cognitive ability,0,1,0.00,-0.06,0.07
+Oyserman et al. (2005),2005,Impaired cognitive ability,0,1,-0.18,-0.49,0.13
+"Parkinson, Wallis, Prince, and Harvey (1982)",1982,Impaired cognitive ability,0,1,1.22,0.16,2.27
+Power and Chapieski (1986),1986,Impaired cognitive ability,1,0,1.71,0.59,2.83
+Straus and Paschall (2009),2009,Impaired cognitive ability,0,1,0.34,0.23,0.44
+Joubert (1991),1991,Low self-esteem,0,1,0.12,-0.22,0.46
+Lau et al. (2003),2003,Low self-esteem,1,0,0.00,-0.43,0.43
+Talillieu and Brownridge (2013),2013,Low self-esteem,1,0,0.17,0.05,0.28
+"Boutwell, Franklin, Barnes, and Beaver (2011)",2011,Low self-regulation,0,1,0.61,0.50,0.71
+"Eisenberg, Chang, Ma, and Huang (2009)",2009,Low self-regulation,0,1,0.06,-0.10,0.22
+Lynam et al. (2009),2009,Low self-regulation,0,1,0.22,0.01,0.44
+"Bugental, Martorell, and Barraza (2003)",2003,Victim of physical abuse,0,1,1.06,0.39,1.74
+Foshee et al. (2005),2005,Victim of physical abuse,0,1,0.49,0.38,0.61
+Frias-Armenta (2002),2002,Victim of physical abuse,1,0,0.44,0.09,0.78
+Gagne et al. (2007),2007,Victim of physical abuse,0,1,1.35,1.18,1.53
+"Hemenway, Solnick, and Carter (1994)",1994,Victim of physical abuse,1,0,0.25,0.06,0.44
+"Herzberger, Potts, and Dillon (1981)",1981,Victim of physical abuse,0,1,1.00,0.08,1.91
+Trickett and Kuczynski (1986),1986,Victim of physical abuse,1,0,0.31,-0.46,1.09
+Zolotor et al. (2008),2008,Victim of physical abuse,1,0,0.38,0.28,0.49
+"Fergusson, Boden, and Horwood (2008) ",2008,Adult antisocial behavior ,1,0,0.45,0.33,0.56
+Lynch et al. (2006) ,2006,Adult antisocial behavior ,1,0,0.10,0.00,0.19
+McCord (1991),1991,Adult antisocial behavior ,1,0,0.60,0.25,0.96
+"Fergusson, Boden, and Horwood (2008) ",2008,Adult mental health problems ,1,0,0.21,0.09,0.32
+Joubert (1992) ,1992,Adult mental health problems ,0,1,-0.03,-0.33,0.27
+Lynch et al. (2006) ,2006,Adult mental health problems ,1,0,0.06,-0.04,0.15
+ Medina et al. (2001) ,2001,Adult mental health problems ,0,1,1.09,0.43,1.76
+"Miller-Perrin, Perrin, and Kocur (2009) ",2009,Adult mental health problems ,0,1,0.04,-0.58,0.66
+"Nettelbladt, Svenson, and Serin (1996) ",1996,Adult mental health problems ,1,0,0.64,0.15,1.14
+"Schweitzer, Zafar, Pavlicova, and Fallon (2011) ",2011,Adult mental health problems ,0,1,1.12,0.44,1.80
+Talillieu and Brownridge (2013),2013,Adult mental health problems ,1,0,0.19,0.08,0.31
+Baer and Corrado (1974),1974,Adult alcohol or substance abuse,1,0,0.41,0.13,0.69
+"Fergusson, Boden, and Horwood (2008)",2008,Adult alcohol or substance abuse,1,0,0.29,0.18,0.40
+Lynch et al. (2006),2006,Adult alcohol or substance abuse,1,0,0.05,-0.05,0.14
+"Tennant, Detels, and Clark (1975)",1975,Adult alcohol or substance abuse,1,0,-0.13,-0.23,-0.04
+Deb and Adak (2006),2006,Adult support for physical punishment,1,0,0.88,0.45,1.31
+Durrant (1993),1993,Adult support for physical punishment,1,0,0.39,0.13,0.66
+Graziano et al. (1992) U.S. sample,1992,Adult support for physical punishment,0,1,0.45,0.04,0.87
+Graziano et al. (1992) India sample,1992,Adult support for physical punishment,0,1,0.20,-0.11,0.51
+"Hemenway, Solnick, and Carter (1994)",1994,Adult support for physical punishment,1,0,0.12,-0.18,0.43
