@@ -1206,15 +1206,13 @@ med.5 <-
 
 ## Distributional Models
 
-In basic regression with a Gaussian DV, we predict the mean, $\mu$ through some linear model. The second parameter of the normal distribution – the residual standard deviation $\sigma$ – is assumed to be constant across observations. We estimate it but do not try to predict it.
+In basic regression with a Gaussian DV, we predict the mean, $\mu$ through some linear model. The second parameter of the normal distribution – the residual standard deviation $\sigma$ – is assumed to be constant across observations. We estimate it but do not predict it.
 
 This extends beyond Gaussian DVs, as most response distributions have a "location" parameter and one or more "scale" or "shape" parameters. Instead of only predicting the location parameters, we can also predict the scale parameters
 
-When to use? You've seen this with Welch's t-test, and if you've ever done SEM you can model variance differences through constraints or  group models
-
 ---
 
-$$y_{ik} \sim t(\mu_{ik}, \sigma_{ik})$$
+$$y_{ik} \sim normal(\mu_{ik}, \sigma_{ik})$$
 $$\mu_{ik} = \beta_0 + \beta_1 Group_{ik}$$
 $$\sigma_{ik} = \gamma_0 + \gamma_1 Group_{ik}$$
 
@@ -1299,22 +1297,9 @@ d.1a %>%
 ```
 
 
-```{r}
-#| code-fold: true
-d.1a %>% 
-  gather_draws(b_sigma_groupCTRL, b_sigma_groupPD) %>% 
-  mutate(value = exp(.value)) %>% 
-  ggplot(aes(x = value, group = .variable,  fill = .variable)) +
-  stat_halfeye(alpha = .7)
-```
-
-
-
-
 ---
 
-But these are estimates of the parameter, not variances per se. Can we have a plot that includes variances and means? 
-
+But these are estimates of the parameter, not spread in the groups. Can we have a plot that includes variances and means? 
 
 ---
 
@@ -1329,16 +1314,65 @@ mlm %>%
 
 
 
+## distributional MLM models
+
+
+```{r}
+#| code-fold: true
+set.seed(16)
+melsm %>% 
+  ungroup() %>% 
+  nest(data = !record_id) %>% 
+  slice_sample(n = 12) %>% 
+  unnest(data) %>% 
+  ggplot(aes(x = day, y = N_A.lag)) +
+  geom_line(color = "black") +
+  geom_point(color = "black", size = 1/2) +
+  ylab("negative affect (standardized)") +
+  facet_wrap(~record_id)
+```
+
+
+----------------
+
+standard MLM 
+
+```{r}
+#| code-fold: true
+melsm.1 <-
+  brm(family = gaussian,
+      N_A.std ~ 1 + day01 + (1 + day01 | record_id),
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(exponential(1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.1")
+```
+
+
+---
+
+```{r}
+summary(melsm.1)
+```
+
+
+
 
 
 
 ## MLM assumptions
 
 
-Sigma, which captures the variation in NA not accounted for by the intercepts, time predictors, and the correlation. An assumption is that sigma does NOT vary across persons, occasions, or other variables. 
+Sigma, which captures the variation in NA not accounted for by the intercepts, time predictor, and the correlation. An assumption is that sigma does NOT vary across persons, occasions, or other variables. 
 
-Posterior predictive interval is the same (and fitted) even though it seem inappropriate from person to person
+Posterior predictive interval is the same across people even though it seems inappropriate from person to person
 
+-----
 
 
 ```{r}
@@ -1406,7 +1440,29 @@ melsm.2 <-
 ```
 
 ---
+
+No sigma - location covariance
+
+```{r, eval = FALSE}
+#| code-fold: true
+melsm.2 <-
+  brm(family = gaussian,
+      bf(N_A.std ~ 1 + day01 + (1 + day01 | record_id),
+         sigma ~ 1 + (1 | record_id)),
+                prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd),
+                prior(normal(0, 1), class = Intercept, dpar = sigma),
+                prior(exponential(1), class = sd, dpar = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 3000, warmup = 1000, chains = 4, cores = 4,
+      data = melsm,
+      backend = "cmdstanr",
+      file = "melsm.2")
+```
  
+ 
+------
 
 
 ```{r}
@@ -1552,7 +1608,7 @@ melsm.3 %>%
   data_grid(day01 = seq_range(day01, n = 20), .model = melsm) %>% 
   add_epred_draws(melsm.3, re_formula = NA, dpar = T) %>% 
   ungroup() %>% 
-  select(day01, .epred, sigma)
+  select(day01, .epred, mu, sigma)
 ```
 20 * 8000 = 160000
 
@@ -1573,20 +1629,8 @@ melsm %>%
 
 ---
 
-```{r}
-#| code-fold: true
- melsm %>% 
-  data_grid(day01 = seq_range(day01, n = 20), record_id) %>% 
-  add_linpred_draws(melsm.3, re_formula = NA, dpar = T) %>% 
-  ggplot()+
-  aes(x = day01, y = sigma) +
-  stat_lineribbon(.width = 0.95, alpha = .5)
-```
-
-
----
-
 Lets look at random effects. Remember we fit a random effect for both the intercept and the slope (time)
+
 ```{r}
 #| code-fold: true
 melsm.3 %>% 
@@ -1600,9 +1644,13 @@ spread_draws(r_record_id__sigma[ID, term]) %>%
 ```{r}
 #| code-fold: true
 melsm.3 %>% 
-spread_draws(r_record_id__sigma[ID, term]) %>% 
-  mutate(r_record_id__sigma = exp(r_record_id__sigma)) %>% 
-   median_qi(estimate = r_record_id__sigma) 
+spread_draws(b_sigma_Intercept,b_sigma_day01, r_record_id__sigma[ID, term]) %>% 
+  pivot_wider(names_from = term, values_from = r_record_id__sigma) %>% 
+  mutate(r_sigma_intercept = exp(b_sigma_Intercept + Intercept)) %>% 
+  mutate(r_sigma_slope = (b_sigma_day01 + day01)) %>% 
+  select(ID, r_sigma_intercept, r_sigma_slope ) %>% 
+   median_qi() %>% 
+  select(ID, r_sigma_intercept, r_sigma_slope)
 ```
 
 ---
@@ -1610,8 +1658,8 @@ spread_draws(r_record_id__sigma[ID, term]) %>%
 
 ```{r}
 melsm.3 %>% 
-spread_draws(r_record_id__sigma[ID, term]) %>% 
-  mutate(r_record_id__sigma = exp(r_record_id__sigma)) %>% 
+spread_draws(b_sigma_Intercept, r_record_id__sigma[ID, term]) %>% 
+  mutate(r_record_id__sigma = exp(b_sigma_Intercept + r_record_id__sigma)) %>% 
    median_qi(estimate = r_record_id__sigma) %>% 
   filter(term == "Intercept") %>% 
   ggplot(aes(x = reorder(ID, estimate), y = estimate, ymin = .lower, ymax = .upper)) +
@@ -1625,27 +1673,15 @@ spread_draws(r_record_id__sigma[ID, term]) %>%
 ```{r}
 #| code-fold: true
 melsm.3 %>% 
-spread_draws(r_record_id__sigma[ID, term]) %>% 
-  mutate(r_record_id__sigma = exp(r_record_id__sigma)) %>% 
+spread_draws(b_sigma_day01, r_record_id__sigma[ID, term]) %>% 
+  mutate(r_record_id__sigma = (b_sigma_day01 + r_record_id__sigma)) %>% 
    median_qi(estimate = r_record_id__sigma) %>% 
   filter(term == "day01") %>% 
   ggplot(aes(x = reorder(ID, estimate), y = estimate, ymin = .lower, ymax = .upper)) +
-   geom_pointinterval(point_colour = "black", interval_color = "grey", point_alpha = .25) + scale_x_discrete("Participants ranked by posterior SD", breaks = NULL) + ylab("sigma estimate") + theme_light()
+   geom_pointinterval(point_colour = "black", interval_color = "grey", point_alpha = .25) + scale_x_discrete("Participants ranked by posterior SD", breaks = NULL) + ylab("log slope estimate") + theme_light()
 ```
 
 
----
-
-When on the log scale you can more easily see some people are less than average where some are more than average in terms of sigma
-```{r}
-#| code-fold: true
-melsm.3 %>% 
-spread_draws(r_record_id__sigma[ID, term]) %>% 
-   median_qi(estimate = r_record_id__sigma) %>% 
-  filter(term == "day01") %>% 
-  ggplot(aes(x = reorder(ID, estimate), y = estimate, ymin = .lower, ymax = .upper)) +
-   geom_pointinterval(point_colour = "black", interval_color = "grey", point_alpha = .25) + scale_x_discrete("Participants ranked by posterior SD", breaks = NULL) + ylab("sigma estimate") + theme_light()
-```
 
 
 ---
@@ -1676,7 +1712,7 @@ ggplot(aes(x = day01, y = N_A.std)) +
 preds3 %>% 
 ggplot(aes(x = .prediction)) +
   stat_halfeye(aes(x = .prediction)) +
-  facet_wrap(~record_id) + xlim(-4,4)
+  facet_wrap(~record_id) + xlim(-3,3)
 
 ```
 
@@ -1883,14 +1919,16 @@ plot(imp.1)
 
 ## Revisting bayesian updating 
 
-Remember the posterior can be thought of as a new prior for your next data aquisition. You could do this one datapoint at a time (remember globe tossing model in SR?), or a dataset at the time.  
+Remember the posterior can be thought of as a new prior for your next data acquisition. You could do this one datapoint at a time (remember globe tossing model in SR?), or a dataset at the time. 
+
+MI is sort of like that. You could instear run 1 model, find the posterior, use that as a prior and then move on with the rest of the datasets repeating this process. Sort of like this MI process. 
 
 
 ## Bayesian imputation within brms
 
 1) Which variables contain missingness? 2) Which variables should predict missingness 3) what imputed variables are used as predictors
 
-Taking care of this in brms ends up creating a multivariate model
+Taking care of this in brms ends up creating a multivariate model!
 ```{r}
 bform <- bf(bmi | mi() ~ age * mi(chl)) +
   bf(chl | mi() ~ age) + set_rescor(FALSE)
@@ -1954,6 +1992,733 @@ imp.2 %>%
   labs(x = "BMI imputed values", y = "IDs") +
   theme_ggdist()
 ```
+
+------
+
+```{r}
+#| code-fold: true
+MI <-read.csv("https://raw.githubusercontent.com/josh-jackson/bayes/master/hw3.csv")
+
+set.seed(7474)
+MI.missing <- MI %>% 
+    mutate(happiness =  replace(happiness, sample(row_number(),  
+           size = ceiling(0.3 * n()), replace = FALSE), NA)) %>% 
+  mutate(schoool.success =  replace(schoool.success, sample(row_number(),  
+           size = ceiling(0.3 * n()), replace = FALSE), NA))
+MI.missing
+```
+
+-------
+
+```{r}
+summary(lm(schoool.success ~ happiness, data = MI))
+```
+
+
+------
+
+```{r}
+summary(lm(schoool.success ~ happiness, data = MI.missing))
+```
+
+
+-----
+
+
+```{r}
+
+imp.3 <- bf(schoool.success | mi() ~ mi(happiness)) +
+        bf(happiness | mi() ~ friendship.quality + SES)
+
+imp.3 <- brm(imp.3, 
+    data = MI.missing, 
+    iter = 2000, warmup = 1000, chains = 4, cores = 4,
+    backend = "cmdstanr", 
+    file = "imp.3")
+
+```
+
+-------
+
+```{r}
+summary(imp.3)
+```
+
+## doing it the "long" way
+
+We could impute missing values for any variable via posterior prediction. We can set up any model with variables we think are related to the variable we want to impute. After fitting the model we can make predictions for a) people who have existing data but missing on our DV or b) completely new people who have some set of predictors. 
+
+
+
+## measurement error
+
+Most measurements are taken with some error, especially in psychology. 
+
+Often require alpha > .7. Advanced approaches (SEM) use latent variables. 
+
+When measurement error is large relative to the quantity being measured, or when very precise relations can be estimated being measured quantities, it is useful to introduce an explicit model of measurement error such as latent measurement model in SEM. 
+
+In bayes it is related to missing data as missing value can be though of as a value with infinite measurement error. 
+
+------
+
+With measurement error, the insight is to realize that any uncertain piece of data can be replaced by a distribution that reflects uncertainty. 
+
+CTT defines this as: true value = observed value + error
+
+Can think about a distribution that reflects the true value and errors around it e.g., true value is 10, but some error in. measurement y ~ N(10,2)
+
+
+-----
+
+schoool.success (observed) \~ Normal( True.SS_i , SE.SS_i )
+True.SS_i \~ Normal( $\mu_i$ , $\sigma$ )
+
+$\mu_i$ = $\beta_0$ + $\beta_1$ $SS\_c$ 
+
+$\beta_0$ \~ Normal(0, 5)\
+$\beta_1$ \~ Normal(0, 5)\
+$\sigma$ \~ HalfCauchy(0,10)
+
+
+-----
+
+Where do we get the SE of the DV? What do we know about standard error of measurement?
+
+SEM = SD * sqrt (1-reliability)
+3.28 * sqrt (.7) = 2.74
+
+```{r}
+library(psych)
+describe( MI)
+```
+
+
+
+-----
+
+```{r}
+
+ME.1 <- brm(schoool.success | mi() ~ happiness, 
+            data = MI, 
+            iter = 2000, warmup = 1000, chains = 4, cores = 4,
+            backend = "cmdstanr", 
+            file = "ME.1")
+
+```
+
+
+-------
+
+```{r}
+summary(ME.1)
+```
+
+-------------
+
+```{r}
+
+ME.2 <- brm(schoool.success | mi(2.74) ~ happiness, 
+            data = MI, 
+            iter = 2000, warmup = 1000, chains = 4, cores = 4,
+            backend = "cmdstanr", 
+            file = "ME.2")
+
+```
+
+-------
+
+```{r}
+summary(ME.2)
+```
+
+
+## Meta-analysis
+
+Meta-analysis plays out statistically very much like measurement error models, where the inferences drawn from multiple data sets are combined to do inference over all of them. 
+
+Meta analysis are also basically a multilevel model!
+
+Learn more: https://osf.io/preprints/psyarxiv/7tbrm/
+
+------
+
+We can think of a meta analysis as our goal is estimating some population effect theta, with individual studies differing in how well they capture the theta. We should model each study specific error, which is easy because each sample already has this estimate. 
+
+$$y_i \sim \operatorname{Normal}(\theta_i, \sigma_i)$$
+We will not model sigma directly as we already have study specific estimates. However, if we had raw data we could use a distributional model to do so! 
+
+------------
+
+$$y_i \sim \operatorname{Normal}(\theta_i, \sigma_i)$$
+We can break theta down into two components, a Mu which provides us estimates of the mean. And tau, which provides us the between study heterogeneity.
+
+$$\theta_i \sim N(\mu, \tau)$$
+Hopefully you can see that meta-analyses are multilevel models as this is a hyperprior where we need prior distributions for mu and tau
+
+-------
+
+```{r}
+#| code-fold: true
+
+spank <- read.csv("https://raw.githubusercontent.com/josh-jackson/bayes23/main/spank.csv")
+spank <-
+  spank %>% 
+  mutate(se = (ul - ll) / 3.92)
+spank 
+```
+
+
+-------
+
+Modeling the difference between spanking and not spanking with cohen's d
+
+$$ \begin{eqnarray} \text{d}_i & \sim & \text{Normal}(\theta_i, \sigma_i = \text{se}_i) \\ \theta_i & \sim & \text{Normal} (\mu, \tau) \\ \mu & \sim & \text{Normal} (0, 1) \\ \tau & \sim & \text{HalfCauchy} (0, 1) \end{eqnarray} $$
+
+----
+
+Each d is an estimate at the population, and we already have uncertainty estimates that we can directly incorporate into the model with the se() function. This is very similar to our MI standard error of the measurement procedure. 
+
+```{r}
+meta.1 <- 
+  brm(family = gaussian,
+      d | se(se) ~ 1 + (1 | study),
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      data = spank, 
+      backend = "cmdstanr", 
+      file = "meta.1")
+```
+
+------
+
+```{r}
+summary(meta.1)
+```
+
+
+
+--------
+
+```{r}
+#| code-fold: true
+get_variables(meta.1)
+```
+
+
+------
+
+```{r, eval = FALSE}
+#| code-fold: true
+meta.1 %>%
+  spread_draws(b_Intercept, r_study[study,Intercept]) 
+```
+Warning: Expected 2 pieces. Additional pieces discarded in 30 rows [1, 3, 9, 12, 13, 15, 16, 17, 18, 19, 23, 24, 25, 32, 38, 39, 42, 52, 60, 65, ...].Error in `spread()`:
+! Each row of output must be identified by a unique combination of keys.
+ℹ Keys are shared for 4 rows
+• 12, 13
+• 24, 25
+
+wut?
+
+------
+
+We can account for this two ways. 1. modeling each sample rather than study. 2. Or we can model each different DV. 
+
+```{r}
+
+spank <- spank %>% mutate(id = row_number())
+
+
+```
+
+-----
+
+```{r}
+meta.2 <- 
+  brm(family = gaussian,
+      d | se(se) ~ 1 + (1 | study) + (1 | id),
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      data = spank, 
+      backend = "cmdstanr", 
+      file = "meta.2")
+```
+
+
+-----
+
+```{r}
+summary(meta.2)
+```
+
+-------
+
+```{r}
+get_variables(meta.2)
+```
+
+
+----
+```{r}
+#| code-fold: true
+meta.2 %>%
+  spread_draws(b_Intercept, r_id[id,]) %>%
+  mutate(mu = b_Intercept + r_id) %>% 
+  median_qi() %>% 
+  ggplot(aes(x = mu)) +
+  stat_halfeye(.width = .95)
+```
+
+
+--------
+
+```{r}
+#| code-fold: true
+meta.2 %>%
+  spread_draws(b_Intercept, r_id[id,]) %>%
+  mutate(mu = b_Intercept + r_id) %>%
+  ggplot(aes(x = mu, y = reorder(id, mu))) +
+  stat_halfeye(.width = .95, size = 2/3) +
+  labs(x = expression(italic("Cohen's d")),
+       y = NULL) + xlim(-.1, .8)
+```
+Is this what we want? 
+
+---------
+
+```{r}
+#| code-fold: true
+spank %>%
+  data_grid(study, id, se)
+  
+```
+
+Too many combinations once we add in epred draws, also we dont want all those levels. What do we do? 
+
+-------
+
+```{r}
+#| code-fold: true
+library(marginaleffects)
+predictions(meta.2, type = "response", ndraws = 100, re_formula = NULL) %>%  posterior_draws() %>% 
+  ggplot(aes(x = estimate, y = reorder(study, estimate))) +
+  stat_halfeye(.width = .95, size = 2/3) +
+  labs(x = expression(italic("Cohen's d")),
+       y = NULL) + xlim(-.1, .8)
+
+```
+
+-----
+
+```{r}
+
+#| code-fold: true
+predictions(meta.2, type = "response", ndraws = 1000, re_formula = NULL) %>%  posterior_draws() %>% 
+  sample_n_of(25,id) %>% 
+  ggplot(aes(x = draw, y = reorder(study, draw))) +
+  stat_halfeye(.width = .95) +
+  labs(x = expression(italic("Cohen's d")),
+       y = NULL) + xlim(-.1, 1)
+
+```
+
+
+-----
+
+Given that some papers have multiple DVs (and not just multiple samples), we could account for this dependence 
+
+```{r}
+
+meta.3 <- 
+  brm(family = gaussian,
+      d | se(se) ~ 1 + (1 | study) + (1 | outcome) + (1 | id),
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      data = spank, 
+      backend = "cmdstanr", 
+      file = "meta.3")
+
+```
+
+
+
+
+--------
+
+```{r}
+summary(meta.3)
+```
+
+-------
+
+```{r}
+#| code-fold: true
+meta.3 %>%
+  spread_draws(b_Intercept, r_outcome[outcome,]) %>%
+  mutate(mu = b_Intercept + r_outcome) %>%
+  ggplot(aes(x = mu, y = reorder(outcome, mu))) +
+  stat_halfeye(.width = .95, size = 2/3) +
+  labs(x = expression(italic("Cohen's d")),
+       y = NULL) + xlim(-.1, .8)
+```
+
+-------
+
+```{r}
+#| code-fold: true
+ind <- meta.3 %>%
+  spread_draws(b_Intercept, r_outcome[outcome,]) %>%
+  mutate(mu = b_Intercept + r_outcome)
+
+out_all_sum <- ind %>% group_by(outcome) %>% 
+      mean_qi(mu)
+
+
+meta.3 %>%
+  spread_draws(b_Intercept, r_outcome[outcome,]) %>%
+  mutate(mu = b_Intercept + r_outcome) %>%
+  ggplot(aes(x = mu, y = reorder(outcome, mu))) +
+  stat_halfeye(.width = .95, size = 2/3) +
+  labs(x = expression(italic("Cohen's d")),
+       y = NULL) + xlim(-.1, .8)+
+    geom_text(
+    data = mutate_if(out_all_sum, is.numeric, round, 2),
+    aes(label = glue::glue("{mu} [{.lower}, {.upper}]"), x = Inf),
+    hjust = "inward")
+
+
+
+```
+
+
+
+## meta-regression
+
+Can we predict these variables? 
+
+```{r}
+#| code-fold: true
+meta.4 <- 
+  brm(family = gaussian,
+      d | se(se) ~ 1 + between + (1 | study) + (1 | outcome) + (1 | id),
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      data = spank, 
+      backend = "cmdstanr", 
+      file = "meta.4")
+
+```
+
+
+-------
+
+```{r}
+summary(meta.4)
+```
+
+
+## IRT
+
+Item response theory is no more than a regression model to predict item responses
+
+Map items onto a latent construct. Unlike standard CTT, we assume: 
+  1) items are not interchangeable. In standard approaches more items, better reliability, as there is a focus on the broad scale rather than specific items.  
+  2) some items are better suited for different levels of the latent construct. E.g. a consideration of hard vs easy items 
+  
+## What do these regression models look like?  
+
+Use different parameters to predict scores: 
+1. Difficulty
+2. Discrimination
+3. Guessing 
+
+Use different response options: 
+1. Logistic
+2. Categorical (mulit-nomial)
+3. Graded response or partial credit (ordered categorical)
+4. Ex-Gaussian and shifted lognormal distribution
+5. Wiener drift diffusion model
+
+## Item difficulty 
+
+Difficultly is one factors that influences performance (think hard math problems). We assume that those who have high levels of the construct (cog ability, neuroticism) are more likely to correctly answer hard problems than those that are low on the construct (theta). 
+
+An item's difficulty is defined as the trait level required for someone to have a probability of 50% correctly answering/endorsing. 
+
+An item with a difficult of 0 (standardized values), person with a 0 theta has a 50:50 shot, whereas someone with a 1 theta will have a greater probability. For an item difficulty of 1.5, a person needs a 1.5 theta to have a 50:50 chance.   
+
+## Discrimination
+
+How well items can differentiate a person who has high theta levels from a person who has low theta levels. This is related to how strongly the item is associated with the latent construct. E.g., is it a good item? Does it have construct irrelevant content? 
+
+Akin to item construct correlation. Or item factor loadings. 
+
+Positive discrimination means item is associated with the latent trait. Zero means there is no association. Negative means those that score high are likely to score low on theta. 
+
+## 1-PL (Rasch Model)
+
+$$ y_{pi}  \sim  \text{Bernoulli}(p_{pi})$$
+$$ logit(p_{pi}) = \beta_0 + \theta_p + \delta_i $$
+$$ \theta_p  \sim \text{Normal}(0, \sigma_\theta)$$
+$$ \delta_i  \sim \text{Normal}(0, \sigma_\delta)$$
+
+## IRT in brms
+
+316 participants on 24 items of a questionnaire on verbal aggression. r2 is our DV and is measured Yes/No. 
+```{r}
+library(lme4)
+data("VerbAgg", package = "lme4")
+IRT <- VerbAgg
+IRT
+```
+
+
+-------
+
+```{r}
+irt.1 <- brm(
+  family = brmsfamily("bernoulli", "logit"),
+  r2 ~ 1 + (1 | item) + (1 | id),
+  prior = c(prior(normal(0, 3), class = Intercept),
+            prior(normal(0, 3), class = "sd", group = "item"),
+            prior(normal(0, 3), class = "sd", group = "id")),
+    iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      data = IRT, 
+      backend = "cmdstanr", 
+      file = "irt.1")
+```
+
+
+
+------
+
+```{r}
+summary(irt.1)
+```
+
+--------
+
+```{r}
+get_variables(irt.1)
+```
+
+## Item Characteristic Curves (ICCs)
+
+It plots the probability of endorsement as a function of latent theta. The sigmoid shape will be parallel across items in the 1pl. 
+
+We want to specify the relevant part of the parameter space for θ, averaging across people. Since the the 1PL model has a logit link, we know most of theta will span from [-4, 4]
+
+$$ logit(p_{pi}) = \beta_0 + \theta_p + \delta_i $$
+$$ p(y = 1) = \text{logit}^{-1}(\beta_0 + \theta_p + \delta_i) $$
+$$ \text{logit}^{-1} = \frac{\text{exp(x)}}{1+\text{exp(x)}}$$
+
+
+
+----
+
+```{r}
+#| code-fold: true
+irt.1 %>% 
+  spread_draws(b_Intercept, r_item[item,]) %>% 
+  ungroup() %>% 
+  tidyr::expand(nesting(.draw, b_Intercept, item, r_item), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
+  mutate(p = inv_logit_scaled(b_Intercept + r_item + theta)) %>% 
+  group_by(theta, item) %>% 
+  summarise(p = mean(p)) %>% 
+  ggplot(aes(x = theta, y = p, color = item)) +
+  geom_line() +
+  labs(title = "ICCs",
+       x = expression(theta~('ability on the logit scale')),
+       y = expression(italic(p)(y==1))) 
+```
+
+
+
+
+## Item Information Curves
+
+They are the derivative of the item characteristic curve, and so tell us the rate of change in that probability. Same information, just a different way to look at it. 
+
+The y axis is information. In 1pl models the IIC will have the same information shape.  
+
+
+----------------
+
+```{r}
+#| code-fold: true
+irt.1 %>% 
+  spread_draws(b_Intercept, r_item[item,]) %>% 
+  ungroup() %>% 
+  tidyr::expand(nesting(.draw, b_Intercept, item, r_item), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
+  mutate(p = inv_logit_scaled(b_Intercept + r_item + theta)) %>% 
+mutate(i = p * (1 - p)) %>% 
+  group_by(theta, item) %>% 
+  summarise(i = mean(i)) %>%
+  ggplot(aes(x = theta, y = i, color = item)) +
+  geom_line() +
+  labs(title = "IICs",
+       x = expression(theta~('ability on the logit scale')),
+       y = "information") 
+```
+
+
+
+## Test Information Curve
+
+The test information curve sums the item information scores to provide a summary of information for the full scale. We can see what levels of theta may or may not be captured by the scale. 
+
+```{r}
+#| code-fold: true
+irt.1 %>% 
+  spread_draws(b_Intercept, r_item[item,]) %>% 
+  ungroup() %>% 
+  tidyr::expand(nesting(.draw, b_Intercept, item, r_item), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
+  mutate(p = inv_logit_scaled(b_Intercept + r_item + theta)) %>% 
+mutate(i = p * (1 - p)) %>% 
+  group_by(theta, .draw) %>% 
+  summarise(sum_i = sum(i)) %>% 
+  group_by(theta) %>% 
+  summarise(i = median(sum_i)) %>%
+  ggplot(aes(x = theta, y = i)) +
+  geom_line() +
+  labs(title = "The test information curve",
+       x = expression(theta~('ability on the logit scale')),
+       y = "information")
+```
+
+
+## 2PL (Two parameter logistic)
+
+$$ y_{pi}  \sim  \text{Bernoulli}(p_{pi})$$
+$$ logit(p_{pi}) =  \alpha_i(\theta_p + \delta_i) $$
+Alpha is our discrimination parameter. In the 1pl it is held constant at 1. The i subscript indicates the discrimination parameter varies across the items, not across persons. 
+
+$$ \theta_p  \sim \text{Normal}(0, \sigma_\theta)$$
+$$ \delta_i  \sim \text{Normal}(0, \sigma_\delta)$$
+-----
+
+What does discrimination do? 
+
+We will see non-parallel lines in the item characteristic terms. 
+
+The 1pl is equivalent to setting factor loadings to 1 in SEM, where this relaxes that constraint. 
+
+## Non-linear syntax
+
+```{r}
+irt.2 <- brm(
+  family = brmsfamily("bernoulli", "logit"),
+  bf(r2 ~ exp(logalpha) * delta,
+    delta ~ 1 + (1 |i| item) + (1 | id),
+    logalpha ~ 1 + (1 |i| item),
+    nl = TRUE),
+  prior = c(prior(normal(0, 1.5), class = b, nlpar = delta),
+            prior(normal(0, 1), class = b, nlpar = logalpha),
+            prior(student_t(10, 0, 1), class = sd, nlpar = delta),
+            prior(student_t(10, 0, 1), class = sd, nlpar = logalpha),
+            prior(lkj(2), class = cor)),
+    iter = 2000, warmup = 1000, cores = 4, chains = 4,
+    data = IRT, 
+    backend = "cmdstanr", 
+    file = "irt.2",
+  control = list(adapt_delta = .99))
+
+```
+
+---------
+
+```{r}
+summary(irt.2)
+```
+
+-------
+
+Random effect estimates for each id__delta item__delta and item__alpha
+```{r}
+get_variables(irt.2)
+```
+
+
+-----
+
+```{r}
+#| code-fold: true
+irt.2 %>% 
+  spread_draws(b_delta_Intercept, b_logalpha_Intercept, r_item__logalpha[item,],r_item__delta[item,]) %>% 
+  ungroup() %>% 
+  tidyr::expand(nesting(.draw, b_delta_Intercept, b_logalpha_Intercept, item, r_item__logalpha,r_item__delta), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
+  mutate(p = inv_logit_scaled(exp(b_logalpha_Intercept + r_item__logalpha) * (b_delta_Intercept + theta + r_item__delta)))
+```
+
+--------
+
+```{r}
+#| code-fold: true
+irt.2 %>% 
+  spread_draws(b_delta_Intercept, b_logalpha_Intercept, r_item__logalpha[item,],r_item__delta[item,]) %>% 
+  ungroup() %>% 
+  tidyr::expand(nesting(.draw, b_delta_Intercept, b_logalpha_Intercept, item, r_item__logalpha,r_item__delta), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
+  mutate(p = inv_logit_scaled(exp(b_logalpha_Intercept + r_item__logalpha) * (b_delta_Intercept + theta + r_item__delta))) %>% 
+  group_by(theta, item) %>% 
+  summarise(p = mean(p)) %>% 
+  ggplot(aes(x = theta, y = p, color = item)) +
+  geom_line() +
+  labs(title = "ICCs",
+       x = expression(theta~('ability on the logit scale')),
+       y = expression(italic(p)(y==1)))
+```
+
+
+---------
+
+```{r}
+#| code-fold: true
+irt.2 %>% 
+  spread_draws(b_delta_Intercept, b_logalpha_Intercept, r_item__logalpha[item,],r_item__delta[item,]) %>% 
+  ungroup() %>% 
+  tidyr::expand(nesting(.draw, b_delta_Intercept, b_logalpha_Intercept, item, r_item__logalpha,r_item__delta), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
+  mutate(p = inv_logit_scaled(exp(b_logalpha_Intercept + r_item__logalpha) * (b_delta_Intercept + theta + r_item__delta))) %>% 
+  mutate(i = p * (1 - p)) %>% 
+  group_by(theta, item) %>% 
+  summarise(i = mean(i)) %>%
+  ggplot(aes(x = theta, y = i, color = item)) +
+  geom_line() +
+  labs(title = "IICs",
+       x = expression(theta~('ability on the logit scale')),
+       y = "information") 
+```
+
+
+---------
+
+```{r}
+#| code-fold: true
+irt.2 %>% 
+  spread_draws(b_delta_Intercept, b_logalpha_Intercept, r_item__logalpha[item,],r_item__delta[item,]) %>% 
+  ungroup() %>% 
+  tidyr::expand(nesting(.draw, b_delta_Intercept, b_logalpha_Intercept, item, r_item__logalpha,r_item__delta), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
+  mutate(p = inv_logit_scaled(exp(b_logalpha_Intercept + r_item__logalpha) * (b_delta_Intercept + theta + r_item__delta))) %>% 
+mutate(i = p * (1 - p)) %>% 
+  group_by(theta, .draw) %>% 
+  summarise(sum_i = sum(i)) %>% 
+  group_by(theta) %>% 
+  summarise(i = mean(sum_i)) %>%
+  ggplot(aes(x = theta, y = i)) +
+  geom_line() +
+  labs(title = "The test information curve",
+       x = expression(theta~('ability on the logit scale')),
+       y = "information")
+```
+
+
+## Graded Response Model
+
+From a binary setting to one in which we have multiple, ordered response categories such as with likert items. 
 
 
 
