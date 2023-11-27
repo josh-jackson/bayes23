@@ -2741,6 +2741,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb136"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1"></a>fits2 <span class="ot">&lt;-</span> newd <span class="sc">%&gt;%</span></span>
 <span id="cb136-2"><a href="#cb136-2"></a>  <span class="fu">add_epred_draws</span>(melsm<span class="fl">.2</span>)</span>
 <span id="cb136-3"><a href="#cb136-3"></a></span>
@@ -2753,6 +2755,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb136-10"><a href="#cb136-10"></a>  <span class="fu">stat_lineribbon</span>(<span class="at">data =</span> preds2, <span class="fu">aes</span>(<span class="at">y =</span> .prediction),<span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">90</span>), <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">color =</span><span class="st">"blue"</span>) <span class="sc">+</span></span>
 <span id="cb136-11"><a href="#cb136-11"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> newd) <span class="sc">+</span></span>
 <span id="cb136-12"><a href="#cb136-12"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>record_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 
 </div>
 <img data-src="adv-9_files/figure-revealjs/unnamed-chunk-93-1.png" width="960" class="r-stretch"></section>
@@ -4915,12 +4918,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </section>
 <section id="brms-and-multiple-imputation" class="slide level2">
 <h2>brms and multiple imputation</h2>
-<p>Each missing value is not imputed N times leading to a total of N fully imputed data sets. The model is fitted to each data sets separately and results are pooled across models.</p>
+<p>Each missing value is imputed N times leading to a total of N fully imputed data sets. The imputation for each dataset is similar to our predict function, using variables to make a prediction. Sometimes this step is an iterative process.</p>
+<p>The model is then fit to N dataset separately and results are pooled across models.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb162"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1"></a><span class="fu">library</span>(mice)</span>
-<span id="cb162-2"><a href="#cb162-2"></a><span class="co">#multivariate imputation by chained equations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb162-2"><a href="#cb162-2"></a><span class="co">#multivariate imputation by chained equations</span></span>
+<span id="cb162-3"><a href="#cb162-3"></a><span class="co"># assumes the probability that a value is missing depends only on observed values and not on unobserved values</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -6285,7 +6290,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </section>
 <section class="slide level2">
 
-<p>We can account for this two ways. 1. modeling each sample rather than study. 2. Or we can model each different DV.</p>
+<p>We can account for this two ways. 1. modeling each estimate rather than study so as there is a random interercept for each value in the dataset. 2. Or, in this dataset, we can model each different DV as studies have two samples often have different DVs.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb207"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb207-1"><a href="#cb207-1"></a>spank <span class="ot">&lt;-</span> spank <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -6626,8 +6631,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb217"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb217-1"><a href="#cb217-1"></a><span class="fu">library</span>(marginaleffects)</span>
 <span id="cb217-2"><a href="#cb217-2"></a><span class="fu">predictions</span>(meta<span class="fl">.2</span>, <span class="at">type =</span> <span class="st">"response"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>, <span class="at">re_formula =</span> <span class="cn">NULL</span>) <span class="sc">%&gt;%</span>  <span class="fu">posterior_draws</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb217-3"><a href="#cb217-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> estimate, <span class="at">y =</span> <span class="fu">reorder</span>(study, estimate))) <span class="sc">+</span></span>
-<span id="cb217-4"><a href="#cb217-4"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> .<span class="dv">95</span>, <span class="at">size =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb217-3"><a href="#cb217-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> draw, <span class="at">y =</span> <span class="fu">reorder</span>(study,draw))) <span class="sc">+</span></span>
+<span id="cb217-4"><a href="#cb217-4"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> .<span class="dv">95</span>) <span class="sc">+</span></span>
 <span id="cb217-5"><a href="#cb217-5"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(<span class="st">"Cohen's d"</span>)),</span>
 <span id="cb217-6"><a href="#cb217-6"></a>       <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span>.<span class="dv">1</span>, .<span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -6637,13 +6642,15 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb218"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb218-1"><a href="#cb218-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb218-2"><a href="#cb218-2"></a><span class="fu">predictions</span>(meta<span class="fl">.2</span>, <span class="at">type =</span> <span class="st">"response"</span>, <span class="at">ndraws =</span> <span class="dv">1000</span>, <span class="at">re_formula =</span> <span class="cn">NULL</span>) <span class="sc">%&gt;%</span>  <span class="fu">posterior_draws</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb218-3"><a href="#cb218-3"></a>  <span class="fu">sample_n_of</span>(<span class="dv">25</span>,id) <span class="sc">%&gt;%</span> </span>
-<span id="cb218-4"><a href="#cb218-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> draw, <span class="at">y =</span> <span class="fu">reorder</span>(study, draw))) <span class="sc">+</span></span>
-<span id="cb218-5"><a href="#cb218-5"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> .<span class="dv">95</span>) <span class="sc">+</span></span>
-<span id="cb218-6"><a href="#cb218-6"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(<span class="st">"Cohen's d"</span>)),</span>
-<span id="cb218-7"><a href="#cb218-7"></a>       <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span>.<span class="dv">1</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb218"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb218-1"><a href="#cb218-1"></a><span class="fu">predictions</span>(meta<span class="fl">.2</span>, <span class="at">type =</span> <span class="st">"response"</span>, <span class="at">ndraws =</span> <span class="dv">1000</span>, <span class="at">re_formula =</span> <span class="cn">NULL</span>) <span class="sc">%&gt;%</span>  <span class="fu">posterior_draws</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb218-2"><a href="#cb218-2"></a>  <span class="fu">sample_n_of</span>(<span class="dv">25</span>,id) <span class="sc">%&gt;%</span> </span>
+<span id="cb218-3"><a href="#cb218-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> draw, <span class="at">y =</span> <span class="fu">reorder</span>(study, draw))) <span class="sc">+</span></span>
+<span id="cb218-4"><a href="#cb218-4"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> .<span class="dv">95</span>) <span class="sc">+</span></span>
+<span id="cb218-5"><a href="#cb218-5"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(<span class="st">"Cohen's d"</span>)),</span>
+<span id="cb218-6"><a href="#cb218-6"></a>       <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span>.<span class="dv">1</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 
 </div>
 <img data-src="adv-9_files/figure-revealjs/unnamed-chunk-147-1.png" width="960" class="r-stretch"></section>
@@ -6736,7 +6743,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb223-12"><a href="#cb223-12"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mu, <span class="at">y =</span> <span class="fu">reorder</span>(outcome, mu))) <span class="sc">+</span></span>
 <span id="cb223-13"><a href="#cb223-13"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> .<span class="dv">95</span>, <span class="at">size =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb223-14"><a href="#cb223-14"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(<span class="st">"Cohen's d"</span>)),</span>
-<span id="cb223-15"><a href="#cb223-15"></a>       <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span>.<span class="dv">1</span>, .<span class="dv">8</span>)<span class="sc">+</span></span>
+<span id="cb223-15"><a href="#cb223-15"></a>       <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span>.<span class="dv">1</span>, .<span class="dv">9</span>)<span class="sc">+</span></span>
 <span id="cb223-16"><a href="#cb223-16"></a>    <span class="fu">geom_text</span>(</span>
 <span id="cb223-17"><a href="#cb223-17"></a>    <span class="at">data =</span> <span class="fu">mutate_if</span>(out_all_sum, is.numeric, round, <span class="dv">2</span>),</span>
 <span id="cb223-18"><a href="#cb223-18"></a>    <span class="fu">aes</span>(<span class="at">label =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"{mu} [{.lower}, {.upper}]"</span>), <span class="at">x =</span> <span class="cn">Inf</span>),</span>
@@ -14739,7 +14746,10 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="pl-two-parameter-logistic" class="slide level2">
 <h2>2PL (Two parameter logistic)</h2>
 <p><span class="math display">\[ y_{pi}  \sim  \text{Bernoulli}(p_{pi})\]</span> <span class="math display">\[ logit(p_{pi}) =  \alpha_i(\theta_p + \delta_i) \]</span> Alpha is our discrimination parameter. In the 1pl it is held constant at 1. The i subscript indicates the discrimination parameter varies across the items, not across persons.</p>
-<p><span class="math display">\[ \theta_p  \sim \text{Normal}(0, \sigma_\theta)\]</span> <span class="math display">\[ \delta_i  \sim \text{Normal}(0, \sigma_\delta)\]</span> —–</p>
+<p><span class="math display">\[ \theta_p  \sim \text{Normal}(0, \sigma_\theta)\]</span> <span class="math display">\[ \delta_i  \sim \text{Normal}(0, \sigma_\delta)\]</span></p>
+</section>
+<section class="slide level2">
+
 <p>What does discrimination do?</p>
 <p>We will see non-parallel lines in the item characteristic terms.</p>
 <p>The 1pl is equivalent to setting factor loadings to 1 in SEM, where this relaxes that constraint.</p>
@@ -15197,11 +15207,12 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb242"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb242-1"><a href="#cb242-1"></a>irt<span class="fl">.2</span> <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb242"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb242-1"><a href="#cb242-1"></a>irt2.dat <span class="ot">&lt;-</span> irt<span class="fl">.2</span> <span class="sc">%&gt;%</span> </span>
 <span id="cb242-2"><a href="#cb242-2"></a>  <span class="fu">spread_draws</span>(b_delta_Intercept, b_logalpha_Intercept, r_item__logalpha[item,],r_item__delta[item,]) <span class="sc">%&gt;%</span> </span>
 <span id="cb242-3"><a href="#cb242-3"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb242-4"><a href="#cb242-4"></a>  tidyr<span class="sc">::</span><span class="fu">expand</span>(<span class="fu">nesting</span>(.draw, b_delta_Intercept, b_logalpha_Intercept, item, r_item__logalpha,r_item__delta), <span class="at">theta =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">6</span>, <span class="at">to =</span> <span class="dv">6</span>, <span class="at">length.out =</span> <span class="dv">100</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb242-5"><a href="#cb242-5"></a>  <span class="fu">mutate</span>(<span class="at">p =</span> <span class="fu">inv_logit_scaled</span>(<span class="fu">exp</span>(b_logalpha_Intercept <span class="sc">+</span> r_item__logalpha) <span class="sc">*</span> (b_delta_Intercept <span class="sc">+</span> theta <span class="sc">+</span> r_item__delta)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb242-5"><a href="#cb242-5"></a>  <span class="fu">mutate</span>(<span class="at">p =</span> <span class="fu">inv_logit_scaled</span>(<span class="fu">exp</span>(b_logalpha_Intercept <span class="sc">+</span> r_item__logalpha) <span class="sc">*</span> (b_delta_Intercept <span class="sc">+</span> theta <span class="sc">+</span> r_item__delta)))</span>
+<span id="cb242-6"><a href="#cb242-6"></a>irt2.dat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 9,600,000 × 8
@@ -15291,7 +15302,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <img data-src="adv-9_files/figure-revealjs/unnamed-chunk-167-1.png" width="960" class="r-stretch"></section>
 <section id="graded-response-model" class="slide level2">
 <h2>Graded Response Model</h2>
-<p>From a binary setting to one in which we have multiple, ordered response categories such as with likert items.</p>
+<p>From a binary setting to one in which we have multiple, ordered response categories such as with likert items. ## Pros and Cons of IRT Pro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)</p>
+<p>Con: complex, CTT and IRT assessments correlate &gt;.96,</p>
 
 <div class="footer footer-default">
 

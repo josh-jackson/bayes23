@@ -2405,7 +2405,7 @@
     "href": "adv-9.html#brms-and-multiple-imputation",
     "title": "advanced MLM",
     "section": "brms and multiple imputation",
-    "text": "brms and multiple imputation\nEach missing value is not imputed N times leading to a total of N fully imputed data sets. The model is fitted to each data sets separately and results are pooled across models.\n\n\nCode\nlibrary(mice)\n#multivariate imputation by chained equations"
+    "text": "brms and multiple imputation\nEach missing value is imputed N times leading to a total of N fully imputed data sets. The imputation for each dataset is similar to our predict function, using variables to make a prediction. Sometimes this step is an iterative process.\nThe model is then fit to N dataset separately and results are pooled across models.\n\n\nCode\nlibrary(mice)\n#multivariate imputation by chained equations\n# assumes the probability that a value is missing depends only on observed values and not on unobserved values"
   },
   {
     "objectID": "adv-9.html#brm_multiple",
@@ -2601,7 +2601,7 @@
     "href": "adv-9.html#pl-two-parameter-logistic",
     "title": "advanced MLM",
     "section": "2PL (Two parameter logistic)",
-    "text": "2PL (Two parameter logistic)\n\\[ y_{pi}  \\sim  \\text{Bernoulli}(p_{pi})\\] \\[ logit(p_{pi}) =  \\alpha_i(\\theta_p + \\delta_i) \\] Alpha is our discrimination parameter. In the 1pl it is held constant at 1. The i subscript indicates the discrimination parameter varies across the items, not across persons.\n\\[ \\theta_p  \\sim \\text{Normal}(0, \\sigma_\\theta)\\] \\[ \\delta_i  \\sim \\text{Normal}(0, \\sigma_\\delta)\\] —–\nWhat does discrimination do?\nWe will see non-parallel lines in the item characteristic terms.\nThe 1pl is equivalent to setting factor loadings to 1 in SEM, where this relaxes that constraint."
+    "text": "2PL (Two parameter logistic)\n\\[ y_{pi}  \\sim  \\text{Bernoulli}(p_{pi})\\] \\[ logit(p_{pi}) =  \\alpha_i(\\theta_p + \\delta_i) \\] Alpha is our discrimination parameter. In the 1pl it is held constant at 1. The i subscript indicates the discrimination parameter varies across the items, not across persons.\n\\[ \\theta_p  \\sim \\text{Normal}(0, \\sigma_\\theta)\\] \\[ \\delta_i  \\sim \\text{Normal}(0, \\sigma_\\delta)\\]"
   },
   {
     "objectID": "adv-9.html#non-linear-syntax",
@@ -2615,6 +2615,6 @@
     "href": "adv-9.html#graded-response-model",
     "title": "advanced MLM",
     "section": "Graded Response Model",
-    "text": "Graded Response Model\nFrom a binary setting to one in which we have multiple, ordered response categories such as with likert items."
+    "text": "Graded Response Model\nFrom a binary setting to one in which we have multiple, ordered response categories such as with likert items. ## Pros and Cons of IRT Pro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)\nCon: complex, CTT and IRT assessments correlate &gt;.96,"
   }
 ]

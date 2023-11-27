@@ -1518,7 +1518,7 @@ spread_draws(b_sigma_Intercept,r_record_id__sigma[ID, term]) %>%
 
 
 ```{r}
-
+#| code-fold: true
 fits2 <- newd %>%
   add_epred_draws(melsm.2)
 
@@ -1842,13 +1842,16 @@ How to solve?
 
 ## brms and multiple imputation
 
-Each missing value is not imputed N times leading to a total of N fully imputed data sets. The model is fitted to each data sets separately and results are pooled across models.
+Each missing value is imputed N times leading to a total of N fully imputed data sets. The imputation for each dataset is similar to our predict function, using variables to make a prediction. Sometimes this step is an iterative process. 
+
+The model is then fit to  N dataset separately and results are pooled across models.
 
 ```{r}
 #| code-fold: true
 
 library(mice)
 #multivariate imputation by chained equations
+# assumes the probability that a value is missing depends only on observed values and not on unobserved values
 ```
 
 ---
@@ -2224,7 +2227,7 @@ wut?
 
 ------
 
-We can account for this two ways. 1. modeling each sample rather than study. 2. Or we can model each different DV. 
+We can account for this two ways. 1. modeling each estimate rather than study so as there is a random interercept for each value in the dataset. 2. Or, in this dataset, we can model each different DV as studies have two samples often have different DVs. 
 
 ```{r}
 
@@ -2304,8 +2307,8 @@ Too many combinations once we add in epred draws, also we dont want all those le
 #| code-fold: true
 library(marginaleffects)
 predictions(meta.2, type = "response", ndraws = 100, re_formula = NULL) %>%  posterior_draws() %>% 
-  ggplot(aes(x = estimate, y = reorder(study, estimate))) +
-  stat_halfeye(.width = .95, size = 2/3) +
+  ggplot(aes(x = draw, y = reorder(study,draw))) +
+  stat_halfeye(.width = .95) +
   labs(x = expression(italic("Cohen's d")),
        y = NULL) + xlim(-.1, .8)
 
@@ -2314,8 +2317,8 @@ predictions(meta.2, type = "response", ndraws = 100, re_formula = NULL) %>%  pos
 -----
 
 ```{r}
-
 #| code-fold: true
+#| 
 predictions(meta.2, type = "response", ndraws = 1000, re_formula = NULL) %>%  posterior_draws() %>% 
   sample_n_of(25,id) %>% 
   ggplot(aes(x = draw, y = reorder(study, draw))) +
@@ -2357,6 +2360,7 @@ summary(meta.3)
 
 ```{r}
 #| code-fold: true
+#| 
 meta.3 %>%
   spread_draws(b_Intercept, r_outcome[outcome,]) %>%
   mutate(mu = b_Intercept + r_outcome) %>%
@@ -2370,6 +2374,7 @@ meta.3 %>%
 
 ```{r}
 #| code-fold: true
+#| 
 ind <- meta.3 %>%
   spread_draws(b_Intercept, r_outcome[outcome,]) %>%
   mutate(mu = b_Intercept + r_outcome)
@@ -2384,7 +2389,7 @@ meta.3 %>%
   ggplot(aes(x = mu, y = reorder(outcome, mu))) +
   stat_halfeye(.width = .95, size = 2/3) +
   labs(x = expression(italic("Cohen's d")),
-       y = NULL) + xlim(-.1, .8)+
+       y = NULL) + xlim(-.1, .9)+
     geom_text(
     data = mutate_if(out_all_sum, is.numeric, round, 2),
     aes(label = glue::glue("{mu} [{.lower}, {.upper}]"), x = Inf),
@@ -2600,7 +2605,8 @@ Alpha is our discrimination parameter. In the 1pl it is held constant at 1. The 
 
 $$ \theta_p  \sim \text{Normal}(0, \sigma_\theta)$$
 $$ \delta_i  \sim \text{Normal}(0, \sigma_\delta)$$
------
+
+---------
 
 What does discrimination do? 
 
@@ -2648,11 +2654,12 @@ get_variables(irt.2)
 
 ```{r}
 #| code-fold: true
-irt.2 %>% 
+irt2.dat <- irt.2 %>% 
   spread_draws(b_delta_Intercept, b_logalpha_Intercept, r_item__logalpha[item,],r_item__delta[item,]) %>% 
   ungroup() %>% 
   tidyr::expand(nesting(.draw, b_delta_Intercept, b_logalpha_Intercept, item, r_item__logalpha,r_item__delta), theta = seq(from = -6, to = 6, length.out = 100)) %>% 
   mutate(p = inv_logit_scaled(exp(b_logalpha_Intercept + r_item__logalpha) * (b_delta_Intercept + theta + r_item__delta)))
+irt2.dat
 ```
 
 --------
@@ -2719,6 +2726,10 @@ mutate(i = p * (1 - p)) %>%
 ## Graded Response Model
 
 From a binary setting to one in which we have multiple, ordered response categories such as with likert items. 
+## Pros and Cons of IRT
+Pro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)
+
+Con: complex, CTT and IRT assessments correlate >.96, 
 
 
 
