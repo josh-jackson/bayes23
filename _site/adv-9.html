@@ -14754,6 +14754,10 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>We will see non-parallel lines in the item characteristic terms.</p>
 <p>The 1pl is equivalent to setting factor loadings to 1 in SEM, where this relaxes that constraint.</p>
 </section>
+<section class="slide level2">
+
+
+<img data-src="2pl.png" class="r-stretch"></section>
 <section id="non-linear-syntax" class="slide level2">
 <h2>Non-linear syntax</h2>
 <div class="cell">
@@ -15302,7 +15306,676 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <img data-src="adv-9_files/figure-revealjs/unnamed-chunk-167-1.png" width="960" class="r-stretch"></section>
 <section id="graded-response-model" class="slide level2">
 <h2>Graded Response Model</h2>
-<p>From a binary setting to one in which we have multiple, ordered response categories such as with likert items. ## Pros and Cons of IRT Pro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)</p>
+<p>From a binary setting to one in which we have multiple, ordered response categories such as with likert items. From GLM we are using the cumulative likelihood. SR refers to it as the ordered categorical.</p>
+<p>We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc.</p>
+<p><span class="math display">\[\log\left(\dfrac{Pr(y_i)}{Pr(y_i)}\right)=\log\left(\dfrac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)}\right)= \alpha_k\]</span></p>
+</section>
+<section class="slide level2">
+
+
+<img data-src="cutpoints.png" class="r-stretch"></section>
+<section class="slide level2">
+
+<p><span class="math display">\[\text{response}_i  \sim \operatorname{cumulative} (\mathbf p) \]</span> <span class="math display">\[\text{logit}(p_k)  = \alpha_k + \phi \]</span> <span class="math display">\[\phi= 0 \]</span> <span class="math display">\[\alpha_k \sim \operatorname{Normal}(0, 1.5)\]</span></p>
+<p>Where <span class="math inline">\(\phi\)</span> is a stand in for regression terms. Right now it is an intercept only model. <span class="math inline">\(\alpha_k\)</span> are our k intercepts, make up for #categories minus 1.</p>
+</section>
+<section class="slide level2">
+
+<p>No, Perhaps, Yes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb247"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb247-1"><a href="#cb247-1"></a>irt<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb247-2"><a href="#cb247-2"></a>  <span class="at">family =</span> <span class="fu">brmsfamily</span>(<span class="st">"cumulative"</span>, <span class="st">"logit"</span>),</span>
+<span id="cb247-3"><a href="#cb247-3"></a>  <span class="fu">bf</span>(resp <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> item) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id)),</span>
+<span id="cb247-4"><a href="#cb247-4"></a>  <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="st">"normal(0, 3)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"id"</span>),</span>
+<span id="cb247-5"><a href="#cb247-5"></a>            <span class="fu">prior</span>(<span class="st">"normal(0, 3)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"item"</span>)),</span>
+<span id="cb247-6"><a href="#cb247-6"></a>    <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb247-7"><a href="#cb247-7"></a>    <span class="at">data =</span> IRT, </span>
+<span id="cb247-8"><a href="#cb247-8"></a>    <span class="at">backend =</span> <span class="st">"cmdstanr"</span>, </span>
+<span id="cb247-9"><a href="#cb247-9"></a>    <span class="at">file =</span> <span class="st">"irt.3"</span>,</span>
+<span id="cb247-10"><a href="#cb247-10"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> .<span class="dv">99</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb248"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb248-1"><a href="#cb248-1"></a><span class="fu">summary</span>(irt<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: cumulative 
+  Links: mu = logit; disc = identity 
+Formula: resp ~ 1 + (1 | item) + (1 | id) 
+   Data: IRT (Number of observations: 7584) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Group-Level Effects: 
+~id (Number of levels: 316) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     1.30      0.06     1.18     1.43 1.00     1267     2253
+
+~item (Number of levels: 24) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     1.15      0.18     0.85     1.55 1.01      834     1457
+
+Population-Level Effects: 
+             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept[1]     0.15      0.25    -0.35     0.64 1.02      276      592
+Intercept[2]     2.00      0.25     1.49     2.49 1.01      279      531
+
+Family Specific Parameters: 
+     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+disc     1.00      0.00     1.00     1.00   NA       NA       NA
+
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb250"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb250-1"><a href="#cb250-1"></a><span class="fu">get_variables</span>(irt<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "b_Intercept[1]"                "b_Intercept[2]"               
+  [3] "sd_id__Intercept"              "sd_item__Intercept"           
+  [5] "disc"                          "r_id[1,Intercept]"            
+  [7] "r_id[2,Intercept]"             "r_id[3,Intercept]"            
+  [9] "r_id[4,Intercept]"             "r_id[5,Intercept]"            
+ [11] "r_id[6,Intercept]"             "r_id[7,Intercept]"            
+ [13] "r_id[8,Intercept]"             "r_id[9,Intercept]"            
+ [15] "r_id[10,Intercept]"            "r_id[11,Intercept]"           
+ [17] "r_id[12,Intercept]"            "r_id[13,Intercept]"           
+ [19] "r_id[14,Intercept]"            "r_id[15,Intercept]"           
+ [21] "r_id[16,Intercept]"            "r_id[17,Intercept]"           
+ [23] "r_id[18,Intercept]"            "r_id[19,Intercept]"           
+ [25] "r_id[20,Intercept]"            "r_id[21,Intercept]"           
+ [27] "r_id[22,Intercept]"            "r_id[23,Intercept]"           
+ [29] "r_id[24,Intercept]"            "r_id[25,Intercept]"           
+ [31] "r_id[26,Intercept]"            "r_id[27,Intercept]"           
+ [33] "r_id[28,Intercept]"            "r_id[29,Intercept]"           
+ [35] "r_id[30,Intercept]"            "r_id[31,Intercept]"           
+ [37] "r_id[32,Intercept]"            "r_id[33,Intercept]"           
+ [39] "r_id[34,Intercept]"            "r_id[35,Intercept]"           
+ [41] "r_id[36,Intercept]"            "r_id[37,Intercept]"           
+ [43] "r_id[38,Intercept]"            "r_id[39,Intercept]"           
+ [45] "r_id[40,Intercept]"            "r_id[41,Intercept]"           
+ [47] "r_id[42,Intercept]"            "r_id[43,Intercept]"           
+ [49] "r_id[44,Intercept]"            "r_id[45,Intercept]"           
+ [51] "r_id[46,Intercept]"            "r_id[47,Intercept]"           
+ [53] "r_id[48,Intercept]"            "r_id[49,Intercept]"           
+ [55] "r_id[50,Intercept]"            "r_id[51,Intercept]"           
+ [57] "r_id[52,Intercept]"            "r_id[53,Intercept]"           
+ [59] "r_id[54,Intercept]"            "r_id[55,Intercept]"           
+ [61] "r_id[56,Intercept]"            "r_id[57,Intercept]"           
+ [63] "r_id[58,Intercept]"            "r_id[59,Intercept]"           
+ [65] "r_id[60,Intercept]"            "r_id[61,Intercept]"           
+ [67] "r_id[62,Intercept]"            "r_id[63,Intercept]"           
+ [69] "r_id[64,Intercept]"            "r_id[65,Intercept]"           
+ [71] "r_id[66,Intercept]"            "r_id[67,Intercept]"           
+ [73] "r_id[68,Intercept]"            "r_id[69,Intercept]"           
+ [75] "r_id[70,Intercept]"            "r_id[71,Intercept]"           
+ [77] "r_id[72,Intercept]"            "r_id[73,Intercept]"           
+ [79] "r_id[74,Intercept]"            "r_id[75,Intercept]"           
+ [81] "r_id[76,Intercept]"            "r_id[77,Intercept]"           
+ [83] "r_id[78,Intercept]"            "r_id[79,Intercept]"           
+ [85] "r_id[80,Intercept]"            "r_id[81,Intercept]"           
+ [87] "r_id[82,Intercept]"            "r_id[83,Intercept]"           
+ [89] "r_id[84,Intercept]"            "r_id[85,Intercept]"           
+ [91] "r_id[86,Intercept]"            "r_id[87,Intercept]"           
+ [93] "r_id[88,Intercept]"            "r_id[89,Intercept]"           
+ [95] "r_id[90,Intercept]"            "r_id[91,Intercept]"           
+ [97] "r_id[92,Intercept]"            "r_id[93,Intercept]"           
+ [99] "r_id[94,Intercept]"            "r_id[95,Intercept]"           
+[101] "r_id[96,Intercept]"            "r_id[97,Intercept]"           
+[103] "r_id[98,Intercept]"            "r_id[99,Intercept]"           
+[105] "r_id[100,Intercept]"           "r_id[101,Intercept]"          
+[107] "r_id[102,Intercept]"           "r_id[103,Intercept]"          
+[109] "r_id[104,Intercept]"           "r_id[105,Intercept]"          
+[111] "r_id[106,Intercept]"           "r_id[107,Intercept]"          
+[113] "r_id[108,Intercept]"           "r_id[109,Intercept]"          
+[115] "r_id[110,Intercept]"           "r_id[111,Intercept]"          
+[117] "r_id[112,Intercept]"           "r_id[113,Intercept]"          
+[119] "r_id[114,Intercept]"           "r_id[115,Intercept]"          
+[121] "r_id[116,Intercept]"           "r_id[117,Intercept]"          
+[123] "r_id[118,Intercept]"           "r_id[119,Intercept]"          
+[125] "r_id[120,Intercept]"           "r_id[121,Intercept]"          
+[127] "r_id[122,Intercept]"           "r_id[123,Intercept]"          
+[129] "r_id[124,Intercept]"           "r_id[125,Intercept]"          
+[131] "r_id[126,Intercept]"           "r_id[127,Intercept]"          
+[133] "r_id[128,Intercept]"           "r_id[129,Intercept]"          
+[135] "r_id[130,Intercept]"           "r_id[131,Intercept]"          
+[137] "r_id[132,Intercept]"           "r_id[133,Intercept]"          
+[139] "r_id[134,Intercept]"           "r_id[135,Intercept]"          
+[141] "r_id[136,Intercept]"           "r_id[137,Intercept]"          
+[143] "r_id[138,Intercept]"           "r_id[139,Intercept]"          
+[145] "r_id[140,Intercept]"           "r_id[141,Intercept]"          
+[147] "r_id[142,Intercept]"           "r_id[143,Intercept]"          
+[149] "r_id[144,Intercept]"           "r_id[145,Intercept]"          
+[151] "r_id[146,Intercept]"           "r_id[147,Intercept]"          
+[153] "r_id[148,Intercept]"           "r_id[149,Intercept]"          
+[155] "r_id[150,Intercept]"           "r_id[151,Intercept]"          
+[157] "r_id[152,Intercept]"           "r_id[153,Intercept]"          
+[159] "r_id[154,Intercept]"           "r_id[155,Intercept]"          
+[161] "r_id[156,Intercept]"           "r_id[157,Intercept]"          
+[163] "r_id[158,Intercept]"           "r_id[159,Intercept]"          
+[165] "r_id[160,Intercept]"           "r_id[161,Intercept]"          
+[167] "r_id[162,Intercept]"           "r_id[163,Intercept]"          
+[169] "r_id[164,Intercept]"           "r_id[165,Intercept]"          
+[171] "r_id[166,Intercept]"           "r_id[167,Intercept]"          
+[173] "r_id[168,Intercept]"           "r_id[169,Intercept]"          
+[175] "r_id[170,Intercept]"           "r_id[171,Intercept]"          
+[177] "r_id[172,Intercept]"           "r_id[173,Intercept]"          
+[179] "r_id[174,Intercept]"           "r_id[175,Intercept]"          
+[181] "r_id[176,Intercept]"           "r_id[177,Intercept]"          
+[183] "r_id[178,Intercept]"           "r_id[179,Intercept]"          
+[185] "r_id[180,Intercept]"           "r_id[181,Intercept]"          
+[187] "r_id[182,Intercept]"           "r_id[183,Intercept]"          
+[189] "r_id[184,Intercept]"           "r_id[185,Intercept]"          
+[191] "r_id[186,Intercept]"           "r_id[187,Intercept]"          
+[193] "r_id[188,Intercept]"           "r_id[189,Intercept]"          
+[195] "r_id[190,Intercept]"           "r_id[191,Intercept]"          
+[197] "r_id[192,Intercept]"           "r_id[193,Intercept]"          
+[199] "r_id[194,Intercept]"           "r_id[195,Intercept]"          
+[201] "r_id[196,Intercept]"           "r_id[197,Intercept]"          
+[203] "r_id[198,Intercept]"           "r_id[199,Intercept]"          
+[205] "r_id[200,Intercept]"           "r_id[201,Intercept]"          
+[207] "r_id[202,Intercept]"           "r_id[203,Intercept]"          
+[209] "r_id[204,Intercept]"           "r_id[205,Intercept]"          
+[211] "r_id[206,Intercept]"           "r_id[207,Intercept]"          
+[213] "r_id[208,Intercept]"           "r_id[209,Intercept]"          
+[215] "r_id[210,Intercept]"           "r_id[211,Intercept]"          
+[217] "r_id[212,Intercept]"           "r_id[213,Intercept]"          
+[219] "r_id[214,Intercept]"           "r_id[215,Intercept]"          
+[221] "r_id[216,Intercept]"           "r_id[217,Intercept]"          
+[223] "r_id[218,Intercept]"           "r_id[219,Intercept]"          
+[225] "r_id[220,Intercept]"           "r_id[221,Intercept]"          
+[227] "r_id[222,Intercept]"           "r_id[223,Intercept]"          
+[229] "r_id[224,Intercept]"           "r_id[225,Intercept]"          
+[231] "r_id[226,Intercept]"           "r_id[227,Intercept]"          
+[233] "r_id[228,Intercept]"           "r_id[229,Intercept]"          
+[235] "r_id[230,Intercept]"           "r_id[231,Intercept]"          
+[237] "r_id[232,Intercept]"           "r_id[233,Intercept]"          
+[239] "r_id[234,Intercept]"           "r_id[235,Intercept]"          
+[241] "r_id[236,Intercept]"           "r_id[237,Intercept]"          
+[243] "r_id[238,Intercept]"           "r_id[239,Intercept]"          
+[245] "r_id[240,Intercept]"           "r_id[241,Intercept]"          
+[247] "r_id[242,Intercept]"           "r_id[243,Intercept]"          
+[249] "r_id[244,Intercept]"           "r_id[245,Intercept]"          
+[251] "r_id[246,Intercept]"           "r_id[247,Intercept]"          
+[253] "r_id[248,Intercept]"           "r_id[249,Intercept]"          
+[255] "r_id[250,Intercept]"           "r_id[251,Intercept]"          
+[257] "r_id[252,Intercept]"           "r_id[253,Intercept]"          
+[259] "r_id[254,Intercept]"           "r_id[255,Intercept]"          
+[261] "r_id[256,Intercept]"           "r_id[257,Intercept]"          
+[263] "r_id[258,Intercept]"           "r_id[259,Intercept]"          
+[265] "r_id[260,Intercept]"           "r_id[261,Intercept]"          
+[267] "r_id[262,Intercept]"           "r_id[263,Intercept]"          
+[269] "r_id[264,Intercept]"           "r_id[265,Intercept]"          
+[271] "r_id[266,Intercept]"           "r_id[267,Intercept]"          
+[273] "r_id[268,Intercept]"           "r_id[269,Intercept]"          
+[275] "r_id[270,Intercept]"           "r_id[271,Intercept]"          
+[277] "r_id[272,Intercept]"           "r_id[273,Intercept]"          
+[279] "r_id[274,Intercept]"           "r_id[275,Intercept]"          
+[281] "r_id[276,Intercept]"           "r_id[277,Intercept]"          
+[283] "r_id[278,Intercept]"           "r_id[279,Intercept]"          
+[285] "r_id[280,Intercept]"           "r_id[281,Intercept]"          
+[287] "r_id[282,Intercept]"           "r_id[283,Intercept]"          
+[289] "r_id[284,Intercept]"           "r_id[285,Intercept]"          
+[291] "r_id[286,Intercept]"           "r_id[287,Intercept]"          
+[293] "r_id[288,Intercept]"           "r_id[289,Intercept]"          
+[295] "r_id[290,Intercept]"           "r_id[291,Intercept]"          
+[297] "r_id[292,Intercept]"           "r_id[293,Intercept]"          
+[299] "r_id[294,Intercept]"           "r_id[295,Intercept]"          
+[301] "r_id[296,Intercept]"           "r_id[297,Intercept]"          
+[303] "r_id[298,Intercept]"           "r_id[299,Intercept]"          
+[305] "r_id[300,Intercept]"           "r_id[301,Intercept]"          
+[307] "r_id[302,Intercept]"           "r_id[303,Intercept]"          
+[309] "r_id[304,Intercept]"           "r_id[305,Intercept]"          
+[311] "r_id[306,Intercept]"           "r_id[307,Intercept]"          
+[313] "r_id[308,Intercept]"           "r_id[309,Intercept]"          
+[315] "r_id[310,Intercept]"           "r_id[311,Intercept]"          
+[317] "r_id[312,Intercept]"           "r_id[313,Intercept]"          
+[319] "r_id[314,Intercept]"           "r_id[315,Intercept]"          
+[321] "r_id[316,Intercept]"           "r_item[S1WantCurse,Intercept]"
+[323] "r_item[S1WantScold,Intercept]" "r_item[S1WantShout,Intercept]"
+[325] "r_item[S2WantCurse,Intercept]" "r_item[S2WantScold,Intercept]"
+[327] "r_item[S2WantShout,Intercept]" "r_item[S3WantCurse,Intercept]"
+[329] "r_item[S3WantScold,Intercept]" "r_item[S3WantShout,Intercept]"
+[331] "r_item[S4wantCurse,Intercept]" "r_item[S4WantScold,Intercept]"
+[333] "r_item[S4WantShout,Intercept]" "r_item[S1DoCurse,Intercept]"  
+[335] "r_item[S1DoScold,Intercept]"   "r_item[S1DoShout,Intercept]"  
+[337] "r_item[S2DoCurse,Intercept]"   "r_item[S2DoScold,Intercept]"  
+[339] "r_item[S2DoShout,Intercept]"   "r_item[S3DoCurse,Intercept]"  
+[341] "r_item[S3DoScold,Intercept]"   "r_item[S3DoShout,Intercept]"  
+[343] "r_item[S4DoCurse,Intercept]"   "r_item[S4DoScold,Intercept]"  
+[345] "r_item[S4DoShout,Intercept]"   "lprior"                       
+[347] "lp__"                          "accept_stat__"                
+[349] "treedepth__"                   "stepsize__"                   
+[351] "divergent__"                   "n_leapfrog__"                 
+[353] "energy__"                     </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb252"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb252-1"><a href="#cb252-1"></a>irt<span class="fl">.3</span>a <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb252-2"><a href="#cb252-2"></a>  <span class="at">family =</span> <span class="fu">brmsfamily</span>(<span class="st">"cumulative"</span>, <span class="st">"logit"</span>),</span>
+<span id="cb252-3"><a href="#cb252-3"></a>  <span class="fu">bf</span>(resp <span class="sc">|</span> <span class="fu">thres</span>(<span class="at">gr =</span> item) <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> item) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id)),</span>
+<span id="cb252-4"><a href="#cb252-4"></a>  <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="st">"normal(0, 3)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"id"</span>),</span>
+<span id="cb252-5"><a href="#cb252-5"></a>            <span class="fu">prior</span>(<span class="st">"normal(0, 3)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"item"</span>)),</span>
+<span id="cb252-6"><a href="#cb252-6"></a>    <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb252-7"><a href="#cb252-7"></a>    <span class="at">data =</span> IRT, </span>
+<span id="cb252-8"><a href="#cb252-8"></a>    <span class="at">backend =</span> <span class="st">"cmdstanr"</span>, </span>
+<span id="cb252-9"><a href="#cb252-9"></a>    <span class="at">file =</span> <span class="st">"irt.3a"</span>,</span>
+<span id="cb252-10"><a href="#cb252-10"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> .<span class="dv">99</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb253"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb253-1"><a href="#cb253-1"></a><span class="fu">summary</span>(irt<span class="fl">.3</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: cumulative 
+  Links: mu = logit; disc = identity 
+Formula: resp | thres(gr = item) ~ 1 + (1 | item) + (1 | id) 
+   Data: IRT (Number of observations: 7584) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Group-Level Effects: 
+~id (Number of levels: 316) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     1.31      0.06     1.19     1.44 1.00     1046     1628
+
+~item (Number of levels: 24) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.49      0.38     0.02     1.42 1.02      325      524
+
+Population-Level Effects: 
+                         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+Intercept[S1WantCurse,1]    -1.17      0.56    -2.34     0.06 1.01     2421
+Intercept[S1WantCurse,2]     0.48      0.55    -0.65     1.71 1.01     2483
+Intercept[S1WantScold,1]    -0.62      0.54    -1.80     0.54 1.00     2532
+Intercept[S1WantScold,2]     0.87      0.54    -0.31     2.03 1.00     2634
+Intercept[S1WantShout,1]    -0.16      0.56    -1.43     0.98 1.01     2233
+Intercept[S1WantShout,2]     1.69      0.57     0.44     2.83 1.00     2316
+Intercept[S2WantCurse,1]    -1.66      0.57    -2.80    -0.42 1.01     2552
+Intercept[S2WantCurse,2]     0.38      0.56    -0.75     1.65 1.01     2559
+Intercept[S2WantScold,1]    -0.71      0.53    -1.87     0.43 1.01     2714
+Intercept[S2WantScold,2]     0.88      0.53    -0.27     2.01 1.01     2760
+Intercept[S2WantShout,1]    -0.15      0.55    -1.42     0.98 1.01     2457
+Intercept[S2WantShout,2]     1.38      0.56     0.09     2.53 1.01     2540
+Intercept[S3WantCurse,1]    -0.57      0.57    -1.94     0.57 1.01     2217
+Intercept[S3WantCurse,2]     1.55      0.57     0.24     2.70 1.01     2238
+Intercept[S3WantScold,1]     0.47      0.60    -1.04     1.56 1.01     1521
+Intercept[S3WantScold,2]     2.73      0.62     1.22     3.84 1.01     1384
+Intercept[S3WantShout,1]     1.19      0.62    -0.38     2.23 1.00     1683
+Intercept[S3WantShout,2]     3.55      0.69     1.89     4.75 1.00     1828
+Intercept[S4wantCurse,1]    -1.07      0.55    -2.29     0.13 1.01     2817
+Intercept[S4wantCurse,2]     1.12      0.55    -0.09     2.30 1.01     2786
+Intercept[S4WantScold,1]     0.18      0.59    -1.23     1.27 1.01     1785
+Intercept[S4WantScold,2]     2.01      0.60     0.61     3.12 1.01     1812
+Intercept[S4WantShout,1]     0.78      0.60    -0.72     1.79 1.01     1411
+Intercept[S4WantShout,2]     2.38      0.62     0.86     3.43 1.01     1480
+Intercept[S1DoCurse,1]      -1.18      0.55    -2.27     0.00 1.00     2579
+Intercept[S1DoCurse,2]       0.71      0.55    -0.38     1.92 1.00     2406
+Intercept[S1DoScold,1]      -0.45      0.57    -1.75     0.70 1.01     2303
+Intercept[S1DoScold,2]       1.30      0.57     0.01     2.46 1.01     2290
+Intercept[S1DoShout,1]       0.67      0.59    -0.74     1.74 1.01     1421
+Intercept[S1DoShout,2]       2.28      0.60     0.91     3.36 1.01     1468
+Intercept[S2DoCurse,1]      -0.88      0.56    -2.08     0.30 1.00     2795
+Intercept[S2DoCurse,2]       0.79      0.56    -0.42     2.00 1.00     2959
+Intercept[S2DoScold,1]      -0.10      0.57    -1.42     0.96 1.01     2241
+Intercept[S2DoScold,2]       1.70      0.58     0.36     2.78 1.01     2330
+Intercept[S2DoShout,1]       1.20      0.59    -0.24     2.27 1.01     1488
+Intercept[S2DoShout,2]       2.87      0.62     1.38     3.93 1.00     1512
+Intercept[S3DoCurse,1]       0.06      0.57    -1.28     1.11 1.01     1961
+Intercept[S3DoCurse,2]       2.38      0.59     1.02     3.48 1.01     2038
+Intercept[S3DoScold,1]       1.18      0.63    -0.45     2.20 1.00     1348
+Intercept[S3DoScold,2]       3.36      0.67     1.71     4.48 1.00     1547
+Intercept[S3DoShout,1]       2.49      0.71     0.57     3.54 1.01     1103
+Intercept[S3DoShout,2]       4.88      0.87     2.76     6.50 1.01     1374
+Intercept[S4DoCurse,1]      -0.70      0.55    -1.96     0.49 1.01     2704
+Intercept[S4DoCurse,2]       1.33      0.55     0.06     2.49 1.01     2729
+Intercept[S4DoScold,1]       0.20      0.59    -1.21     1.29 1.01     1758
+Intercept[S4DoScold,2]       2.15      0.60     0.71     3.21 1.00     1852
+Intercept[S4DoShout,1]       1.61      0.63    -0.01     2.59 1.01     1171
+Intercept[S4DoShout,2]       3.46      0.68     1.77     4.58 1.00     1396
+                         Tail_ESS
+Intercept[S1WantCurse,1]     1380
+Intercept[S1WantCurse,2]     1347
+Intercept[S1WantScold,1]     1718
+Intercept[S1WantScold,2]     1705
+Intercept[S1WantShout,1]     1333
+Intercept[S1WantShout,2]     1540
+Intercept[S2WantCurse,1]     1411
+Intercept[S2WantCurse,2]     1575
+Intercept[S2WantScold,1]     1763
+Intercept[S2WantScold,2]     1595
+Intercept[S2WantShout,1]     1311
+Intercept[S2WantShout,2]     1067
+Intercept[S3WantCurse,1]     1364
+Intercept[S3WantCurse,2]     1306
+Intercept[S3WantScold,1]      908
+Intercept[S3WantScold,2]      986
+Intercept[S3WantShout,1]     1226
+Intercept[S3WantShout,2]     1315
+Intercept[S4wantCurse,1]     1419
+Intercept[S4wantCurse,2]     1408
+Intercept[S4WantScold,1]     1235
+Intercept[S4WantScold,2]     1377
+Intercept[S4WantShout,1]     1191
+Intercept[S4WantShout,2]     1084
+Intercept[S1DoCurse,1]       1829
+Intercept[S1DoCurse,2]       1779
+Intercept[S1DoScold,1]       1595
+Intercept[S1DoScold,2]       1649
+Intercept[S1DoShout,1]       1041
+Intercept[S1DoShout,2]       1051
+Intercept[S2DoCurse,1]       1708
+Intercept[S2DoCurse,2]       1911
+Intercept[S2DoScold,1]       1406
+Intercept[S2DoScold,2]       1424
+Intercept[S2DoShout,1]       1203
+Intercept[S2DoShout,2]       1364
+Intercept[S3DoCurse,1]       1020
+Intercept[S3DoCurse,2]       1086
+Intercept[S3DoScold,1]       1230
+Intercept[S3DoScold,2]       1314
+Intercept[S3DoShout,1]       1011
+Intercept[S3DoShout,2]       1107
+Intercept[S4DoCurse,1]       1657
+Intercept[S4DoCurse,2]       1588
+Intercept[S4DoScold,1]       1111
+Intercept[S4DoScold,2]       1301
+Intercept[S4DoShout,1]       1033
+Intercept[S4DoShout,2]       1143
+
+Family Specific Parameters: 
+     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+disc     1.00      0.00     1.00     1.00   NA       NA       NA
+
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb255"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb255-1"><a href="#cb255-1"></a><span class="fu">get_variables</span>(irt<span class="fl">.3</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "b_Intercept[S1WantCurse,1]"    "b_Intercept[S1WantCurse,2]"   
+  [3] "b_Intercept[S1WantScold,1]"    "b_Intercept[S1WantScold,2]"   
+  [5] "b_Intercept[S1WantShout,1]"    "b_Intercept[S1WantShout,2]"   
+  [7] "b_Intercept[S2WantCurse,1]"    "b_Intercept[S2WantCurse,2]"   
+  [9] "b_Intercept[S2WantScold,1]"    "b_Intercept[S2WantScold,2]"   
+ [11] "b_Intercept[S2WantShout,1]"    "b_Intercept[S2WantShout,2]"   
+ [13] "b_Intercept[S3WantCurse,1]"    "b_Intercept[S3WantCurse,2]"   
+ [15] "b_Intercept[S3WantScold,1]"    "b_Intercept[S3WantScold,2]"   
+ [17] "b_Intercept[S3WantShout,1]"    "b_Intercept[S3WantShout,2]"   
+ [19] "b_Intercept[S4wantCurse,1]"    "b_Intercept[S4wantCurse,2]"   
+ [21] "b_Intercept[S4WantScold,1]"    "b_Intercept[S4WantScold,2]"   
+ [23] "b_Intercept[S4WantShout,1]"    "b_Intercept[S4WantShout,2]"   
+ [25] "b_Intercept[S1DoCurse,1]"      "b_Intercept[S1DoCurse,2]"     
+ [27] "b_Intercept[S1DoScold,1]"      "b_Intercept[S1DoScold,2]"     
+ [29] "b_Intercept[S1DoShout,1]"      "b_Intercept[S1DoShout,2]"     
+ [31] "b_Intercept[S2DoCurse,1]"      "b_Intercept[S2DoCurse,2]"     
+ [33] "b_Intercept[S2DoScold,1]"      "b_Intercept[S2DoScold,2]"     
+ [35] "b_Intercept[S2DoShout,1]"      "b_Intercept[S2DoShout,2]"     
+ [37] "b_Intercept[S3DoCurse,1]"      "b_Intercept[S3DoCurse,2]"     
+ [39] "b_Intercept[S3DoScold,1]"      "b_Intercept[S3DoScold,2]"     
+ [41] "b_Intercept[S3DoShout,1]"      "b_Intercept[S3DoShout,2]"     
+ [43] "b_Intercept[S4DoCurse,1]"      "b_Intercept[S4DoCurse,2]"     
+ [45] "b_Intercept[S4DoScold,1]"      "b_Intercept[S4DoScold,2]"     
+ [47] "b_Intercept[S4DoShout,1]"      "b_Intercept[S4DoShout,2]"     
+ [49] "sd_id__Intercept"              "sd_item__Intercept"           
+ [51] "disc"                          "Intercept_1[1]"               
+ [53] "Intercept_1[2]"                "Intercept_2[1]"               
+ [55] "Intercept_2[2]"                "Intercept_3[1]"               
+ [57] "Intercept_3[2]"                "Intercept_4[1]"               
+ [59] "Intercept_4[2]"                "Intercept_5[1]"               
+ [61] "Intercept_5[2]"                "Intercept_6[1]"               
+ [63] "Intercept_6[2]"                "Intercept_7[1]"               
+ [65] "Intercept_7[2]"                "Intercept_8[1]"               
+ [67] "Intercept_8[2]"                "Intercept_9[1]"               
+ [69] "Intercept_9[2]"                "Intercept_10[1]"              
+ [71] "Intercept_10[2]"               "Intercept_11[1]"              
+ [73] "Intercept_11[2]"               "Intercept_12[1]"              
+ [75] "Intercept_12[2]"               "Intercept_13[1]"              
+ [77] "Intercept_13[2]"               "Intercept_14[1]"              
+ [79] "Intercept_14[2]"               "Intercept_15[1]"              
+ [81] "Intercept_15[2]"               "Intercept_16[1]"              
+ [83] "Intercept_16[2]"               "Intercept_17[1]"              
+ [85] "Intercept_17[2]"               "Intercept_18[1]"              
+ [87] "Intercept_18[2]"               "Intercept_19[1]"              
+ [89] "Intercept_19[2]"               "Intercept_20[1]"              
+ [91] "Intercept_20[2]"               "Intercept_21[1]"              
+ [93] "Intercept_21[2]"               "Intercept_22[1]"              
+ [95] "Intercept_22[2]"               "Intercept_23[1]"              
+ [97] "Intercept_23[2]"               "Intercept_24[1]"              
+ [99] "Intercept_24[2]"               "r_id[1,Intercept]"            
+[101] "r_id[2,Intercept]"             "r_id[3,Intercept]"            
+[103] "r_id[4,Intercept]"             "r_id[5,Intercept]"            
+[105] "r_id[6,Intercept]"             "r_id[7,Intercept]"            
+[107] "r_id[8,Intercept]"             "r_id[9,Intercept]"            
+[109] "r_id[10,Intercept]"            "r_id[11,Intercept]"           
+[111] "r_id[12,Intercept]"            "r_id[13,Intercept]"           
+[113] "r_id[14,Intercept]"            "r_id[15,Intercept]"           
+[115] "r_id[16,Intercept]"            "r_id[17,Intercept]"           
+[117] "r_id[18,Intercept]"            "r_id[19,Intercept]"           
+[119] "r_id[20,Intercept]"            "r_id[21,Intercept]"           
+[121] "r_id[22,Intercept]"            "r_id[23,Intercept]"           
+[123] "r_id[24,Intercept]"            "r_id[25,Intercept]"           
+[125] "r_id[26,Intercept]"            "r_id[27,Intercept]"           
+[127] "r_id[28,Intercept]"            "r_id[29,Intercept]"           
+[129] "r_id[30,Intercept]"            "r_id[31,Intercept]"           
+[131] "r_id[32,Intercept]"            "r_id[33,Intercept]"           
+[133] "r_id[34,Intercept]"            "r_id[35,Intercept]"           
+[135] "r_id[36,Intercept]"            "r_id[37,Intercept]"           
+[137] "r_id[38,Intercept]"            "r_id[39,Intercept]"           
+[139] "r_id[40,Intercept]"            "r_id[41,Intercept]"           
+[141] "r_id[42,Intercept]"            "r_id[43,Intercept]"           
+[143] "r_id[44,Intercept]"            "r_id[45,Intercept]"           
+[145] "r_id[46,Intercept]"            "r_id[47,Intercept]"           
+[147] "r_id[48,Intercept]"            "r_id[49,Intercept]"           
+[149] "r_id[50,Intercept]"            "r_id[51,Intercept]"           
+[151] "r_id[52,Intercept]"            "r_id[53,Intercept]"           
+[153] "r_id[54,Intercept]"            "r_id[55,Intercept]"           
+[155] "r_id[56,Intercept]"            "r_id[57,Intercept]"           
+[157] "r_id[58,Intercept]"            "r_id[59,Intercept]"           
+[159] "r_id[60,Intercept]"            "r_id[61,Intercept]"           
+[161] "r_id[62,Intercept]"            "r_id[63,Intercept]"           
+[163] "r_id[64,Intercept]"            "r_id[65,Intercept]"           
+[165] "r_id[66,Intercept]"            "r_id[67,Intercept]"           
+[167] "r_id[68,Intercept]"            "r_id[69,Intercept]"           
+[169] "r_id[70,Intercept]"            "r_id[71,Intercept]"           
+[171] "r_id[72,Intercept]"            "r_id[73,Intercept]"           
+[173] "r_id[74,Intercept]"            "r_id[75,Intercept]"           
+[175] "r_id[76,Intercept]"            "r_id[77,Intercept]"           
+[177] "r_id[78,Intercept]"            "r_id[79,Intercept]"           
+[179] "r_id[80,Intercept]"            "r_id[81,Intercept]"           
+[181] "r_id[82,Intercept]"            "r_id[83,Intercept]"           
+[183] "r_id[84,Intercept]"            "r_id[85,Intercept]"           
+[185] "r_id[86,Intercept]"            "r_id[87,Intercept]"           
+[187] "r_id[88,Intercept]"            "r_id[89,Intercept]"           
+[189] "r_id[90,Intercept]"            "r_id[91,Intercept]"           
+[191] "r_id[92,Intercept]"            "r_id[93,Intercept]"           
+[193] "r_id[94,Intercept]"            "r_id[95,Intercept]"           
+[195] "r_id[96,Intercept]"            "r_id[97,Intercept]"           
+[197] "r_id[98,Intercept]"            "r_id[99,Intercept]"           
+[199] "r_id[100,Intercept]"           "r_id[101,Intercept]"          
+[201] "r_id[102,Intercept]"           "r_id[103,Intercept]"          
+[203] "r_id[104,Intercept]"           "r_id[105,Intercept]"          
+[205] "r_id[106,Intercept]"           "r_id[107,Intercept]"          
+[207] "r_id[108,Intercept]"           "r_id[109,Intercept]"          
+[209] "r_id[110,Intercept]"           "r_id[111,Intercept]"          
+[211] "r_id[112,Intercept]"           "r_id[113,Intercept]"          
+[213] "r_id[114,Intercept]"           "r_id[115,Intercept]"          
+[215] "r_id[116,Intercept]"           "r_id[117,Intercept]"          
+[217] "r_id[118,Intercept]"           "r_id[119,Intercept]"          
+[219] "r_id[120,Intercept]"           "r_id[121,Intercept]"          
+[221] "r_id[122,Intercept]"           "r_id[123,Intercept]"          
+[223] "r_id[124,Intercept]"           "r_id[125,Intercept]"          
+[225] "r_id[126,Intercept]"           "r_id[127,Intercept]"          
+[227] "r_id[128,Intercept]"           "r_id[129,Intercept]"          
+[229] "r_id[130,Intercept]"           "r_id[131,Intercept]"          
+[231] "r_id[132,Intercept]"           "r_id[133,Intercept]"          
+[233] "r_id[134,Intercept]"           "r_id[135,Intercept]"          
+[235] "r_id[136,Intercept]"           "r_id[137,Intercept]"          
+[237] "r_id[138,Intercept]"           "r_id[139,Intercept]"          
+[239] "r_id[140,Intercept]"           "r_id[141,Intercept]"          
+[241] "r_id[142,Intercept]"           "r_id[143,Intercept]"          
+[243] "r_id[144,Intercept]"           "r_id[145,Intercept]"          
+[245] "r_id[146,Intercept]"           "r_id[147,Intercept]"          
+[247] "r_id[148,Intercept]"           "r_id[149,Intercept]"          
+[249] "r_id[150,Intercept]"           "r_id[151,Intercept]"          
+[251] "r_id[152,Intercept]"           "r_id[153,Intercept]"          
+[253] "r_id[154,Intercept]"           "r_id[155,Intercept]"          
+[255] "r_id[156,Intercept]"           "r_id[157,Intercept]"          
+[257] "r_id[158,Intercept]"           "r_id[159,Intercept]"          
+[259] "r_id[160,Intercept]"           "r_id[161,Intercept]"          
+[261] "r_id[162,Intercept]"           "r_id[163,Intercept]"          
+[263] "r_id[164,Intercept]"           "r_id[165,Intercept]"          
+[265] "r_id[166,Intercept]"           "r_id[167,Intercept]"          
+[267] "r_id[168,Intercept]"           "r_id[169,Intercept]"          
+[269] "r_id[170,Intercept]"           "r_id[171,Intercept]"          
+[271] "r_id[172,Intercept]"           "r_id[173,Intercept]"          
+[273] "r_id[174,Intercept]"           "r_id[175,Intercept]"          
+[275] "r_id[176,Intercept]"           "r_id[177,Intercept]"          
+[277] "r_id[178,Intercept]"           "r_id[179,Intercept]"          
+[279] "r_id[180,Intercept]"           "r_id[181,Intercept]"          
+[281] "r_id[182,Intercept]"           "r_id[183,Intercept]"          
+[283] "r_id[184,Intercept]"           "r_id[185,Intercept]"          
+[285] "r_id[186,Intercept]"           "r_id[187,Intercept]"          
+[287] "r_id[188,Intercept]"           "r_id[189,Intercept]"          
+[289] "r_id[190,Intercept]"           "r_id[191,Intercept]"          
+[291] "r_id[192,Intercept]"           "r_id[193,Intercept]"          
+[293] "r_id[194,Intercept]"           "r_id[195,Intercept]"          
+[295] "r_id[196,Intercept]"           "r_id[197,Intercept]"          
+[297] "r_id[198,Intercept]"           "r_id[199,Intercept]"          
+[299] "r_id[200,Intercept]"           "r_id[201,Intercept]"          
+[301] "r_id[202,Intercept]"           "r_id[203,Intercept]"          
+[303] "r_id[204,Intercept]"           "r_id[205,Intercept]"          
+[305] "r_id[206,Intercept]"           "r_id[207,Intercept]"          
+[307] "r_id[208,Intercept]"           "r_id[209,Intercept]"          
+[309] "r_id[210,Intercept]"           "r_id[211,Intercept]"          
+[311] "r_id[212,Intercept]"           "r_id[213,Intercept]"          
+[313] "r_id[214,Intercept]"           "r_id[215,Intercept]"          
+[315] "r_id[216,Intercept]"           "r_id[217,Intercept]"          
+[317] "r_id[218,Intercept]"           "r_id[219,Intercept]"          
+[319] "r_id[220,Intercept]"           "r_id[221,Intercept]"          
+[321] "r_id[222,Intercept]"           "r_id[223,Intercept]"          
+[323] "r_id[224,Intercept]"           "r_id[225,Intercept]"          
+[325] "r_id[226,Intercept]"           "r_id[227,Intercept]"          
+[327] "r_id[228,Intercept]"           "r_id[229,Intercept]"          
+[329] "r_id[230,Intercept]"           "r_id[231,Intercept]"          
+[331] "r_id[232,Intercept]"           "r_id[233,Intercept]"          
+[333] "r_id[234,Intercept]"           "r_id[235,Intercept]"          
+[335] "r_id[236,Intercept]"           "r_id[237,Intercept]"          
+[337] "r_id[238,Intercept]"           "r_id[239,Intercept]"          
+[339] "r_id[240,Intercept]"           "r_id[241,Intercept]"          
+[341] "r_id[242,Intercept]"           "r_id[243,Intercept]"          
+[343] "r_id[244,Intercept]"           "r_id[245,Intercept]"          
+[345] "r_id[246,Intercept]"           "r_id[247,Intercept]"          
+[347] "r_id[248,Intercept]"           "r_id[249,Intercept]"          
+[349] "r_id[250,Intercept]"           "r_id[251,Intercept]"          
+[351] "r_id[252,Intercept]"           "r_id[253,Intercept]"          
+[353] "r_id[254,Intercept]"           "r_id[255,Intercept]"          
+[355] "r_id[256,Intercept]"           "r_id[257,Intercept]"          
+[357] "r_id[258,Intercept]"           "r_id[259,Intercept]"          
+[359] "r_id[260,Intercept]"           "r_id[261,Intercept]"          
+[361] "r_id[262,Intercept]"           "r_id[263,Intercept]"          
+[363] "r_id[264,Intercept]"           "r_id[265,Intercept]"          
+[365] "r_id[266,Intercept]"           "r_id[267,Intercept]"          
+[367] "r_id[268,Intercept]"           "r_id[269,Intercept]"          
+[369] "r_id[270,Intercept]"           "r_id[271,Intercept]"          
+[371] "r_id[272,Intercept]"           "r_id[273,Intercept]"          
+[373] "r_id[274,Intercept]"           "r_id[275,Intercept]"          
+[375] "r_id[276,Intercept]"           "r_id[277,Intercept]"          
+[377] "r_id[278,Intercept]"           "r_id[279,Intercept]"          
+[379] "r_id[280,Intercept]"           "r_id[281,Intercept]"          
+[381] "r_id[282,Intercept]"           "r_id[283,Intercept]"          
+[383] "r_id[284,Intercept]"           "r_id[285,Intercept]"          
+[385] "r_id[286,Intercept]"           "r_id[287,Intercept]"          
+[387] "r_id[288,Intercept]"           "r_id[289,Intercept]"          
+[389] "r_id[290,Intercept]"           "r_id[291,Intercept]"          
+[391] "r_id[292,Intercept]"           "r_id[293,Intercept]"          
+[393] "r_id[294,Intercept]"           "r_id[295,Intercept]"          
+[395] "r_id[296,Intercept]"           "r_id[297,Intercept]"          
+[397] "r_id[298,Intercept]"           "r_id[299,Intercept]"          
+[399] "r_id[300,Intercept]"           "r_id[301,Intercept]"          
+[401] "r_id[302,Intercept]"           "r_id[303,Intercept]"          
+[403] "r_id[304,Intercept]"           "r_id[305,Intercept]"          
+[405] "r_id[306,Intercept]"           "r_id[307,Intercept]"          
+[407] "r_id[308,Intercept]"           "r_id[309,Intercept]"          
+[409] "r_id[310,Intercept]"           "r_id[311,Intercept]"          
+[411] "r_id[312,Intercept]"           "r_id[313,Intercept]"          
+[413] "r_id[314,Intercept]"           "r_id[315,Intercept]"          
+[415] "r_id[316,Intercept]"           "r_item[S1WantCurse,Intercept]"
+[417] "r_item[S1WantScold,Intercept]" "r_item[S1WantShout,Intercept]"
+[419] "r_item[S2WantCurse,Intercept]" "r_item[S2WantScold,Intercept]"
+[421] "r_item[S2WantShout,Intercept]" "r_item[S3WantCurse,Intercept]"
+[423] "r_item[S3WantScold,Intercept]" "r_item[S3WantShout,Intercept]"
+[425] "r_item[S4wantCurse,Intercept]" "r_item[S4WantScold,Intercept]"
+[427] "r_item[S4WantShout,Intercept]" "r_item[S1DoCurse,Intercept]"  
+[429] "r_item[S1DoScold,Intercept]"   "r_item[S1DoShout,Intercept]"  
+[431] "r_item[S2DoCurse,Intercept]"   "r_item[S2DoScold,Intercept]"  
+[433] "r_item[S2DoShout,Intercept]"   "r_item[S3DoCurse,Intercept]"  
+[435] "r_item[S3DoScold,Intercept]"   "r_item[S3DoShout,Intercept]"  
+[437] "r_item[S4DoCurse,Intercept]"   "r_item[S4DoScold,Intercept]"  
+[439] "r_item[S4DoShout,Intercept]"   "lprior"                       
+[441] "lp__"                          "accept_stat__"                
+[443] "treedepth__"                   "stepsize__"                   
+[445] "divergent__"                   "n_leapfrog__"                 
+[447] "energy__"                     </code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb257"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb257-1"><a href="#cb257-1"></a>irt<span class="fl">.3</span>a <span class="sc">%&gt;%</span> </span>
+<span id="cb257-2"><a href="#cb257-2"></a><span class="fu">gather_draws</span>(b_Intercept[item,cut]) <span class="sc">%&gt;%</span> </span>
+<span id="cb257-3"><a href="#cb257-3"></a>  <span class="fu">group_by</span>(item, cut) <span class="sc">%&gt;%</span> </span>
+<span id="cb257-4"><a href="#cb257-4"></a>  <span class="fu">summarise</span>(<span class="at">mean =</span> <span class="fu">mean</span>(.value),</span>
+<span id="cb257-5"><a href="#cb257-5"></a>            <span class="at">sd   =</span> <span class="fu">sd</span>(.value),</span>
+<span id="cb257-6"><a href="#cb257-6"></a>            <span class="at">ll   =</span> <span class="fu">quantile</span>(.value, <span class="at">probs =</span> .<span class="dv">025</span>),</span>
+<span id="cb257-7"><a href="#cb257-7"></a>            <span class="at">ul   =</span> <span class="fu">quantile</span>(.value, <span class="at">probs =</span> .<span class="dv">975</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb257-8"><a href="#cb257-8"></a>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">factor</span>(cut), <span class="at">x =</span> mean, <span class="at">xmin =</span> ll, <span class="at">xmax =</span> ul, <span class="at">group =</span> item, <span class="at">color =</span> item)) <span class="sc">+</span></span>
+<span id="cb257-9"><a href="#cb257-9"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="sc">-</span><span class="fl">0.5</span>)) <span class="sc">+</span><span class="fu">xlab</span>(<span class="st">"theta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="adv-9_files/figure-revealjs/unnamed-chunk-174-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb258"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb258-1"><a href="#cb258-1"></a>irt<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb258-2"><a href="#cb258-2"></a>  <span class="at">family =</span> <span class="fu">brmsfamily</span>(<span class="st">"cumulative"</span>, <span class="st">"logit"</span>),</span>
+<span id="cb258-3"><a href="#cb258-3"></a>  <span class="fu">bf</span>(resp <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span>i<span class="sc">|</span> item) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id),</span>
+<span id="cb258-4"><a href="#cb258-4"></a>  disc <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span>i<span class="sc">|</span> item)),</span>
+<span id="cb258-5"><a href="#cb258-5"></a>  <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="st">"constant(1)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"id"</span>), </span>
+<span id="cb258-6"><a href="#cb258-6"></a>            <span class="fu">prior</span>(<span class="st">"normal(0, 3)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"item"</span>),</span>
+<span id="cb258-7"><a href="#cb258-7"></a>            <span class="fu">prior</span>(<span class="st">"normal(0, 1)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"item"</span>, <span class="at">dpar =</span> <span class="st">"disc"</span>)),</span>
+<span id="cb258-8"><a href="#cb258-8"></a>    <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb258-9"><a href="#cb258-9"></a>    <span class="at">data =</span> IRT, </span>
+<span id="cb258-10"><a href="#cb258-10"></a>    <span class="at">backend =</span> <span class="st">"cmdstanr"</span>, </span>
+<span id="cb258-11"><a href="#cb258-11"></a>    <span class="at">file =</span> <span class="st">"irt.4"</span>,</span>
+<span id="cb258-12"><a href="#cb258-12"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> .<span class="dv">99</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>The thresholds of two items are simply shifted to the left or right relative to each other but otherwise share the same shape</p>
+</section>
+<section id="pros-and-cons-of-irt" class="slide level2">
+<h2>Pros and Cons of IRT</h2>
+<p>Pro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)</p>
 <p>Con: complex, CTT and IRT assessments correlate &gt;.96,</p>
 
 <div class="footer footer-default">

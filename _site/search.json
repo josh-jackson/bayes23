@@ -2615,6 +2615,13 @@
     "href": "adv-9.html#graded-response-model",
     "title": "advanced MLM",
     "section": "Graded Response Model",
-    "text": "Graded Response Model\nFrom a binary setting to one in which we have multiple, ordered response categories such as with likert items. ## Pros and Cons of IRT Pro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)\nCon: complex, CTT and IRT assessments correlate &gt;.96,"
+    "text": "Graded Response Model\nFrom a binary setting to one in which we have multiple, ordered response categories such as with likert items. From GLM we are using the cumulative likelihood. SR refers to it as the ordered categorical.\nWe want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc.\n\\[\\log\\left(\\dfrac{Pr(y_i)}{Pr(y_i)}\\right)=\\log\\left(\\dfrac{Pr(y_i \\leq k)}{1-Pr(y_i \\leq k)}\\right)= \\alpha_k\\]"
+  },
+  {
+    "objectID": "adv-9.html#pros-and-cons-of-irt",
+    "href": "adv-9.html#pros-and-cons-of-irt",
+    "title": "advanced MLM",
+    "section": "Pros and Cons of IRT",
+    "text": "Pros and Cons of IRT\nPro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)\nCon: complex, CTT and IRT assessments correlate &gt;.96,"
   }
 ]

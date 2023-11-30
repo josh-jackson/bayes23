@@ -2614,6 +2614,13 @@ We will see non-parallel lines in the item characteristic terms.
 
 The 1pl is equivalent to setting factor loadings to 1 in SEM, where this relaxes that constraint. 
 
+
+----------
+
+
+![](2pl.png)
+
+
 ## Non-linear syntax
 
 ```{r}
@@ -2725,7 +2732,125 @@ mutate(i = p * (1 - p)) %>%
 
 ## Graded Response Model
 
-From a binary setting to one in which we have multiple, ordered response categories such as with likert items. 
+From a binary setting to one in which we have multiple, ordered response categories such as with likert items. From GLM we are using the cumulative likelihood. SR refers to it as the ordered categorical.   
+
+We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc. 
+
+$$\log\left(\dfrac{Pr(y_i)}{Pr(y_i)}\right)=\log\left(\dfrac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)}\right)= \alpha_k$$
+
+-----
+
+![](cutpoints.png)
+
+-------
+
+$$\text{response}_i  \sim \operatorname{cumulative} (\mathbf p) $$ $$\text{logit}(p_k)  = \alpha_k + \phi $$ 
+$$\phi= 0 $$ 
+$$\alpha_k \sim \operatorname{Normal}(0, 1.5)$$
+
+Where $\phi$ is a stand in for regression terms. Right now it is an intercept only model. $\alpha_k$ are our k intercepts, make up for #categories minus 1.
+
+---------
+
+No, Perhaps, Yes. 
+
+```{r}
+irt.3 <- brm(
+  family = brmsfamily("cumulative", "logit"),
+  bf(resp ~ 1 + (1 | item) + (1 | id)),
+  prior = c(prior("normal(0, 3)", class = "sd", group = "id"),
+            prior("normal(0, 3)", class = "sd", group = "item")),
+    iter = 2000, warmup = 1000, cores = 4, chains = 4,
+    data = IRT, 
+    backend = "cmdstanr", 
+    file = "irt.3",
+  control = list(adapt_delta = .99))
+```
+
+--------
+
+```{r}
+summary(irt.3)
+```
+
+------
+
+```{r}
+get_variables(irt.3)
+```
+
+
+---------
+
+```{r}
+irt.3a <- brm(
+  family = brmsfamily("cumulative", "logit"),
+  bf(resp | thres(gr = item) ~ 1 + (1 | item) + (1 | id)),
+  prior = c(prior("normal(0, 3)", class = "sd", group = "id"),
+            prior("normal(0, 3)", class = "sd", group = "item")),
+    iter = 2000, warmup = 1000, cores = 4, chains = 4,
+    data = IRT, 
+    backend = "cmdstanr", 
+    file = "irt.3a",
+  control = list(adapt_delta = .99))
+```
+
+
+------
+
+```{r}
+summary(irt.3a)
+```
+
+
+------
+```{r}
+get_variables(irt.3a)
+```
+
+--------
+
+```{r}
+#| code-fold: true
+irt.3a %>% 
+gather_draws(b_Intercept[item,cut]) %>% 
+  group_by(item, cut) %>% 
+  summarise(mean = mean(.value),
+            sd   = sd(.value),
+            ll   = quantile(.value, probs = .025),
+            ul   = quantile(.value, probs = .975)) %>% 
+   ggplot(aes(y = factor(cut), x = mean, xmin = ll, xmax = ul, group = item, color = item)) +
+  geom_pointinterval(position = position_dodge(width = -0.5)) +xlab("theta")
+```
+
+
+--------
+
+```{r}
+irt.4 <- brm(
+  family = brmsfamily("cumulative", "logit"),
+  bf(resp ~ 1 + (1 |i| item) + (1 | id),
+  disc ~ 1 + (1 |i| item)),
+  prior = c(prior("constant(1)", class = "sd", group = "id"), 
+            prior("normal(0, 3)", class = "sd", group = "item"),
+            prior("normal(0, 1)", class = "sd", group = "item", dpar = "disc")),
+    iter = 2000, warmup = 1000, cores = 4, chains = 4,
+    data = IRT, 
+    backend = "cmdstanr", 
+    file = "irt.4",
+  control = list(adapt_delta = .99))
+
+
+```
+
+
+
+--------
+
+The thresholds of two items are simply shifted to the left or right relative to each other but otherwise share the same shape
+
+
+
 ## Pros and Cons of IRT
 Pro: CAT, item and people are interpreted on the same probability metric, some scores can be measured with more precision than others (rather than one reliability assessment), creation of item banks, investigation of differential item functioning (DIF)
 
