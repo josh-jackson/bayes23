@@ -1834,25 +1834,39 @@ rho %>%
 ## Missing data
 
 How to solve? 
-1. Listwise
-2. Estimation algorithm eg FIML
-3. Multiple Imputation (before you run the model)
-4. Bayesian (while you run the model)
+1. Listwise 
+2. Estimation algorithm eg FIML   
+3. Multiple Imputation (before you run the model)   
+4. Bayesian (while you run the model). 
 
 
 ## brms and multiple imputation
 
-Each missing value is imputed N times leading to a total of N fully imputed data sets. The imputation for each dataset is similar to our predict function, using variables to make a prediction. Sometimes this step is an iterative process. 
+Each missing value is imputed N times leading to a total of N fully imputed data sets. The imputation for each dataset is similar to our predict function, using variables to make a prediction. Sometimes this is an iterative process. 
 
 The model is then fit to  N dataset separately and results are pooled across models.
+
+Assumes the probability that a value is missing depends only on observed values and not on unobserved values (MAR)
 
 ```{r}
 #| code-fold: true
 
 library(mice)
 #multivariate imputation by chained equations
-# assumes the probability that a value is missing depends only on observed values and not on unobserved values
+
 ```
+
+----
+
+1. Replace (or impute) the missing values in each variable with temporary "place holder" values derived solely from the non-missing values available for that variable. e.g start with the mean
+
+2. A variable at a time use the other variables (including the place holder means) to make predictions using multiple regression. E.g., find the general association, and then plug in an individuals score on those to predict the missing value. 
+
+3. Repeat #2 with all other variables that have missing data, using the new imputated data to make predictions. 
+
+4. Once complete, use the new imputed dataset to predict the missing values that you predicted in #2, plus some random noise. Rinse and repeat for other variables. This constitutes an iteration Do N iterations such as 5
+
+5. Do 1-4 separately to create different imputed datasets. 
 
 ---
 
@@ -1875,7 +1889,8 @@ nhanes.imp <- mice(nhanes, m = 10)
 nhanes.imp
 ```
 mids = multiple impudated data set
-ppm = predictive mean matching.  Uses a datapoint from the original, nonmissing data which has a predicted value close to the predicted value of the missing sample
+
+ppm = predictive mean matching.  
 
 ---
 
@@ -1924,7 +1939,7 @@ plot(imp.1)
 
 Remember the posterior can be thought of as a new prior for your next data acquisition. You could do this one datapoint at a time (remember globe tossing model in SR?), or a dataset at the time. 
 
-MI is sort of like that. You could instear run 1 model, find the posterior, use that as a prior and then move on with the rest of the datasets repeating this process. Sort of like this MI process. 
+MI is sort of like that. You could instead run 1 model with a single imputed dataset, estimate the posterior, use that posterior as a prior for a new model and then iterate through the rest of the imputed datasets
 
 
 ## Bayesian imputation within brms
@@ -1958,7 +1973,7 @@ Cons: cannot impute discrete values within brms/Stan
 posterior_summary(imp.2)
 ```
 
----
+## missing data posterior
 
 ```{r}
 #| code-fold: true
@@ -1978,8 +1993,16 @@ imp.2 %>%
   ggplot(aes(x = Ymi_chl, 
              y = reorder(ID, Ymi_chl))) +
   stat_slab(fill = "black", alpha = 3/4, height = 1.6, slab_color = "black", slab_size = 1/4) +
-  labs(x = "Chl imputed values", y = "IDs") +
-  theme_ggdist()
+  labs(x = "Chl imputed values", y = "IDs") 
+```
+
+
+------
+
+```{r}
+nhanes %>% 
+  ggplot(aes(x=chl)) + 
+  geom_density() + xlim(150,250)
 ```
 
 
@@ -2067,17 +2090,18 @@ In bayes it is related to missing data as missing value can be though of as a va
 
 With measurement error, the insight is to realize that any uncertain piece of data can be replaced by a distribution that reflects uncertainty. 
 
-CTT defines this as: true value = observed value + error
+Clastical Test Theory (CTT) defines this as: true value = observed value + error
 
 Can think about a distribution that reflects the true value and errors around it e.g., true value is 10, but some error in. measurement y ~ N(10,2)
 
 
 -----
 
-schoool.success (observed) \~ Normal( True.SS_i , SE.SS_i )
-True.SS_i \~ Normal( $\mu_i$ , $\sigma$ )
+$$\text{schoool.success (observed)} \sim \text{Normal}( \text{True.SS}_i, \text{SE.SS}_i )$$
 
-$\mu_i$ = $\beta_0$ + $\beta_1$ $SS\_c$ 
+$$\text{True.SS}_i \sim \text{Normal}(\mu_i , \sigma )$$
+
+$\mu_i$ = $\beta_0$ + $\beta_1$ $\text{Happiness}\_c$ 
 
 $\beta_0$ \~ Normal(0, 5)\
 $\beta_1$ \~ Normal(0, 5)\
@@ -2133,6 +2157,21 @@ ME.2 <- brm(schoool.success | mi(2.74) ~ happiness,
 
 ```{r}
 summary(ME.2)
+```
+
+
+## measurement error on the predictor
+
+me(predictor, sde_predictor)
+
+```{r, eval = FALSE}
+
+ME.2 <- brm(schoool.success | mi(2.74) ~ me(happiness, SD_error), 
+            data = MI, 
+            iter = 2000, warmup = 1000, chains = 4, cores = 4,
+            backend = "cmdstanr", 
+            file = "ME.2")
+
 ```
 
 
@@ -2318,7 +2357,7 @@ predictions(meta.2, type = "response", ndraws = 100, re_formula = NULL) %>%  pos
 
 ```{r}
 #| code-fold: true
-#| 
+
 predictions(meta.2, type = "response", ndraws = 1000, re_formula = NULL) %>%  posterior_draws() %>% 
   sample_n_of(25,id) %>% 
   ggplot(aes(x = draw, y = reorder(study, draw))) +
@@ -2425,6 +2464,8 @@ meta.4 <-
 ```{r}
 summary(meta.4)
 ```
+
+
 
 
 ## IRT
