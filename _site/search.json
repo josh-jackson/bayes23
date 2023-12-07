@@ -2566,7 +2566,7 @@
     "href": "adv-9.html#pl-rasch-model",
     "title": "advanced MLM",
     "section": "1-PL (Rasch Model)",
-    "text": "1-PL (Rasch Model)\n\\[ y_{pi}  \\sim  \\text{Bernoulli}(p_{pi})\\] \\[ logit(p_{pi}) = \\beta_0 + \\theta_p + \\delta_i \\] \\[ \\theta_p  \\sim \\text{Normal}(0, \\sigma_\\theta)\\] \\[ \\delta_i  \\sim \\text{Normal}(0, \\sigma_\\delta)\\]"
+    "text": "1-PL (Rasch Model)\n\\[ y_{pi}  \\sim  \\text{Bernoulli}(p_{pi})\\] \\[ logit(p_{pi}) = \\beta_0 + \\theta_p + \\delta_i \\]\n(usually difficulty is defined as \\(\\theta_p\\) - \\(\\delta_i\\))\n\\[ \\theta_p  \\sim \\text{Normal}(0, \\sigma_\\theta)\\] \\[ \\delta_i  \\sim \\text{Normal}(0, \\sigma_\\delta)\\]"
   },
   {
     "objectID": "adv-9.html#irt-in-brms",
@@ -2608,7 +2608,7 @@
     "href": "adv-9.html#non-linear-syntax",
     "title": "advanced MLM",
     "section": "Non-linear syntax",
-    "text": "Non-linear syntax\n\nirt.2 &lt;- brm(\n  family = brmsfamily(\"bernoulli\", \"logit\"),\n  bf(r2 ~ exp(logalpha) * delta,\n    delta ~ 1 + (1 |i| item) + (1 | id),\n    logalpha ~ 1 + (1 |i| item),\n    nl = TRUE),\n  prior = c(prior(normal(0, 1.5), class = b, nlpar = delta),\n            prior(normal(0, 1), class = b, nlpar = logalpha),\n            prior(student_t(10, 0, 1), class = sd, nlpar = delta),\n            prior(student_t(10, 0, 1), class = sd, nlpar = logalpha),\n            prior(lkj(2), class = cor)),\n    iter = 2000, warmup = 1000, cores = 4, chains = 4,\n    data = IRT, \n    backend = \"cmdstanr\", \n    file = \"irt.2\",\n  control = list(adapt_delta = .99))"
+    "text": "Non-linear syntax\ndelta was our initial modeling of difficulty. We are now also modeling how difficulty varies across discrimination, so these two terms must interact. Difficulty depends on the item and the person, whereas discrimination is only item specific.\n\nirt.2 &lt;- brm(\n  family = brmsfamily(\"bernoulli\", \"logit\"),\n  bf(r2 ~ exp(logalpha) * delta, # discrimination fixed &gt;0\n    delta ~ 1 + (1 |i| item) + (1 | id),\n    logalpha ~ 1 + (1 |i| item),\n    nl = TRUE),\n  prior = c(prior(normal(0, 1.5), class = b, nlpar = delta),\n            prior(normal(0, 1), class = b, nlpar = logalpha),\n            prior(student_t(10, 0, 1), class = sd, nlpar = delta),\n            prior(student_t(10, 0, 1), class = sd, nlpar = logalpha),\n            prior(lkj(2), class = cor)),\n    iter = 2000, warmup = 1000, cores = 4, chains = 4,\n    data = IRT, \n    backend = \"cmdstanr\", \n    file = \"irt.2\",\n  control = list(adapt_delta = .99))"
   },
   {
     "objectID": "adv-9.html#graded-response-model",
@@ -2637,5 +2637,12 @@
     "title": "advanced MLM",
     "section": "measurement error on the predictor",
     "text": "measurement error on the predictor\nme(predictor, sde_predictor)\n\nME.2 &lt;- brm(schoool.success | mi(2.74) ~ me(happiness, SD_error), \n            data = MI, \n            iter = 2000, warmup = 1000, chains = 4, cores = 4,\n            backend = \"cmdstanr\", \n            file = \"ME.2\")"
+  },
+  {
+    "objectID": "adv-9.html#brms-easiness",
+    "href": "adv-9.html#brms-easiness",
+    "title": "advanced MLM",
+    "section": "brms easiness",
+    "text": "brms easiness\nIn the following code we will estimate easieness rather than difficulty. This is just the reversed scored version, all likelihood and model fit are the same.\nWhy? Because it is computationally easier to do addition than subjection (see below)"
   }
 ]

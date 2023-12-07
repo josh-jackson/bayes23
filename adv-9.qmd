@@ -2498,6 +2498,12 @@ An item's difficulty is defined as the trait level required for someone to have 
 
 An item with a difficult of 0 (standardized values), person with a 0 theta has a 50:50 shot, whereas someone with a 1 theta will have a greater probability. For an item difficulty of 1.5, a person needs a 1.5 theta to have a 50:50 chance.   
 
+## brms easiness
+
+In the following code we will estimate easieness rather than difficulty. This is just the reversed scored version, all likelihood and model fit are the same. 
+
+Why? Because it is computationally easier to do addition than subjection (see below)
+
 ## Discrimination
 
 How well items can differentiate a person who has high theta levels from a person who has low theta levels. This is related to how strongly the item is associated with the latent construct. E.g., is it a good item? Does it have construct irrelevant content? 
@@ -2509,7 +2515,10 @@ Positive discrimination means item is associated with the latent trait. Zero mea
 ## 1-PL (Rasch Model)
 
 $$ y_{pi}  \sim  \text{Bernoulli}(p_{pi})$$
-$$ logit(p_{pi}) = \beta_0 + \theta_p + \delta_i $$
+$$ logit(p_{pi}) = \beta_0 + \theta_p + \delta_i $$ 
+
+(usually difficulty is defined as $\theta_p$ - $\delta_i$)
+
 $$ \theta_p  \sim \text{Normal}(0, \sigma_\theta)$$
 $$ \delta_i  \sim \text{Normal}(0, \sigma_\delta)$$
 
@@ -2662,12 +2671,30 @@ The 1pl is equivalent to setting factor loadings to 1 in SEM, where this relaxes
 ![](2pl.png)
 
 
-## Non-linear syntax
+-------
 
+While we are only predicting one parameter, p, we can think of these more complex models as similar to distributional models. That is because they will become non-linear! 
+
+All regression models are linear in that they consist of a set of liner combinations. b1X1 X b2X2 is totally fine as interactions are linear in the parameters (they are just a parameter multiplied by a new variable X1xX2, added to other parameters) even if they are not linear in the curves the predict 
+
+Nonlinear models are widespread and can be thought of as anything not linear e.g., B1 * B2 or cos(b1 * X). 
+
+
+------
+
+In our 2PL, we have two parameters per our repeated item measure: difficulty and discrimination, which are related in a non-linear way.
+
+$$  p(y = 1,\alpha_i,\theta_p,\delta_i  ) =  \alpha_i(\theta_p + \delta_i) $$
+We will model these much like we do distributional models but instead of distributional parameters from the likelihood, it will be different parameters from our model
+
+
+## Non-linear syntax
+delta was our initial modeling of difficulty. We are now also modeling how difficulty varies across discrimination, so these two terms must interact. 
+Difficulty depends on the item and the person, whereas discrimination is only item specific. 
 ```{r}
 irt.2 <- brm(
   family = brmsfamily("bernoulli", "logit"),
-  bf(r2 ~ exp(logalpha) * delta,
+  bf(r2 ~ exp(logalpha) * delta, # discrimination fixed >0
     delta ~ 1 + (1 |i| item) + (1 | id),
     logalpha ~ 1 + (1 |i| item),
     nl = TRUE),
